@@ -1,10 +1,29 @@
 body
 {
-	background: #d1d1d1
+	background-image: url(../img/background/hexabump_@2X.png);
 }
 
-.container
+.page-wrap
 {
 	margin-top: 50px;
 	max-width: 1800px;
+}
+
+.page-wrap p,
+.page-wrap label
+{
+	color: white;
+}
+
+.page-wrap small
+{
+	color: grey;
+}
+
+.page-wrap h1,
+.page-wrap h2,
+.page-wrap h3,
+.page-wrap h4
+{
+	color: #99ccff;
 }
