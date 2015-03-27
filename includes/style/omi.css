@@ -65,3 +65,8 @@ body
 	width: 225px;
 	height: 333px;
 }
+
+.form-control
+{
+	border-radius: 0px !important;
+}

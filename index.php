@@ -30,12 +30,15 @@ require './includes/config/config.php';
 			</div>
 			<div class="col-lg-9 col-md-9 col-sm-9 col-xs-8">
 				<div class="col-lg-12">
-					<div class="box">
-						<form action=" " method="post">
-							<input type="text" class="form-control" placeholder="Enter keywords...">
-						</form>
-					</div>
+					<!-- This should be given an javascript function associated, so when a letter is typed, this should invoke a search which toggles images below for results -->
+					<form action=" " method="post">
+						<input type="text" class="form-control" placeholder="Enter keywords...">
+					</form>
 				</div>
+				<br>
+				<br>
+				<br>
+				<div class="clearfix"></div>
 				<div class="col-lg-4 col-md-4 col-sm-6 col-xs-6">
 					<img class="poster" src="http://ia.media-imdb.com/images/M/MV5BMjAzOTM4MzEwNl5BMl5BanBnXkFtZTgwMzU1OTc1MDE@._V1_SX300.jpg">
 				</div>
