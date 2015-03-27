@@ -27,3 +27,41 @@ body
 {
 	color: #99ccff;
 }
+
+.box
+{
+    /*border-color: lightblue;*/
+    /*border-style: solid;*/
+    /*border-width: thin;*/
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 5px;
+    padding-right: 5px;
+    font-size: 110%;
+    margin-bottom: 20px;
+	width: 94%;
+	margin-left: 3%;
+	margin-right: 3%;
+	background-color: white;
+}
+
+.box h1,
+.box h2,
+.box h3,
+.box h4
+{
+	color: black;
+	text-align: center;
+}
+
+.header-ender
+{
+	border: 3px double #99ccff;
+}
+
+.poster
+{
+	padding: 10px;
+	width: 225px;
+	height: 333px;
+}
