@@ -1,5 +1,14 @@
 <?php
 require './includes/config/config.php';
+
+if(isset($_POST['search']))
+{
+	$title = preg_replace("/ /", '+', $_POST['search_field']);
+	
+	$json = file_get_contents("http://www.omdbapi.com/?t=$title&y=&plot=short&r=json&type=movie");
+	
+	$data = json_decode($json, true);
+}
 ?>
 
 <!DOCTYPE html>
@@ -32,11 +41,35 @@ require './includes/config/config.php';
 				<div class="col-lg-12">
 					<!-- This should be given an javascript function associated, so when a letter is typed, this should invoke a search which toggles images below for results -->
 					<form action=" " method="post">
-						<input type="text" class="form-control" placeholder="Enter keywords...">
+						<input type="text" class="form-control" placeholder="Enter keywords..." name="search_field">
+						<input type="submit" name="search" style="display: none">
 					</form>
 				</div>
+				<div class="clearfix"></div>
 				<br>
-				<br>
+				<div class="col-lg-12">
+					<div class="box">
+						<?php
+						if(is_array($data))
+						{
+							foreach($data as $key=>$value)
+							{
+								if($key == 'Poster')
+								{
+									?><img src="<?php echo $value ?>"><?php
+								}
+								else
+								{
+									echo $key.': '.$value.'<br>';
+								}
+							}
+						}
+
+
+						// close cURL resource, and free up system resources
+						?>
+					</div>
+				</div>
 				<br>
 				<div class="clearfix"></div>
 				<div class="col-lg-4 col-md-4 col-sm-6 col-xs-6">
