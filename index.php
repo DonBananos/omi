@@ -56,7 +56,9 @@ if(isset($_POST['search']))
 							{
 								if($key == 'Poster')
 								{
-									?><img src="<?php echo $value ?>"><?php
+									?>
+						<img src="<?php echo $value ?>">
+									<?php
 								}
 								else
 								{
