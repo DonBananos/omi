@@ -112,6 +112,10 @@ if(isset($_POST['search']))
 
 							}
 						}
+						else
+						{
+							?>Please search in the field above<?php
+						}
 						?>
 						<div class="clearfix"></div>
 					</div>
