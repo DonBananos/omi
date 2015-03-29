@@ -3,10 +3,13 @@ require './includes/config/config.php';
 
 if(isset($_POST['search']))
 {
+	//Replaces all spaces with + (for search)
 	$title = preg_replace("/ /", '+', $_POST['search_field']);
 	
+	//HTTP request to OMDb API with JSON answer
 	$json = file_get_contents("http://www.omdbapi.com/?t=$title&y=&plot=short&r=json&type=movie");
 	
+	//JSON decode of answer
 	$data = json_decode($json, true);
 }
 ?>
@@ -49,27 +52,68 @@ if(isset($_POST['search']))
 				<br>
 				<div class="col-lg-12">
 					<div class="box">
+						<h3>Search Result</h3>
+						<hr class="header-ender">
 						<?php
-						if(is_array($data))
+						if(isset($data))
 						{
-							foreach($data as $key=>$value)
+							if(is_array($data))
 							{
-								if($key == 'Poster')
+								?>
+						<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+								<?php
+								foreach($data as $key=>$value)
 								{
-									?>
-						<img src="<?php echo $value ?>">
-									<?php
+									if($key == 'Poster')
+									{
+										//Save Poster URL for later use
+										$posterUrl = $value;
+									}
+									elseif($key == "imdbID")
+									{
+										//Save ID in IMDb URL to movie
+										$imdbLink = "http://www.imdb.com/title/$value/";
+										//Print ID
+										?>
+							<div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+								<b><?php echo $key ?>:</b>
+							</div>
+							<div class="col-lg-8 col-md-8 col-sm-8 col-xs-8">
+								<?php echo $value ?>
+							</div>
+							<div class="clearfix"></div>
+										<?php
+									}
+									else
+									{
+										//Print all values not poster URL or ID
+										?>
+							<div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+								<b><?php echo $key ?>:</b>
+							</div>
+							<div class="col-lg-8 col-md-8 col-sm-8 col-xs-8">
+								<?php echo $value ?>
+							</div>
+							<div class="clearfix"></div>
+										<?php
+									}
 								}
-								else
-								{
-									echo $key.': '.$value.'<br>';
-								}
+								?>
+							<div class="clearfix"></div>
+						</div>
+						<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+							<img src="<?php echo $posterUrl ?>">
+							<br>
+							<br>
+							<a href="<?php echo $imdbLink ?>" target="_blank"><img src="http://ia.media-imdb.com/images/G/01/imdb/images/plugins/imdb_46x22-2264473254._CB379390954_.png"></a>
+							<div class="clearfix"></div>
+						</div>
+								<?php
+
 							}
 						}
-
-
-						// close cURL resource, and free up system resources
 						?>
+						<div class="clearfix"></div>
 					</div>
 				</div>
 				<br>
