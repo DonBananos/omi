@@ -40,7 +40,8 @@ if(isset($_POST['search']))
 					<br>
 				</div>
 			</div>
-			<div class="col-lg-9 col-md-9 col-sm-9 col-xs-8">
+			
+                        <div class="col-lg-9 col-md-9 col-sm-9 col-xs-8">
 				<div class="col-lg-12">
 					<!-- This should be given an javascript function associated, so when a letter is typed, this should invoke a search which toggles images below for results -->
 					<form action=" " method="post">
@@ -141,6 +142,12 @@ if(isset($_POST['search']))
 					<img class="poster" src="http://ia.media-imdb.com/images/M/MV5BODU4MjU4NjIwNl5BMl5BanBnXkFtZTgwMDU2MjEyMDE@._V1_SX300.jpg">
 				</div>
 			</div>
+                    
+                                                <!-- REGISTER FORM -->
+                        <?php
+                            require './user/register.html';
+                        ?>
+                        
 			<div class="clearfix"></div>
 			<?php
 			require './includes/footer.html';
