@@ -9,10 +9,14 @@
 
 class User
 {
-	private $id;
-	private $firstname;
-	private $lastname;
-	private $username;
+	private $id; //Integer
+	private $username; //String
+	private $email; //String
+	private $password; //String
+	private $created; //Datetime
+	private $active; //Boolean
+	private $roleId; //Integer
+	private $role; //String
 	
 	function __construct($id = null) //set to null if id is not in constructor
 	{
@@ -43,7 +47,7 @@ class User
 		//$this->setFirstname($firstname);
 	}
 	
-	public function createUser($username, $firstname, $lastname)
+	public function createUser($username, $email, $password)
 	{
 		/*
 		 * If you don't understand this function, you probably shouldn't be 
@@ -62,19 +66,34 @@ class User
 		return $this->id;
 	}
 
-	public function getFirstname()
-	{
-		return $this->firstname;
-	}
-
-	public function getLastname()
-	{
-		return $this->lastname;
-	}
-
 	public function getUsername()
 	{
 		return $this->username;
+	}
+	
+	public function getEmail()
+	{
+		return $this->email;
+	}
+	
+	public function getDateCreated()
+	{
+		return date('d/m-Y', strtotime($this->created));
+	}
+	
+	public function getDatetimeCreated()
+	{
+		return date('d/m-Y h:i:s', strtotime($this->created));
+	}
+	
+	public function getActive()
+	{
+		return $this->active;
+	}
+	
+	public function getRole()
+	{
+		return $this->role;
 	}
 
 	private function setId($id)
@@ -82,19 +101,45 @@ class User
 		$this->id = $id;
 	}
 
-	private function setFirstname($firstname)
-	{
-		$this->firstname = $firstname;
-	}
-
-	private function setLastname($lastname)
-	{
-		$this->lastname = $lastname;
-	}
-
 	private function setUsername($username)
 	{
 		$this->username = $username;
+	}
+	
+	private function setEmail($email)
+	{
+		$this->email = $email;
+	}
+	
+	private function setPassword($password)
+	{
+		$this->password = $password;
+	}
+	
+	private function setCreated($created)
+	{
+		$this->created = $created;
+	}
+	
+	private function setActive($active)
+	{
+		$this->active = $active;
+	}
+	
+	private function setRoleId($roleId)
+	{
+		$this->roleId = $roleId;
+	}
+	
+	private function setRole()
+	{
+		$db = new mysqli($host, $user, $password, $database, $port, $socket);
+		$sql = "SELECT role_name FROM role WHERE role_id = ?";
+		$statement = $db->prepare($sql);
+		$statement->bind_param("i", $this->roleId);
+		//Something to get the role_name
+		$role = ""; //set $role to role_name..
+		$this->role = $role;
 	}
 }
 
