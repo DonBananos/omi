@@ -13,7 +13,7 @@ is triggered, which the updates the content of its related HTML errorMsg element
 
     <div class="row">
         <div class="col-md-4">
-            <form role="form" action="" method="POST" onsubmit="">
+            <form role="form" action="./includes/config/register.php" method="POST" >
 
                 <h2>Register</h2>
 
