@@ -32,7 +32,7 @@ if (isset($_POST['search'])) {
                         <small>// CEO CincoWare</small>
                     </div>
                     <div class="col-md-4">
-                        <?php require './user/register.php'; ?>
+                        <?php require './user/registerView.php'; ?>
                     </div>
                 </div>
             </div> <!-- container -->
