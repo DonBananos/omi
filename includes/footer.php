@@ -1,6 +1,8 @@
-<p style="text-align: center; color: grey">
-    Copyright &copy; 2015 CincoWare
-</p>     
+<footer>
+    <p style="text-align: center; color: grey">
+        Copyright &copy; 2015 CincoWare
+    </p>  
+</footer>
 
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
