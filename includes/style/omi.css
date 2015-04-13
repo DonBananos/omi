@@ -70,3 +70,15 @@ body
 {
 	border-radius: 0px !important;
 }
+
+.main-container {
+    padding-top: 50px;
+}
+
+.main-container p, h1, h2, h3, h4, h5, small{
+    color:#fff;
+}
+
+.main-container p, h1, h2, h3, h4, h5, small{
+    padding: 10px;;
+}

@@ -1,4 +1,3 @@
-
 <!--
 Task ID: OMI_014
 Author: Heini L. Ovason
@@ -13,7 +12,7 @@ is triggered, which the updates the content of its related HTML errorMsg element
 <div class="container">
 
     <div class="row">
-        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-4">
+        <div class="col-md-4">
             <form role="form" action="" method="POST" onsubmit="">
 
                 <h2>Register</h2>
@@ -55,7 +54,7 @@ is triggered, which the updates the content of its related HTML errorMsg element
 
                 <div class="row">
                     <div class="col-xs-12 col-sm-6 col-md-6">
-                        <input type="submit" value="Register" class="btn btn-primary btn-block btn-lg">
+                        <button type="submit" class="btn btn-primary">Sign up</button>
                     </div>
                 </div>
 
@@ -118,4 +117,14 @@ is triggered, which the updates the content of its related HTML errorMsg element
 
 </script>
 
+
+
+
+<?php
+
+/* 
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 
