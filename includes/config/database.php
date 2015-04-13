@@ -1,8 +1,8 @@
 <?php
-
-/* 
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
+	$dbCon = new mysqli('85.119.155.19', 'phplogin', 'Mowgli42', 'omi');
+	if ($dbCon->connect_errno) 
+	{
+  		printf("Connect failed: %s\n", $mysqli->connect_error);
+   		exit();
+	}
+?>
