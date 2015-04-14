@@ -53,9 +53,15 @@ class User
 		$stmt->fetch();
 		$stmt->close();
 		if($stmt->num_rows == 1){
+			$this->setId($id);
 			$this->setUsername($username);
 			$this->setEmail($email);
 			$this->setPassword($password);
+			$this->setCreated($created);
+			$this->setActive($active);
+			$this->setRoleId($roleId);
+			$this->setRole();
+			$this->setActivationCode($activationCode);
 		}return true;
 	}
 	
@@ -456,6 +462,55 @@ class User
 		}return false;
 	}
 	
+	public function login($username, $password)
+	{
+		if($this->checkIfValueExists('username', $username))
+		{
+			$this->setValuesAccordingToUsername($username);
+			$hashedTriedPassword = $this->hashPass($password);
+			if($hashedTriedPassword == $this->hashedPassword)
+			{
+				$_SESSION['signed_in'] = TRUE;
+				$_SESSION['active_user'] = new User($this->id);
+				return true;
+			}
+			else
+			{
+				$respond = 'Username Or Password is incorrect!'; //Password is wrong
+			}
+		}
+		else
+		{
+			$respond = 'Username Or Password is incorrect!'; //Username is wrong
+		}
+	}
+
+	private function setValuesAccordingToUsername($username)
+	{
+		$sql = "SELECT user_id, user_email, user_password, user_created, user_active, user_role_id, user_activation_code FROM user WHERE username = ?";
+		$stmt = $dbCon->prepare($sql); //Prepare Statement
+		if($stmt === false){
+			trigger_error('SQL Error: '.$dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('s', $username); //Bind parameters.
+		$stmt->execute(); //Execute
+		$stmt->bind_result($id, $email, $password, $created, $active, $roleId, $activationCode); //Get ResultSet
+		$stmt->fetch();
+		$stmt->close();
+		if($stmt->num_rows == 1){
+			$this->setId($id);
+			$this->setUsername($username);
+			$this->setEmail($email);
+			$this->setPassword($password);
+			$this->setCreated($created);
+			$this->setActive($active);
+			$this->setRoleId($roleId);
+			$this->setRole();
+			$this->setActivationCode($activationCode);
+		}return true;
+	}
+	
+	
 	/*
 	 * All Getters and Setters (Getters are public, Setters are private)
 	 */
@@ -539,5 +594,10 @@ class User
 		$stmt->fetch();
 		$stmt->close();
 		$this->role = $role;
+	}
+	
+	private function setActivationCode($activationCode)
+	{
+		$this->activationCode = $activationCode;
 	}
 }
