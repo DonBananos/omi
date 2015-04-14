@@ -1,7 +1,7 @@
 <?php
 
 $path = "/onlineMovieIndex/";
-
+$url = "localhost/onlineMovieIndex/";
 
 /*
  * Regular Expressions for Register and Login

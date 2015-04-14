@@ -511,6 +511,17 @@ class User
 		}return true;
 	}
 	
+	public function logout()
+	{
+		session_unset();
+		?>
+		<script>
+			window.location = '<?php echo $url ?>';
+		</script>
+		<?php
+		die();
+	}
+	
 	
 	/*
 	 * All Getters and Setters (Getters are public, Setters are private)
