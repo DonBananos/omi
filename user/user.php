@@ -42,10 +42,21 @@ class User
 			$id = $this->id;
 		}
 		
-		//SELECT * FROM user WHERE user_id = $id
-		//Query
-		//Set each value according to resultset.
-		//$this->setFirstname($firstname);
+		$sql = "SELECT username, user_email, user_password, user_created, user_active, user_role_id, user_activation_code FROM user WHERE user_id = ?";
+		$stmt = $dbCon->prepare($sql); //Prepare Statement
+		if($stmt === false){
+			trigger_error('SQL Error: '.$dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('i', $id); //Bind parameters.
+		$stmt->execute(); //Execute
+		$stmt->bind_result($username, $email, $password, $created, $active, $roleId, $activationCode); //Get ResultSet
+		$stmt->fetch();
+		$stmt->close();
+		if($stmt->num_rows == 1){
+			$this->setUsername($username);
+			$this->setEmail($email);
+			$this->setPassword($password);
+		}return true;
 	}
 	
 	/*
@@ -208,6 +219,218 @@ class User
 		return false;
 	}
 	
+	private function sendVerificationEmail()
+	{
+		/*
+		 * This function sends the email needed for activation of account.
+		 */
+		$mail = $this->generateVerificationEmail();
+		if(mail($mail['to'], $mail['subject'], $mail['message'], $mail['headers']))
+		{
+			return true;
+		}
+		return false;
+	}
+	
+	private function generateVerificationEmail()
+	{
+		/*
+		 * This function generated an array of all data to be send in e-mail for
+		 * activation of account.
+		 */
+		//Array with all mail data
+		$mail = array();
+		
+		//Receiver of email
+		$mail['to'] = $this->email; 
+			
+		//Subject of email
+		$mail['subject'] = 'Activate your OMI account';
+		
+		//Message of the email
+		$mail['message'] = $this->generateVerificationEmailView();
+		
+		//Headers
+		$headers  = 'MIME-Version: 1.0' . "\r\n";
+		$headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
+
+		$headers .= 'From: Online Movie Index <omi@mjsolutions.dk>' . "\r\n";
+		
+		$mail['headers'] = $headers;
+		
+		return $mail;
+	}
+	
+	private function generateVerificationEmailView()
+	{
+		/*
+		 * This function creates the View to send to the user when activation is
+		 * needed.
+		 */
+		
+		//REMEMBER TO CHANGE LINKS!!!!! <---------------------------- ¤¤¤¤¤¤¤¤¤¤
+		$data = 
+				'
+					Can\'t see this e-mail? No problem, activate your account <a href="http://www.omi.mjsolutions.dk/activate/'.$this->id.'/'.$this->activationCode.'/">here</a>!
+					<html>
+						<body>
+							<style>
+								body
+								{
+									background-image: url(/onlineMovieIndex/includes/img/background/hexabump_@2X.png); //Set in link to background image when online
+								}
+								.wrapper
+								{
+									max-width: 835px;
+									width: 80%;
+									margin: 0 auto;
+									margin-top: 15px;
+								}
+								h1
+								{
+									color: #99ccff;
+								}
+								h3
+								{
+									color: #ccc;
+								}
+								.btn
+								{
+									display: inline-block;
+									padding: 6px 12px;
+									margin-bottom: 0;
+									font-size: 14px;
+									font-weight: normal;
+									line-height: 1.42857143;
+									text-align: center;
+									white-space: nowrap;
+									vertical-align: middle;
+									-ms-touch-action: manipulation;
+										touch-action: manipulation;
+									cursor: pointer;
+									-webkit-user-select: none;
+									   -moz-user-select: none;
+										-ms-user-select: none;
+											user-select: none;
+									background-image: none;
+									border: 1px solid transparent;
+									text-decoration: none;
+								}
+								.btn:focus,
+								.btn:active:focus,
+								.btn.active:focus,
+								.btn.focus,
+								.btn:active.focus,
+								.btn.active.focus 
+								{
+									outline: thin dotted;
+									outline: 5px auto -webkit-focus-ring-color;
+									outline-offset: -2px;
+								}
+								.btn:hover,
+								.btn:focus,
+								.btn.focus 
+								{
+									color: #333;
+									text-decoration: none;
+								}
+								.btn:active,
+								.btn.active 
+								{
+									background-image: none;
+									outline: 0;
+									-webkit-box-shadow: inset 0 3px 5px rgba(0, 0, 0, .125);
+											box-shadow: inset 0 3px 5px rgba(0, 0, 0, .125);
+								}
+								.btn-primary 
+								{
+									color: #fff;
+									background-color: #337ab7;
+									border-color: #2e6da4;
+								}
+								.btn-primary:hover,
+								.btn-primary:focus,
+								.btn-primary.focus,
+								.btn-primary:active,
+								.btn-primary.active,
+								.open > .dropdown-toggle.btn-primary 
+								{
+									color: #fff;
+									background-color: #286090;
+									border-color: #204d74;
+								}
+								.btn-primary:active,
+								.btn-primary.active,
+								.open > .dropdown-toggle.btn-primary 
+								{
+									background-image: none;
+								}
+								.btn-primary.disabled,
+								.btn-primary[disabled],
+								fieldset[disabled] .btn-primary,
+								.btn-primary.disabled:hover,
+								.btn-primary[disabled]:hover,
+								fieldset[disabled] .btn-primary:hover,
+								.btn-primary.disabled:focus,
+								.btn-primary[disabled]:focus,
+								fieldset[disabled] .btn-primary:focus,
+								.btn-primary.disabled.focus,
+								.btn-primary[disabled].focus,
+								fieldset[disabled] .btn-primary.focus,
+								.btn-primary.disabled:active,
+								.btn-primary[disabled]:active,
+								fieldset[disabled] .btn-primary:active,
+								.btn-primary.disabled.active,
+								.btn-primary[disabled].active,
+								fieldset[disabled] .btn-primary.active 
+								{
+									background-color: #337ab7;
+									border-color: #2e6da4;
+								}
+								.btn-primary .badge 
+								{
+									color: #337ab7;
+									background-color: #fff;
+								}
+								a
+								{
+									color: #99ccff;
+								}
+								.bottom-text
+								{
+									color: grey;
+									text-align: center;
+								}
+							</style>
+							<div class="wrapper">
+								<h1>
+									Thank you for joining the Online Movie Index!
+								</h1>
+								<h3>
+									Welcome '.$this->username.'<br>
+									You\'ve succesfully registered your new account at Online Movie
+									Index. To finalize your registration, please activate your 
+									account through the link below!
+								</h3>
+								<a href="http://www.omi.mjsolutions.dk/activate/'.$this->id.'/'.$this->activationCode.'/" class="btn btn-primary">Activate you account</a>
+								<br>
+								<br>
+								<h3>
+									Alternatively, your can follow the link below, or paste it into
+									your browser.<br>
+									<a href="http://www.omi.mjsolutions.dk/activate/'.$this->id.'/'.$this->activationCode.'/">http://www.omi.mjsolutions.dk/activate/'.$this->id.'/'.$this->activationCode.'/</a>
+								</h3>
+								<hr>
+								<small class="bottom-text">
+									The Online Movie Index Application is created by CincoWare. &copy; 2015 CincoWare
+								</small>
+							</div>
+						</body>
+					</html>
+				';
+		return $data;
+	}
+	
 	/*
 	 * All Getters and Setters (Getters are public, Setters are private)
 	 */
@@ -228,12 +451,12 @@ class User
 	
 	public function getDateCreated()
 	{
-		return date('d/m-Y', strtotime($this->created));
+		return date($fullDateFormat, strtotime($this->created));
 	}
 	
 	public function getDatetimeCreated()
 	{
-		return date('d/m-Y h:i:s', strtotime($this->created));
+		return date($shortDateTimeFormat, strtotime($this->created));
 	}
 	
 	public function getActive()
@@ -263,7 +486,7 @@ class User
 	
 	private function setPassword($password)
 	{
-		$this->password = $password;
+		$this->hashedPassword = $password;
 	}
 	
 	private function setCreated($created)
@@ -283,13 +506,13 @@ class User
 	
 	private function setRole()
 	{
-		$db = new mysqli($host, $user, $password, $database, $port, $socket);
 		$sql = "SELECT role_name FROM role WHERE role_id = ?";
-		$statement = $db->prepare($sql);
-		$statement->bind_param("i", $this->roleId);
-		//Something to get the role_name
-		$role = ""; //set $role to role_name..
+		$stmt = $dbCon->prepare($sql);
+		$stmt->bind_param("i", $this->roleId);
+		$stmt->execute(); //Execute
+		$stmt->bind_result($role); //Get ResultSet
+		$stmt->fetch();
+		$stmt->close();
 		$this->role = $role;
 	}
 }
-
