@@ -431,6 +431,31 @@ class User
 		return $data;
 	}
 	
+	public function checkActivationCode($activationCode)
+	{
+		if($activationCode == $this->activationCode)
+		{
+			return $this->setActivationToNull();
+		}
+		return false;
+	}
+	
+	private function setActivationToNull()
+	{
+		$sql = "UPDATE user SET user_activation_code = NULL WHERE user_id = ? AND user_activation_code = ?";
+		$stmt = $dbCon->prepare($sql); //Prepare Statement
+		if($stmt === false){
+			trigger_error('SQL Error: '.$dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('is', $this->id, $this->activationCode); //Bind parameters.
+		$stmt->execute(); //Execute
+		$rows = $stmt->affected_rows;
+		$stmt->close();
+		if($rows != false){
+			return true;
+		}return false;
+	}
+	
 	/*
 	 * All Getters and Setters (Getters are public, Setters are private)
 	 */
