@@ -483,6 +483,7 @@ class User
 		{
 			$respond = 'Username Or Password is incorrect!'; //Username is wrong
 		}
+		return $respond;
 	}
 
 	private function setValuesAccordingToUsername($username)
