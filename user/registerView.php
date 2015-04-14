@@ -3,58 +3,48 @@ Task ID: OMI_014
 Author: Heini L. Ovason
 -->
 
-<!-- 
-### Overview of Javascript validation functionality ###
-When keys are released in the different fields, a related validation-function 
-is triggered, which the updates the content of its related HTML errorMsg element.
--->
-
 <div class="container">
 
     <div class="row">
         <div class="col-md-4">
-            <form role="form" action="./includes/config/register.php" method="POST" >
+            <form method="post" id="registerForm" role="form" action="">
 
-                <h2>Register</h2>
-
-                <hr>
+                <h2>Register-Test</h2>
 
                 <!-- Username -->
                 <div class="form-group">
-                    <input type="text" onkeyup="usernameLength()" name="display_name" id="display_name" class="form-control input-lg" placeholder="Username" required>
+                    <label for="username">Username</label>
+                    <input type="text" name="username" id="username" class="form-control input-lg" placeholder="Username">   
                 </div>
-                <div id="display_name_errorMsg"></div>
 
                 <!-- Email -->
                 <div class="form-group">
-                    <input type="email" name="email" id="email" class="form-control input-lg" placeholder="Email Address" required>
+                    <label for="email">Email</label>
+                    <input type="email" name="email" id="email" class="form-control input-lg" placeholder="Email Address">
                 </div>
 
                 <!-- Password -->
                 <div class="form-group">
-                    <input type="password" onkeyup="passwordLength()" name="password" id="password" class="form-control input-lg" placeholder="Password" required>
+                    <label for="password">Password</label>
+                    <input type="password" name="password" id="password" class="form-control input-lg" placeholder="Password">
                 </div>
-                <div id="password_errorMsg"></div>
 
                 <!-- Retype Password -->
                 <div class="form-group">
-                    <input type="password" onkeyup="comparePasswords()" name="password_confirmation" id="password_confirmation" class="form-control input-lg" placeholder="Confirm Password" required>
+                    <label for="retypePassword">Retype Password</label>
+                    <input type="password" name="retypePassword" id="retypePassword" class="form-control input-lg" placeholder="Confirm Password">
                 </div>
-                <div id="password_confirmation_errorMsg"></div>
-
-                <hr>
 
                 <!-- Checkbox & Link to Terms of Condition-->
                 <div class="form-group">
                     <!-- Modal view of Terms & Conditions? -->
                     <input type="checkbox" value="remember-me" required>
                     <small>I accept <a href="#">Terms & Conditions</a></small>
-
                 </div>
 
                 <div class="row">
                     <div class="col-xs-12 col-sm-6 col-md-6">
-                        <button type="submit" class="btn btn-primary">Sign up</button>
+                        <button type="button" id="registerBtn" class="btn btn-primary">Sign up</button>
                     </div>
                 </div>
 
@@ -63,68 +53,201 @@ is triggered, which the updates the content of its related HTML errorMsg element
     </div>
 </div>
 
+<!-- UNUSED - I could not access the regex variables defined in config.php -->
+<?php require './includes/config/config.php'; ?> 
+
+<!-- Javascript -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<script src="./js/bootstrap.min.js"></script>
 <script type="text/javascript">
-
     /*
-     * Checking #display_name length to be at least 1 char, and at most 20 chars. 
-     * */
-    function usernameLength() {
-        var username = document.getElementById("display_name").value;
-        var errMsg = "";
-        if (!(username.length > 1)) {
-            errMsg = "Username min. 2 characters!";
-        } else if (!(username.length < 20)) {
-            errMsg = "Username max. 20 characters!";
+     * Inspirationskilde https://www.youtube.com/watch?v=t2oXpi61E4A
+     * All 4 validation functions are inspired from above video, and its sequel.
+     */
+
+    function validateUsername() {
+        if ($("#username").val() === null || $("#username").val() === "") {
+            var div = $("#username").closest("div");
+            div.removeClass("has-success");
+            $("#glyphUsername").remove();
+            $("#infoUsername").remove();
+            div.addClass("has-error has-feedback");
+            div.append('<span id="glyphUsername" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>');
+            div.append('<div id="infoUsername" class="alert alert-info" role="alert">Please enter a username!</div>');
+            return false;
         } else {
-            // Do nothing
+            if ($("#username").val().match('^[a-zA-Z0-9][a-zA-Z0-9_-]{5,39}$')) {
+                var div = $("#username").closest("div");
+                div.removeClass("has-error");
+                $("#infoUsername").remove();
+                div.addClass("has-success has-feedback");
+                $("#glyphUsername").remove();
+                div.append('<span id="glyphUsername" class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true"></span>');
+                return true;
+            } else {
+                var div = $("#username").closest("div");
+                div.removeClass("has-success");
+                $("#glyphUsername").remove();
+                $("#infoUsername").remove();
+                div.addClass("has-error has-feedback");
+                div.append('<span id="glyphUsername" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>');
+                div.append('<div id="infoUsername" class="alert alert-info" role="alert">Enter a valid username between 6-40 characters. Only \'A-Z\', \'a-z\', \'0-9\' and \'-_\' are allowed.</div>');
+                return false;
+            }
         }
-        document.getElementById("display_name_errorMsg").innerHTML = "<p>" + errMsg + "</p>";
     }
 
-    /*
-     * Checking #password length to be at least 6 char, and at most 30 chars. 
-     * */
-    function passwordLength() {
-        var password = document.getElementById("password").value;
-        var errMsg = "";
-        if (!(password.length > 5)) {
-            errMsg = "Password min. 6 characters!";
-        } else if (password.length >= 30) {
-            errMsg = "Password max. 30 characters!";
+    function validateEmail() {
+        if ($("#email").val() === null || $("#email").val() === "") {
+            var div = $("#email").closest("div");
+            div.removeClass("has-success");
+            $("#glyphEmail").remove();
+            $("#infoEmail").remove();
+            div.addClass("has-error has-feedback");
+            div.append('<span id="glyphEmail" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>');
+            div.append('<div id="infoEmail" class="alert alert-info" role="alert">Please enter your Email!</div>');
+            return false;
         } else {
-            // Do nothing
+            if ($("#email").val().match('^(?=^.{6,}$)(?=.*[a-z])(?=.*@)(?=.*\.)[0-9a-z@\.]*$')) {
+                var div = $("#email").closest("div");
+                div.removeClass("has-error");
+                $("#infoEmail").remove();
+                div.addClass("has-success has-feedback");
+                $("#glyphEmail").remove();
+                div.append('<span id="glyphEmail" class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true"></span>');
+                return true;
+            } else {
+                var div = $("#email").closest("div");
+                div.removeClass("has-success");
+                $("#glyphEmail").remove();
+                $("#infoEmail").remove();
+                div.addClass("has-error has-feedback");
+                div.append('<span id="glyphEmail" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>');
+                div.append('<div id="infoEmail" class="alert alert-info" role="alert">Please enter a valid email address. Ex: John@doe.com</div>');
+                return false;
+            }
         }
-        document.getElementById("password_errorMsg").innerHTML = "<p>" + errMsg + "</p>";
+    }
+    function validatePassword() {
+        if ($("#password").val() === null || $("#password").val() === "") {
+            var div = $("#password").closest("div");
+            div.removeClass("has-success");
+            $("#glyphPassword").remove();
+            $("#infoPassword").remove();
+            div.addClass("has-error has-feedback");
+            div.append('<span id="glyphPassword" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>');
+            div.append('<div id="infoPassword" class="alert alert-info" role="alert">Please enter a Password!</div>');
+            return false;
+        } else {
+            if ($("#password").val().match('^(?=^.{7,39}$)(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?!.*\s)[0-9a-zA-Z!@#$%&]*$')) {
+                var div = $("#password").closest("div");
+                div.removeClass("has-error");
+                $("#infoPassword").remove();
+                div.addClass("has-success has-feedback");
+                $("#glyphPassword").remove();
+                div.append('<span id="glyphPassword" class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true"></span>');
+                return true;
+            } else {
+                var div = $("#password").closest("div");
+                div.removeClass("has-success");
+                $("#glyphPassword").remove();
+                $("#infoPassword").remove();
+                div.addClass("has-error has-feedback");
+                div.append('<span id="glyphPassword" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>');
+                div.append('<div id="infoPassword" class="alert alert-info" role="alert">Please enter a valid password.<br>At least 1 upper case character.<br>At least 1 lower case character.<br>At least 1 digit Only.<br>\'A-Z\', \'a-z\' or \'0-9\' as first character.<br>Between 8 and 40 characters of length.<br>Accepted special characters: !@#$%&</div>');
+                return false;
+            }
+        }
     }
 
-    /*
-     * If #password_confirmation.length is equal to, or larger than
-     * #password.length, then we start comparing the two element values 
-     * */
-    function comparePasswords() {
-        var pwd = document.getElementById("password").value;
-        var pwdConf = document.getElementById("password_confirmation").value;
-        var errMsg = "";
-        if (pwdConf === pwd) {
-            // Do nothing
+    function validateRetypedPassword() {
+        if ($("#password").val() === null || $("#retypePassword").val() === "") {
+            var div = $("#retypePassword").closest("div");
+            div.removeClass("has-success");
+            $("#glyphRetypePassword").remove();
+            $("#infoRetypePassword").remove();
+            div.addClass("has-error has-feedback");
+            div.append('<span id="glyphRetypePassword" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>');
+            div.append('<div id="infoRetypePassword" class="alert alert-info" role="alert">Please verify your password!</div>');
+            return false;
         } else {
-            errMsg = "Passwords dont match!";
+            if ($("#password").val() === $("#retypePassword").val()) {
+                var div = $("#retypePassword").closest("div");
+                div.removeClass("has-error");
+                $("#infoRetypePassword").remove();
+                div.addClass("has-success has-feedback");
+                $("#glyphRetypePassword").remove();
+                div.append('<span id="glyphRetypePassword" class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true"></span>');
+                return true;
+            } else {
+                var div = $("#retypePassword").closest("div");
+                div.removeClass("has-success");
+                $("#glyphRetypePassword").remove();
+                $("#infoRetypePassword").remove();
+                div.addClass("has-error has-feedback");
+                div.append('<span id="glyphRetypePassword" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>');
+                div.append('<div id="infoRetypePassword" class="alert alert-info" role="alert">Password and retyped paswword do not match!</div>');
+                return false;
+            }
         }
-        document.getElementById("password_confirmation_errorMsg").innerHTML = "<p>" + errMsg + "</p>";
     }
 
+    $(document).ready(function () {
 
+        /*
+         * Listening to fields based on related CSS selector ID's.
+         * If focus is removed then the focusout() triggers a function
+         * which calls the correct validation-function.
+         */
+        $("#username").focusout(function () {
+            validateUsername();
+        });
+
+        $("#email").focusout(function () {
+            validateEmail();
+        });
+
+        $("#password").focusout(function () {
+            validatePassword();
+        });
+
+        $("#retypePassword").focusout(function () {
+            validateRetypedPassword();
+        });
+
+        /*
+         * Listening to form button based on related CSS selector ID.
+         * Again we verify that input is correct before we are able
+         * to perform form action.
+         */
+        $("#registerBtn").click(function () {
+            var nrOfTestsPassed = 0;
+
+            if (validateUsername()) {
+                nrOfTestsPassed++;
+            }
+            if (validateEmail()) {
+                nrOfTestsPassed++;
+            }
+            if (validatePassword()) {
+                nrOfTestsPassed++;
+            }
+            if (validateRetypedPassword()) {
+                nrOfTestsPassed++;
+            }
+            //console.log("nrOfTestsPassed:" + nrOfTestsPassed)
+            if (nrOfTestsPassed === 4)
+            {
+                $("form#registerForm").submit();
+            }
+        });
+    }
+
+    );
 
 </script>
 
 
 
 
-<?php
-
-/* 
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 

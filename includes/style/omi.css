@@ -75,10 +75,7 @@ body
     padding-top: 50px;
 }
 
-.main-container p, h1, h2, h3, h4, h5, small{
+.main-container p, h1, h2, h3, h4, h5, small, label{
     color:#fff;
-}
-
-.main-container p, h1, h2, h3, h4, h5, small{
-    padding: 10px;;
+    padding: 0px;
 }
