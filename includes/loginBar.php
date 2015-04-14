@@ -3,7 +3,6 @@ Task ID: OMI_015
 Author: Heini L. Ovason
 -->
 
-
 <nav class="navbar navbar-inverse navbar-fixed-top">
     <div class="container">
         <div class="navbar-header">

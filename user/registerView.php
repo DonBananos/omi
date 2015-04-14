@@ -45,7 +45,6 @@ Author: Heini L. Ovason
 <!-- Access the regex standards variables defined in config.php -->
 <?php 
     require './includes/config/config.php'; 
-    echo $regexUsername; 
 ?> 
 
 <!-- Javascript -->
