@@ -79,3 +79,11 @@ body
     color:#fff;
     padding: 0px;
 }
+
+@media(max-width:480px){
+    
+    #registerForm {
+        padding-top: 0px;
+    }
+}
+

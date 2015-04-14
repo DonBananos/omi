@@ -3,58 +3,50 @@ Task ID: OMI_014
 Author: Heini L. Ovason
 -->
 
-<div class="container">
+<form method="post" id="registerForm" role="form" action="">
 
-    <div class="row">
-        <div class="col-md-4">
-            <form method="post" id="registerForm" role="form" action="">
+    <h2>Register</h2>
 
-                <h2>Register-Test</h2>
-
-                <!-- Username -->
-                <div class="form-group">
-                    <label for="username">Username</label>
-                    <input type="text" name="username" id="username" class="form-control input-lg" placeholder="Username">   
-                </div>
-
-                <!-- Email -->
-                <div class="form-group">
-                    <label for="email">Email</label>
-                    <input type="email" name="email" id="email" class="form-control input-lg" placeholder="Email Address">
-                </div>
-
-                <!-- Password -->
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <input type="password" name="password" id="password" class="form-control input-lg" placeholder="Password">
-                </div>
-
-                <!-- Retype Password -->
-                <div class="form-group">
-                    <label for="retypePassword">Retype Password</label>
-                    <input type="password" name="retypePassword" id="retypePassword" class="form-control input-lg" placeholder="Confirm Password">
-                </div>
-
-                <!-- Checkbox & Link to Terms of Condition-->
-                <div class="form-group">
-                    <!-- Modal view of Terms & Conditions? -->
-                    <input type="checkbox" value="remember-me" required>
-                    <small>I accept <a href="#">Terms & Conditions</a></small>
-                </div>
-
-                <div class="row">
-                    <div class="col-xs-12 col-sm-6 col-md-6">
-                        <button type="button" id="registerBtn" class="btn btn-primary">Sign up</button>
-                    </div>
-                </div>
-
-            </form>
-        </div>
+    <!-- Username -->
+    <div class="form-group">
+        <label for="username">Username</label>
+        <input type="text" name="username" id="username" class="form-control input-lg" placeholder="Username">   
     </div>
-</div>
 
-<!-- UNUSED - I could not access the regex variables defined in config.php -->
-<?php require './includes/config/config.php'; ?> 
+    <!-- Email -->
+    <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" name="email" id="email" class="form-control input-lg" placeholder="Email Address">
+    </div>
+
+    <!-- Password -->
+    <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" name="password" id="password" class="form-control input-lg" placeholder="Password">
+    </div>
+
+    <!-- Retype Password -->
+    <div class="form-group">
+        <label for="retypePassword">Retype Password</label>
+        <input type="password" name="retypePassword" id="retypePassword" class="form-control input-lg" placeholder="Confirm Password">
+    </div>
+
+    <!-- Checkbox & Link to Terms of Condition-->
+    <div class="form-group">
+        <!-- Modal view of Terms & Conditions? -->
+        <input type="checkbox" value="remember-me" required>
+        <small>I accept <a href="#">Terms & Conditions</a></small>
+    </div>
+
+    <button type="button" id="registerBtn" class="btn btn-primary">Sign up</button>
+
+</form>
+
+<!-- Access the regex standards variables defined in config.php -->
+<?php 
+    require './includes/config/config.php'; 
+    echo $regexUsername; 
+?> 
 
 <!-- Javascript -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
@@ -76,7 +68,7 @@ Author: Heini L. Ovason
             div.append('<div id="infoUsername" class="alert alert-info" role="alert">Please enter a username!</div>');
             return false;
         } else {
-            if ($("#username").val().match('^[a-zA-Z0-9][a-zA-Z0-9_-]{5,39}$')) {
+            if ($("#username").val().match(regexUsr)) {
                 var div = $("#username").closest("div");
                 div.removeClass("has-error");
                 $("#infoUsername").remove();
@@ -108,7 +100,7 @@ Author: Heini L. Ovason
             div.append('<div id="infoEmail" class="alert alert-info" role="alert">Please enter your Email!</div>');
             return false;
         } else {
-            if ($("#email").val().match('^(?=^.{6,}$)(?=.*[a-z])(?=.*@)(?=.*\.)[0-9a-z@\.]*$')) {
+            if ($("#email").val().match(regexEm)) {
                 var div = $("#email").closest("div");
                 div.removeClass("has-error");
                 $("#infoEmail").remove();
@@ -139,7 +131,7 @@ Author: Heini L. Ovason
             div.append('<div id="infoPassword" class="alert alert-info" role="alert">Please enter a Password!</div>');
             return false;
         } else {
-            if ($("#password").val().match('^(?=^.{7,39}$)(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?!.*\s)[0-9a-zA-Z!@#$%&]*$')) {
+            if ($("#password").val().match(regexPwd)) {
                 var div = $("#password").closest("div");
                 div.removeClass("has-error");
                 $("#infoPassword").remove();
@@ -193,7 +185,9 @@ Author: Heini L. Ovason
     }
 
     $(document).ready(function () {
-
+        regexUsr = "<?php echo $regexUsername ?>";
+        regexEm = "<?php echo $regexEmail ?>";
+        regexPwd = "<?php echo $regexPassword ?>";
         /*
          * Listening to fields based on related CSS selector ID's.
          * If focus is removed then the focusout() triggers a function
