@@ -71,8 +71,8 @@ body
 	border-radius: 0px !important;
 }
 
-.main-container {
-    padding-top: 50px;
+.main-container, footer {
+    margin-top: 50px;
 }
 
 .main-container p, h1, h2, h3, h4, h5, small, label{

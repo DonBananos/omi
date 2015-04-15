@@ -1,4 +1,7 @@
+</div> <!-- END .main-container (BEGIN <div> is located in header.php) -->
+
 <footer>
+    <hr>
     <p style="text-align: center; color: grey">
         Copyright &copy; 2015 CincoWare
     </p>  
@@ -9,6 +12,8 @@
 <!-- Javascript -->
 <script src="./js/bootstrap.min.js"></script>
 
+</body>
+</html>
 
 <?php
 
@@ -17,4 +22,5 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 
