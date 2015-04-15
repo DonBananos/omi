@@ -38,7 +38,7 @@ Author: Heini L. Ovason
         <small>I accept <a href="#">Terms & Conditions</a></small>
     </div>
 
-    <button type="submit" id="registerBtn" class="btn btn-primary">Sign up</button>
+    <button type="button" id="registerBtn" class="btn btn-primary">Sign up</button>
 
 </form>
 
@@ -47,8 +47,12 @@ Author: Heini L. Ovason
     require './includes/config/config.php'; 
 ?> 
 
-
-
+<!-- 
+jQuery (necessary for Bootstrap's JavaScript plugins)
+To verify that backend registration validation is working simply commendable
+commend out the script.
+-->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 
 <!-- Javascript -->
 <script type="text/javascript">

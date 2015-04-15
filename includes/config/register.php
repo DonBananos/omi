@@ -21,6 +21,7 @@ if ($regValidate->validate() == FALSE) {
 } else {
     unset($regValidate);
     // ALL IS GOOD, SO WE CONTINUE.
+    echo 'ALL IS GOOD!';
     
     // CHECKING FOR CURRENT USERNAME IN DB.
     $query = $dbCon->query("SELECT * FROM user WHERE username='$username'");
