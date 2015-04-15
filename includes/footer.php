@@ -1,3 +1,7 @@
+<!--
+Author: R. Mike Jensen, Heini L. Ovason
+-->
+
 <footer>
     <hr>
     <p style="text-align: center; color: grey">

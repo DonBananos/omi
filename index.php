@@ -1,3 +1,8 @@
+<!--
+Author: R. Mike Jensen, Heini L. Ovason
+-->
+
+
 <?php
 require './includes/config/config.php';
 

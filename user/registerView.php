@@ -1,9 +1,9 @@
 <!--
-Task ID: OMI_014
+User story ID: OMI_014
 Author: Heini L. Ovason
 -->
 
-<form method="post" id="registerForm" role="form" action="">
+<form method="post" id="registerForm" role="form" action="./includes/config/register.php">
 
     <h2>Register</h2>
 
@@ -34,11 +34,11 @@ Author: Heini L. Ovason
     <!-- Checkbox & Link to Terms of Condition-->
     <div class="form-group">
         <!-- Modal view of Terms & Conditions? -->
-        <input type="checkbox" value="remember-me" required>
+        <input type="checkbox" value="remember-me">
         <small>I accept <a href="#">Terms & Conditions</a></small>
     </div>
 
-    <button type="button" id="registerBtn" class="btn btn-primary">Sign up</button>
+    <button type="submit" id="registerBtn" class="btn btn-primary">Sign up</button>
 
 </form>
 
@@ -47,8 +47,7 @@ Author: Heini L. Ovason
     require './includes/config/config.php'; 
 ?> 
 
-<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+
 
 
 <!-- Javascript -->
@@ -171,7 +170,7 @@ Author: Heini L. Ovason
                 div.addClass("has-success has-feedback");
                 $("#glyphRetypePassword").remove();
                 div.append('<span id="glyphRetypePassword" class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true"></span>');
-                return true;
+                return true; 
             } else {
                 var div = $("#retypePassword").closest("div");
                 div.removeClass("has-success");

@@ -1,5 +1,5 @@
 <!--
-Task ID: OMI_015
+User story ID: OMI_015
 Author: Heini L. Ovason
 -->
 
