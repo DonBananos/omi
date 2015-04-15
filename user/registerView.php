@@ -10,25 +10,25 @@ Author: Heini L. Ovason
     <!-- Username -->
     <div class="form-group">
         <label for="username">Username</label>
-        <input type="text" name="username" id="username" class="form-control input-lg" placeholder="Username">   
+        <input type="text" name="username" id="username" class="form-control" placeholder="Username">   
     </div>
 
     <!-- Email -->
     <div class="form-group">
         <label for="email">Email</label>
-        <input type="email" name="email" id="email" class="form-control input-lg" placeholder="Email Address">
+        <input type="email" name="email" id="email" class="form-control" placeholder="Email Address">
     </div>
 
     <!-- Password -->
     <div class="form-group">
         <label for="password">Password</label>
-        <input type="password" name="password" id="password" class="form-control input-lg" placeholder="Password">
+        <input type="password" name="password" id="password" class="form-control" placeholder="Password">
     </div>
 
     <!-- Retype Password -->
     <div class="form-group">
         <label for="retypePassword">Retype Password</label>
-        <input type="password" name="retypePassword" id="retypePassword" class="form-control input-lg" placeholder="Confirm Password">
+        <input type="password" name="retypePassword" id="retypePassword" class="form-control" placeholder="Confirm Password">
     </div>
 
     <!-- Checkbox & Link to Terms of Condition-->
@@ -46,6 +46,10 @@ Author: Heini L. Ovason
 <?php 
     require './includes/config/config.php'; 
 ?> 
+
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+
 
 <!-- Javascript -->
 <script type="text/javascript">
@@ -237,6 +241,7 @@ Author: Heini L. Ovason
     );
 
 </script>
+
 
 
 
