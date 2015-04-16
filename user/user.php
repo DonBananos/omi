@@ -1,6 +1,5 @@
 <?php
-
-/* 
+/*
  * The User Object is used when needing a single user.
  * This object is only for getting and setting User Values.
  * 
@@ -9,6 +8,7 @@
 
 class User
 {
+	private $algo = '$2y$14$';
 	private $id; //Integer
 	private $username; //String
 	private $email; //String
@@ -18,41 +18,44 @@ class User
 	private $roleId; //Integer
 	private $role; //String
 	private $activationCode; //String
-	
+
 	function __construct($id = null) //set to null if id is not in constructor
 	{
-		if(!empty($id))
+		if (!empty($id))
 		{
 			$this->id = $id;
 		}
 	}
-	
+
+	/*
+	 * This function selects all values from the user table associated with
+	 * the specific user id given as parameter. These values are returned as
+	 * resultset, and set to their given attributes in the object.
+	 * Function can be called from outside the object, since collections of
+	 * users will be using this object to create an instance of each user,
+	 * by using the same object, but changing all attributes.
+	 */
+
 	public function setValuesAccordingToId($id = null)
 	{
-		/*
-		 * This function selects all values from the user table associated with
-		 * the specific user id given as parameter. These values are returned as
-		 * resultset, and set to their given attributes in the object.
-		 * Function can be called from outside the object, since collections of
-		 * users will be using this object to create an instance of each user,
-		 * by using the same object, but changing all attributes.
-		 */
-		if(empty($id))
+		if (empty($id))
 		{
 			$id = $this->id;
 		}
-		
+
 		$sql = "SELECT username, user_email, user_password, user_created, user_active, user_role_id, user_activation_code FROM user WHERE user_id = ?";
 		$stmt = $dbCon->prepare($sql); //Prepare Statement
-		if($stmt === false){
-			trigger_error('SQL Error: '.$dbCon->error, E_USER_ERROR);
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
 		}
 		$stmt->bind_param('i', $id); //Bind parameters.
 		$stmt->execute(); //Execute
 		$stmt->bind_result($username, $email, $password, $created, $active, $roleId, $activationCode); //Get ResultSet
 		$stmt->fetch();
 		$stmt->close();
-		if($stmt->num_rows == 1){
+		if ($stmt->num_rows == 1)
+		{
 			$this->setId($id);
 			$this->setUsername($username);
 			$this->setEmail($email);
@@ -64,43 +67,44 @@ class User
 			$this->setActivationCode($activationCode);
 		}return true;
 	}
-	
+
 	/*
 	 * If you don't understand this function, you probably shouldn't be 
 	 * looking in the Source Code. Try mobbing floors instead.!
 	 */
+
 	public function createUser($username, $email, $password)
 	{
 		$inUse = $this->checkIfValuesAreInUse($username, $email);
-		if($inUse != false)
+		if ($inUse != false)
 		{
 			return $inUse;
 		}
 		$hashedPass = $this->hashPass($password);
-		
+
 		$this->generateActivationCode();
-		
+
 		return $this->saveCreatedUser();
 	}
-	
+
 	private function checkIfValuesAreInUse($username, $email)
 	{
 		$errors = 0;
-		if(!$this->checkIfValueExists('username', $username)) //Check if username is in use
+		if (!$this->checkIfValueExists('username', $username)) //Check if username is in use
 		{
 			$error = 'Username';
 			$errors++;
 		}
-		if(!$this->checkIfValueExists('email', $email)) //Check if email is in use
+		if (!$this->checkIfValueExists('email', $email)) //Check if email is in use
 		{
-			if($errors == 1)
+			if ($errors == 1)
 			{
 				$error .= ' and ';
 			}
 			$error .= 'Email';
 			$errors++;
 		}
-		if($errors > 0) //If email and/or username is in use
+		if ($errors > 0) //If email and/or username is in use
 		{
 			$error .= ' is already in use';
 			return $error;
@@ -109,52 +113,62 @@ class User
 		$this->email = $email;
 		return false;
 	}
-	
+
 	private function checkIfValueExists($whatToCheck, $valueToCheck)
 	{
-		if($whatToCheck == 'username'){
+		if ($whatToCheck == 'username')
+		{
 			$sql = "SELECT COUNT(*) as users FROM user WHERE username = ?";
 		}
-		elseif($whatToCheck == 'email'){
+		elseif ($whatToCheck == 'email')
+		{
 			$sql = "SELECT COUNT(*) as users FROM user WHERE user_email = ?";
 		}
 		$stmt = $dbCon->prepare($sql); //Prepare Statement
-		if($stmt === false){
-			trigger_error('SQL Error: '.$dbCon->error, E_USER_ERROR);
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
 		}
 		$stmt->bind_param('s', $valueToCheck); //Bind parameters.
 		$stmt->execute(); //Execute
 		$stmt->bind_result($users); //Get ResultSet
 		$stmt->fetch();
 		$stmt->close();
-		if($users > 0){
+		if ($users > 0)
+		{
 			return false;
 		}return true;
 	}
-	
+
+	/*
+	 * Hashing the password with the awesome Blowfish method. Awesomeness ftw.
+	 */
 	private function hashPass($password)
 	{
-		//Some najz hashing...
-		$hashedPass = hash_hmac('sha512', $password, $this->getSalt($this->username, $password));
+		//Hashing Pass with $algo and salt from getSalt function
+		$hashedPass = crypt($password, $this->algo . $this->getSalt($this->username, $password));
 		return $hashedPass;
 	}
-	
+
+	/*
+	 * Creating the Salt.
+	 */
 	private function getSalt($username, $password)
 	{
-		//Her skal Boecks smarte salt generator ind!
-		$salt = 'salt123456789';
+		$rand = crypt($password . $username); // More than 22 Characters.
+		$salt = substr($rand, 0, 22); // A Maxiumum of 22 Characters
 		return $salt;
 	}
-	
+
 	private function generateActivationCode()
 	{
 		$initial = true; //Initial value is true, so while loop runs first time
 		$existing = $initial; //Setting existing to initial value
-		while($existing == true)
+		while ($existing == true)
 		{
 			//Generate actiationCcode between 40 and 80 characters
 			$activationCode = $this->generateRandomString(40, 80);
-			if($this->checkIfActivationCodeIsExisting($activationCode))
+			if ($this->checkIfActivationCodeIsExisting($activationCode))
 			{
 				$existing = true;
 			}
@@ -165,79 +179,82 @@ class User
 		}
 		$this->activationCode = $activationCode;
 	}
-	
+
 	private function generateRandomString($least_number_of_characters, $max_number_of_characters)
 	{
 		$characters = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 		$number_of_characters = rand($least_number_of_characters, $max_number_of_characters);
 		$random_string = "";
-		for ($i = 0; $i < $number_of_characters; $i++) 
+		for ($i = 0; $i < $number_of_characters; $i++)
 		{
 			$random_string .= $characters[rand(0, strlen($characters) - 1)];
 		}
 		return $random_string;
 	}
-	
+
 	private function checkIfActivationCodeIsExisting($activationCode)
 	{
 		$sql = "SELECT COUNT(*) as codes FROM user WHERE user_activation_code = ?";
 		$stmt = $dbCon->prepare($sql); //Prepare Statement
-		if($stmt === false){
-			trigger_error('SQL Error: '.$dbCon->error, E_USER_ERROR);
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
 		}
 		$stmt->bind_param('s', $activationCode); //Bind parameters.
 		$stmt->execute(); //Execute
 		$stmt->bind_result($codes); //Get ResultSet
 		$stmt->fetch();
 		$stmt->close();
-		if($codes > 0){
+		if ($codes > 0)
+		{
 			return true;
 		}return false;
 	}
-	
+
 	private function saveCreatedUser()
 	{
 		//Create SQL Query
 		$sql = "INSERT INTO user (username, user_email, user_password, user_created, user_active, user_role_id, user_activation_code) VALUES (?, ?, ?, NOW(), 1, 1, ?)";
-		
+
 		//Prepare Statement
 		$stmt = $dbCon->prepare($sql);
-		if($stmt === false)
+		if ($stmt === false)
 		{
-			trigger_error('SQL Error: '.$dbCon->error, E_USER_ERROR);
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
 		}
-		
+
 		//Bind parameters.
 		$stmt->bind_param('ssss', $this->username, $this->email, $this->hashedPassword, $this->activationCode);
-		
+
 		//Execute
 		$stmt->execute();
-		
+
 		//Get ID of user just saved
 		$id = $stmt->insert_id;
-		
+
 		$stmt->close();
-		if($id > 0)
+		if ($id > 0)
 		{
 			$this->id = $id;
+			$this->setValuesAccordingToId();
 			return true;
 		}
 		return false;
 	}
-	
+
 	private function sendVerificationEmail()
 	{
 		/*
 		 * This function sends the email needed for activation of account.
 		 */
 		$mail = $this->generateVerificationEmail();
-		if(mail($mail['to'], $mail['subject'], $mail['message'], $mail['headers']))
+		if (mail($mail['to'], $mail['subject'], $mail['message'], $mail['headers']))
 		{
 			return true;
 		}
 		return false;
 	}
-	
+
 	private function generateVerificationEmail()
 	{
 		/*
@@ -246,38 +263,37 @@ class User
 		 */
 		//Array with all mail data
 		$mail = array();
-		
+
 		//Receiver of email
-		$mail['to'] = $this->email; 
-			
+		$mail['to'] = $this->email;
+
 		//Subject of email
 		$mail['subject'] = 'Activate your OMI account';
-		
+
 		//Message of the email
 		$mail['message'] = $this->generateVerificationEmailView();
-		
+
 		//Headers
-		$headers  = 'MIME-Version: 1.0' . "\r\n";
+		$headers = 'MIME-Version: 1.0' . "\r\n";
 		$headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
 
 		$headers .= 'From: Online Movie Index <omi@mjsolutions.dk>' . "\r\n";
-		
+
 		$mail['headers'] = $headers;
-		
+
 		return $mail;
 	}
-	
+
 	private function generateVerificationEmailView()
 	{
 		/*
 		 * This function creates the View to send to the user when activation is
 		 * needed.
 		 */
-		
+
 		//REMEMBER TO CHANGE LINKS!!!!! <---------------------------- ¤¤¤¤¤¤¤¤¤¤
-		$data = 
-				'
-					Can\'t see this e-mail? No problem, activate your account <a href="http://www.omi.mjsolutions.dk/activate/'.$this->id.'/'.$this->activationCode.'/">here</a>!
+		$data = "
+					Can't see this e-mail? No problem, activate your account <a href='http://www.omi.mjsolutions.dk/activate/$this->id/$this->activationCode/'>here</a>!
 					<html>
 						<body>
 							<style>
@@ -408,67 +424,70 @@ class User
 									text-align: center;
 								}
 							</style>
-							<div class="wrapper">
+							<div class='wrapper'>
 								<h1>
 									Thank you for joining the Online Movie Index!
 								</h1>
 								<h3>
-									Welcome '.$this->username.'<br>
-									You\'ve succesfully registered your new account at Online Movie
+									Welcome ' . $this->username . '<br>
+									You've succesfully registered your new account at Online Movie
 									Index. To finalize your registration, please activate your 
 									account through the link below!
 								</h3>
-								<a href="http://www.omi.mjsolutions.dk/activate/'.$this->id.'/'.$this->activationCode.'/" class="btn btn-primary">Activate you account</a>
+								<a href='http://www.omi.mjsolutions.dk/activate/$this->id/$this->activationCode/' class='btn btn-primary'>Activate you account</a>
 								<br>
 								<br>
 								<h3>
 									Alternatively, your can follow the link below, or paste it into
 									your browser.<br>
-									<a href="http://www.omi.mjsolutions.dk/activate/'.$this->id.'/'.$this->activationCode.'/">http://www.omi.mjsolutions.dk/activate/'.$this->id.'/'.$this->activationCode.'/</a>
+									<a href='http://www.omi.mjsolutions.dk/activate/$this->id/$this->activationCode/'>http://www.omi.mjsolutions.dk/activate/$this->id/$this->activationCode/</a>
 								</h3>
 								<hr>
-								<small class="bottom-text">
+								<small class='bottom-text'>
 									The Online Movie Index Application is created by CincoWare. &copy; 2015 CincoWare
 								</small>
 							</div>
 						</body>
 					</html>
-				';
+				";
 		return $data;
 	}
-	
+
 	public function checkActivationCode($activationCode)
 	{
-		if($activationCode == $this->activationCode)
+		if ($activationCode == $this->activationCode)
 		{
 			return $this->setActivationToNull();
 		}
 		return false;
 	}
-	
+
 	private function setActivationToNull()
 	{
 		$sql = "UPDATE user SET user_activation_code = NULL WHERE user_id = ? AND user_activation_code = ?";
 		$stmt = $dbCon->prepare($sql); //Prepare Statement
-		if($stmt === false){
-			trigger_error('SQL Error: '.$dbCon->error, E_USER_ERROR);
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
 		}
 		$stmt->bind_param('is', $this->id, $this->activationCode); //Bind parameters.
 		$stmt->execute(); //Execute
 		$rows = $stmt->affected_rows;
 		$stmt->close();
-		if($rows != false){
+		if ($rows != false)
+		{
 			return true;
 		}return false;
 	}
-	
+
 	public function login($username, $password)
 	{
-		if($this->checkIfValueExists('username', $username))
+		if ($this->checkIfValueExists('username', $username))
 		{
 			$this->setValuesAccordingToUsername($username);
-			$hashedTriedPassword = $this->hashPass($password);
-			if($hashedTriedPassword == $this->hashedPassword)
+			//Check password identity
+			$hashedTriedPassword = crypt($password, $this->hashedPassword);
+			if ($hashedTriedPassword == $password)
 			{
 				$_SESSION['signed_in'] = TRUE;
 				$_SESSION['active_user'] = new User($this->id);
@@ -490,15 +509,17 @@ class User
 	{
 		$sql = "SELECT user_id, user_email, user_password, user_created, user_active, user_role_id, user_activation_code FROM user WHERE username = ?";
 		$stmt = $dbCon->prepare($sql); //Prepare Statement
-		if($stmt === false){
-			trigger_error('SQL Error: '.$dbCon->error, E_USER_ERROR);
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
 		}
 		$stmt->bind_param('s', $username); //Bind parameters.
 		$stmt->execute(); //Execute
 		$stmt->bind_result($id, $email, $password, $created, $active, $roleId, $activationCode); //Get ResultSet
 		$stmt->fetch();
 		$stmt->close();
-		if($stmt->num_rows == 1){
+		if ($stmt->num_rows == 1)
+		{
 			$this->setId($id);
 			$this->setUsername($username);
 			$this->setEmail($email);
@@ -510,7 +531,7 @@ class User
 			$this->setActivationCode($activationCode);
 		}return true;
 	}
-	
+
 	public function logout()
 	{
 		session_unset();
@@ -521,11 +542,11 @@ class User
 		<?php
 		die();
 	}
-	
-	
+
 	/*
 	 * All Getters and Setters (Getters are public, Setters are private)
 	 */
+
 	public function getId()
 	{
 		return $this->id;
@@ -535,27 +556,27 @@ class User
 	{
 		return $this->username;
 	}
-	
+
 	public function getEmail()
 	{
 		return $this->email;
 	}
-	
+
 	public function getDateCreated()
 	{
 		return date($fullDateFormat, strtotime($this->created));
 	}
-	
+
 	public function getDatetimeCreated()
 	{
 		return date($shortDateTimeFormat, strtotime($this->created));
 	}
-	
+
 	public function getActive()
 	{
 		return $this->active;
 	}
-	
+
 	public function getRole()
 	{
 		return $this->role;
@@ -570,32 +591,32 @@ class User
 	{
 		$this->username = $username;
 	}
-	
+
 	private function setEmail($email)
 	{
 		$this->email = $email;
 	}
-	
+
 	private function setPassword($password)
 	{
 		$this->hashedPassword = $password;
 	}
-	
+
 	private function setCreated($created)
 	{
 		$this->created = $created;
 	}
-	
+
 	private function setActive($active)
 	{
 		$this->active = $active;
 	}
-	
+
 	private function setRoleId($roleId)
 	{
 		$this->roleId = $roleId;
 	}
-	
+
 	private function setRole()
 	{
 		$sql = "SELECT role_name FROM role WHERE role_id = ?";
@@ -607,9 +628,10 @@ class User
 		$stmt->close();
 		$this->role = $role;
 	}
-	
+
 	private function setActivationCode($activationCode)
 	{
 		$this->activationCode = $activationCode;
 	}
+
 }
