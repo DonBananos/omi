@@ -26,7 +26,7 @@ $regexPassword = "((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%_-]).{6,20})";
 //Email: onlu 'a-z', '0-9', a single '@' and a single '.' is allowed.
 //$regexEmail = "^(?=^.{6,}$)(?=.*[a-z])(?=.*@)(?=.*\.)[0-9a-z@\.]*$";
 //This regex goes a layer deeper and listens for something in the domain/subdomian section of the email address
-$regexEmail = "^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+[a-zA-Z-]+$";
+$regexEmail = "^[a-zA-Z0-9_.+-]+@[a-z0-9A-Z]+\.[a-z0-9A-Z]*\.?[a-zA-Z]{2,}$";
 
 
 /*

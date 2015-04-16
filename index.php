@@ -17,11 +17,20 @@ if (isset($_POST['search'])) {
     $data = json_decode($json, true);
 }
 ?>
-
-<?php require './includes/header.php'; ?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Online movie Index</title>
+	<?php require './includes/header.php'; ?>
+</head>
+<body>
+    
+    <!--
+    This makes sure that all content has a margin of 50px below navbar. 
+    Without this "tweek" in mobile viewport the content will slide up behind 
+    the navbar.
+    -->
+    <div class="main-container">
 <?php require './includes/loginBar.php'; ?>
 <?php require './includes/start.php'; ?>
 <?php require './includes/footer.php'; ?>
-
-
-
