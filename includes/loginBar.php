@@ -20,12 +20,12 @@ Author: Heini L. Ovason
                 <li><a href="#">About</a></li>
                 <li><a href="#">Contact</a></li>
             </ul>
-            <form class="navbar-form navbar-right">
+            <form class="navbar-form navbar-right" method="post" action="/onlineMovieIndex/user/login.php">
                 <div class="form-group">
-                    <input type="text" placeholder="Username" class="form-control" required autofocus>
+                    <input type="text" placeholder="Username" name="username" class="form-control" required autofocus>
                 </div>
                 <div class="form-group">
-                    <input type="password" placeholder="Password" class="form-control" required>
+                    <input type="password" placeholder="Password" name="password" class="form-control" required>
                 </div>
                 <button type="submit" class="btn btn-success">Sign in</button>
             </form>

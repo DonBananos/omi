@@ -1,11 +1,20 @@
 <!--
 Author: R. Mike Jensen, Heini L. Ovason
 -->
-
-
 <?php
+session_start();
 require './includes/config/config.php';
-
+require './includes/config/database.php';
+require './user/user.php';
+$logged_in = false;
+if(isset($_SESSION['signed_in']))
+{
+	if($_SESSION['user_id'] > 0)
+	{
+		$logged_in = true;
+		$active_user = new User($_SESSION['user_id']);
+	}
+}
 if (isset($_POST['search'])) {
     //Replaces all spaces with + (for search)
     $title = preg_replace("/ /", '+', $_POST['search_field']);
@@ -31,6 +40,17 @@ if (isset($_POST['search'])) {
     the navbar.
     -->
     <div class="main-container">
-<?php require './includes/loginBar.php'; ?>
-<?php require './includes/start.php'; ?>
-<?php require './includes/footer.php'; ?>
+<?php
+if(isset($_SESSION['signed_in']))
+{
+	require './includes/navbar.php';
+	?>
+		<h1>Welcome Back <?php echo $active_user->getUsername() ?></h1>
+	<?php
+}
+else
+{
+	require './includes/loginBar.php'; 
+	require './includes/start.php';
+}
+require './includes/footer.php'; ?>

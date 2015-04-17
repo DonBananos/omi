@@ -19,9 +19,9 @@ $regexUsername = "^[a-zA-Z0-9][a-zA-Z0-9_-]{5,39}$";
 //  (?=.*[A-Z])		must contains one uppercase characters
 //  (?=.*[@#$%])	must contains one special symbols in the list "@#$%_-"
 //  .                   match anything with previous condition checking
-//  {6,20}              length at least 6 characters and maximum of 20	
+//  {8,40}              length at least 8 characters and maximum of 40	
 //  )			End of group
-$regexPassword = "((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%_-]).{6,20})";
+$regexPassword = "/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[@#$%_-]*.{8,40}$/";
 
 //Email: onlu 'a-z', '0-9', a single '@' and a single '.' is allowed.
 //$regexEmail = "^(?=^.{6,}$)(?=.*[a-z])(?=.*@)(?=.*\.)[0-9a-z@\.]*$";

@@ -1,3 +1,13 @@
+<?php
+if(isset($_SESSION['user_id']))
+{
+	$signed_in = true;
+}
+else
+{
+	$signed_in = true;
+}
+?>
 <nav class="navbar navbar-inverse navbar-fixed-top">
     <div class="container">
         <div class="navbar-header">
@@ -11,17 +21,16 @@
         </div>
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
-                <li><a href="#">Home</a></li>
+                <li><a href="/onlineMovieIndex/">Home</a></li>
             </ul>
-            <form class="navbar-form navbar-right">
-                <div class="form-group">
-                    <input type="text" placeholder="Username" class="form-control" required autofocus>
-                </div>
-                <div class="form-group">
-                    <input type="password" placeholder="Password" class="form-control" required>
-                </div>
-                <button type="submit" class="btn btn-success">Sign in</button>
-            </form>
+			<ul class="nav navbar-nav navbar-right">
+				<li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo $active_user->getUsername(); ?> <span class="caret"></span></a>
+					<ul class="dropdown-menu" role="menu" id="navbar-dropdown-menu">
+						<li><a href="/onlineMovieIndex/user/logout.php">Logout</a></li>
+					</ul>
+				</li>
+			</ul>
         </div><!--/.navbar-collapse -->
     </div>
 </nav>

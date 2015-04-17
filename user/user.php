@@ -6,9 +6,10 @@
  * @author Mike Jensen < mj@mjsolutions.dk >
  */
 
+session_start();
+
 class User
 {
-	private $algo = '$2y$14$';
 	private $id; //Integer
 	private $username; //String
 	private $email; //String
@@ -18,12 +19,14 @@ class User
 	private $roleId; //Integer
 	private $role; //String
 	private $activationCode; //String
+	private $salt;
 
 	function __construct($id = null) //set to null if id is not in constructor
 	{
 		if (!empty($id))
 		{
 			$this->id = $id;
+			$this->setValuesAccordingToId();
 		}
 	}
 
@@ -38,12 +41,13 @@ class User
 
 	public function setValuesAccordingToId($id = null)
 	{
+		global $dbCon;
 		if (empty($id))
 		{
 			$id = $this->id;
 		}
 
-		$sql = "SELECT username, user_email, user_password, user_created, user_active, user_role_id, user_activation_code FROM user WHERE user_id = ?";
+		$sql = "SELECT username, user_email, user_password, user_created, user_active, user_role_id, user_activation_code, user_salt FROM user WHERE user_id = ?";
 		$stmt = $dbCon->prepare($sql); //Prepare Statement
 		if ($stmt === false)
 		{
@@ -51,21 +55,20 @@ class User
 		}
 		$stmt->bind_param('i', $id); //Bind parameters.
 		$stmt->execute(); //Execute
-		$stmt->bind_result($username, $email, $password, $created, $active, $roleId, $activationCode); //Get ResultSet
+		$stmt->bind_result($username, $email, $password, $created, $active, $roleId, $activationCode, $salt); //Get ResultSet
 		$stmt->fetch();
 		$stmt->close();
-		if ($stmt->num_rows == 1)
-		{
-			$this->setId($id);
-			$this->setUsername($username);
-			$this->setEmail($email);
-			$this->setPassword($password);
-			$this->setCreated($created);
-			$this->setActive($active);
-			$this->setRoleId($roleId);
-			$this->setRole();
-			$this->setActivationCode($activationCode);
-		}return true;
+		$this->setId($id);
+		$this->setUsername($username);
+		$this->setEmail($email);
+		$this->setPassword($password);
+		$this->setCreated($created);
+		$this->setActive($active);
+		$this->setRoleId($roleId);
+		$this->setRole();
+		$this->setActivationCode($activationCode);
+		$this->setSalt($salt);
+		return true;
 	}
 
 	/*
@@ -80,8 +83,9 @@ class User
 		{
 			return $inUse;
 		}
-		$hashedPass = $this->hashPass($password);
-
+		$this->setSalt($this->generateSalt());
+		$this->hashedPassword = $this->hashPass($password);
+		
 		$this->generateActivationCode();
 
 		return $this->saveCreatedUser();
@@ -116,13 +120,14 @@ class User
 
 	private function checkIfValueExists($whatToCheck, $valueToCheck)
 	{
+		global $dbCon;
 		if ($whatToCheck == 'username')
 		{
-			$sql = "SELECT COUNT(*) as users FROM user WHERE username = ?";
+			$sql = "SELECT user_id FROM user WHERE username = ?";
 		}
 		elseif ($whatToCheck == 'email')
 		{
-			$sql = "SELECT COUNT(*) as users FROM user WHERE user_email = ?";
+			$sql = "SELECT user_id FROM user WHERE user_email = ?";
 		}
 		$stmt = $dbCon->prepare($sql); //Prepare Statement
 		if ($stmt === false)
@@ -131,10 +136,11 @@ class User
 		}
 		$stmt->bind_param('s', $valueToCheck); //Bind parameters.
 		$stmt->execute(); //Execute
-		$stmt->bind_result($users); //Get ResultSet
+		$stmt->bind_result($id); //Get ResultSet
 		$stmt->fetch();
+		$numRows = $stmt->num_rows();
 		$stmt->close();
-		if ($users > 0)
+		if ($numRows > 0)
 		{
 			return false;
 		}return true;
@@ -145,19 +151,9 @@ class User
 	 */
 	private function hashPass($password)
 	{
-		//Hashing Pass with $algo and salt from getSalt function
-		$hashedPass = crypt($password, $this->algo . $this->getSalt($this->username, $password));
-		return $hashedPass;
-	}
-
-	/*
-	 * Creating the Salt.
-	 */
-	private function getSalt($username, $password)
-	{
-		$rand = crypt($password . $username); // More than 22 Characters.
-		$salt = substr($rand, 0, 22); // A Maxiumum of 22 Characters
-		return $salt;
+		$salt = $this->getSalt();
+		$hashedPassword = hash_hmac('sha512', $password, $salt);
+		return $hashedPassword;
 	}
 
 	private function generateActivationCode()
@@ -179,6 +175,12 @@ class User
 		}
 		$this->activationCode = $activationCode;
 	}
+	
+	private function generateSalt()
+	{
+		$salt = $this->generateRandomString(20, 30);
+		return $salt;
+	}
 
 	private function generateRandomString($least_number_of_characters, $max_number_of_characters)
 	{
@@ -194,6 +196,7 @@ class User
 
 	private function checkIfActivationCodeIsExisting($activationCode)
 	{
+		global $dbCon;
 		$sql = "SELECT COUNT(*) as codes FROM user WHERE user_activation_code = ?";
 		$stmt = $dbCon->prepare($sql); //Prepare Statement
 		if ($stmt === false)
@@ -213,9 +216,10 @@ class User
 
 	private function saveCreatedUser()
 	{
+		global $dbCon;
 		//Create SQL Query
-		$sql = "INSERT INTO user (username, user_email, user_password, user_created, user_active, user_role_id, user_activation_code) VALUES (?, ?, ?, NOW(), 1, 1, ?)";
-
+		$sql = "INSERT INTO user (username, user_email, user_password, user_created, user_active, user_role_id, user_activation_code, user_salt) VALUES (?, ?, ?, NOW(), 1, 1, ?, ?)";
+		
 		//Prepare Statement
 		$stmt = $dbCon->prepare($sql);
 		if ($stmt === false)
@@ -224,22 +228,21 @@ class User
 		}
 
 		//Bind parameters.
-		$stmt->bind_param('ssss', $this->username, $this->email, $this->hashedPassword, $this->activationCode);
+		$stmt->bind_param('sssss', $this->username, $this->email, $this->hashedPassword, $this->activationCode, $this->salt);
 
 		//Execute
 		$stmt->execute();
 
 		//Get ID of user just saved
 		$id = $stmt->insert_id;
-
+		
 		$stmt->close();
 		if ($id > 0)
 		{
-			$this->id = $id;
-			$this->setValuesAccordingToId();
+			$this->setValuesAccordingToId($id);
 			return true;
 		}
-		return false;
+		return $dbCon->error;
 	}
 
 	private function sendVerificationEmail()
@@ -464,6 +467,7 @@ class User
 
 	private function setActivationToNull()
 	{
+		global $dbCon;
 		$sql = "UPDATE user SET user_activation_code = NULL WHERE user_id = ? AND user_activation_code = ?";
 		$stmt = $dbCon->prepare($sql); //Prepare Statement
 		if ($stmt === false)
@@ -486,28 +490,29 @@ class User
 		{
 			$this->setValuesAccordingToUsername($username);
 			//Check password identity
-			$hashedTriedPassword = crypt($password, $this->hashedPassword);
-			if ($hashedTriedPassword == $password)
+			$hashedTriedPassword = $this->hashPass($password);
+			if ($hashedTriedPassword == $this->hashedPassword)
 			{
-				$_SESSION['signed_in'] = TRUE;
-				$_SESSION['active_user'] = new User($this->id);
+				$_SESSION['signed_in'] = true;
+				$_SESSION['user_id'] = $this->id;
 				return true;
 			}
 			else
 			{
-				$respond = 'Username Or Password is incorrect!'; //Password is wrong
+				$respond = 'Password is incorrect!'; //Password is wrong
 			}
 		}
 		else
 		{
-			$respond = 'Username Or Password is incorrect!'; //Username is wrong
+			$respond = 'Username is incorrect!'; //Username is wrong
 		}
 		return $respond;
 	}
 
 	private function setValuesAccordingToUsername($username)
 	{
-		$sql = "SELECT user_id, user_email, user_password, user_created, user_active, user_role_id, user_activation_code FROM user WHERE username = ?";
+		global $dbCon;
+		$sql = "SELECT user_id, user_email, user_password, user_created, user_active, user_role_id, user_activation_code, user_salt FROM user WHERE username = ?";
 		$stmt = $dbCon->prepare($sql); //Prepare Statement
 		if ($stmt === false)
 		{
@@ -515,32 +520,17 @@ class User
 		}
 		$stmt->bind_param('s', $username); //Bind parameters.
 		$stmt->execute(); //Execute
-		$stmt->bind_result($id, $email, $password, $created, $active, $roleId, $activationCode); //Get ResultSet
+		$stmt->bind_result($id, $email, $password, $created, $active, $roleId, $activationCode, $salt); //Get ResultSet
 		$stmt->fetch();
+		$numRows = $stmt->num_rows();
 		$stmt->close();
-		if ($stmt->num_rows == 1)
-		{
-			$this->setId($id);
-			$this->setUsername($username);
-			$this->setEmail($email);
-			$this->setPassword($password);
-			$this->setCreated($created);
-			$this->setActive($active);
-			$this->setRoleId($roleId);
-			$this->setRole();
-			$this->setActivationCode($activationCode);
-		}return true;
+		$this->setId($id);
+		$this->setValuesAccordingToId($id);
 	}
 
 	public function logout()
 	{
 		session_unset();
-		?>
-		<script>
-			window.location = '<?php echo $url ?>';
-		</script>
-		<?php
-		die();
 	}
 
 	/*
@@ -581,6 +571,16 @@ class User
 	{
 		return $this->role;
 	}
+	
+	private function getActivationCode()
+	{
+		return $this->activationCode;
+	}
+	
+	private function getSalt()
+	{
+		return $this->salt;
+	}
 
 	private function setId($id)
 	{
@@ -619,6 +619,7 @@ class User
 
 	private function setRole()
 	{
+		global $dbCon;
 		$sql = "SELECT role_name FROM role WHERE role_id = ?";
 		$stmt = $dbCon->prepare($sql);
 		$stmt->bind_param("i", $this->roleId);
@@ -632,6 +633,11 @@ class User
 	private function setActivationCode($activationCode)
 	{
 		$this->activationCode = $activationCode;
+	}
+	
+	private function setSalt($salt)
+	{
+		$this->salt = $salt;
 	}
 
 }
