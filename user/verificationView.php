@@ -11,7 +11,7 @@ Author: Heini L. Ovason
 $verificationMsg;
 
 // Temp variable result.
-$verificationResult = true;
+$verificationResult = false;
 
 if ($verificationResult) {
     $verificationMsg = "Account Verified!";

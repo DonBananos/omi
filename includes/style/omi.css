@@ -1,22 +1,22 @@
 body
 {
-	background-image: url(../img/background/hexabump_@2X.png);
+    background-image: url(../img/background/hexabump_@2X.png);
 }
 
 .page-wrap
 {
-	max-width: 1800px;
+    max-width: 1800px;
 }
 
 .page-wrap p,
 .page-wrap label
 {
-	color: white;
+    color: white;
 }
 
 .page-wrap small
 {
-	color: grey;
+    color: grey;
 }
 
 body h1,
@@ -24,7 +24,7 @@ body h2,
 body h3,
 body h4
 {
-	color: #99ccff;
+    color: #99ccff;
 }
 
 .box
@@ -38,10 +38,10 @@ body h4
     padding-right: 5px;
     font-size: 110%;
     margin-bottom: 20px;
-	width: 94%;
-	margin-left: 3%;
-	margin-right: 3%;
-	background-color: white;
+    width: 94%;
+    margin-left: 3%;
+    margin-right: 3%;
+    background-color: white;
 }
 
 .box h1,
@@ -49,25 +49,25 @@ body h4
 .box h3,
 .box h4
 {
-	color: black;
-	text-align: center;
+    color: black;
+    text-align: center;
 }
 
 .header-ender
 {
-	border: 3px double #99ccff;
+    border: 3px double #99ccff;
 }
 
 .poster
 {
-	padding: 10px;
-	width: 225px;
-	height: 333px;
+    padding: 10px;
+    width: 225px;
+    height: 333px;
 }
 
 .form-control
 {
-	border-radius: 0px !important;
+    border-radius: 0px !important;
 }
 
 .main-container, footer {
@@ -79,11 +79,11 @@ body h4
     padding: 0px;
 }
 
-
 .navbar-inverse a:hover
 {
     color: #99ccff !important;
 }
+
 #navbar-dropdown-menu
 {
     background-color: #333 !important;
@@ -92,17 +92,23 @@ body h4
 #navbar-dropdown-menu a
 {
     background-color: #333 !important;
-	color:lightgray !important;
+    color:lightgray !important;
 }
 
-#navbar-dropdown-menu a:hover
+#navbar-dropdown-menu li a:hover
 {
-	background-color: #333 !important;
-	color:#99ccff !important;
+    background-color: #333 !important;
+    color:#99ccff !important;
 }
 
-@media(max-width:480px){
-    
+.dropdown-menu li a:focus, .dropdown-menu li a:hover {
+    background-image: none;
+    background-color: #333;
+}
+
+@media(max-width:480px)
+{
+
     #registerForm {
         padding-top: 0px;
     }
