@@ -138,9 +138,8 @@ class User
 		$stmt->execute(); //Execute
 		$stmt->bind_result($id); //Get ResultSet
 		$stmt->fetch();
-		$numRows = $stmt->num_rows();
 		$stmt->close();
-		if ($numRows > 0)
+		if ($id != null)
 		{
 			return false;
 		}return true;

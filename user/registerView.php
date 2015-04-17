@@ -2,8 +2,7 @@
 User story ID: OMI_014
 Author: Heini L. Ovason
 -->
-
-<form method="post" id="registerForm" role="form" action="./includes/config/register.php">
+<form method="post" id="registerForm" role="form" action="/onlineMovieIndex/includes/config/register.php">
 
     <h2>Register</h2>
 
@@ -135,7 +134,7 @@ commend out the script.
             div.append('<div id="infoPassword" class="alert alert-info" role="alert">Please enter a Password!</div>');
             return false;
         } else {
-            if ($("#password").val().match(regexPwd)) {
+            if ($("#password").val().match(<?php echo $regexPassword ?>)) {
                 var div = $("#password").closest("div");
                 div.removeClass("has-error");
                 $("#infoPassword").remove();
