@@ -111,6 +111,7 @@ class User
 		if ($errors > 0) //If email and/or username is in use
 		{
 			$error .= ' is already in use';
+			?><script>alert('<?php echo $error ?>')</script><?php
 			return $error;
 		}
 		$this->username = $username;
