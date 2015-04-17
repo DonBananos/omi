@@ -11,64 +11,249 @@
 
 class Movie
 {
-	public $id;
-	public $title;
-	public $slug; //The url prepared name for the movie
-	public $runtime; //In minutes, as received from OMDb API
-	public $year;
-	public $release;
-	public $language; //Array of languages
-	public $plot;
-	public $poster_url;
-	public $imdb_id;
-	public $imdb_rating;
-	public $imdb_link;
+	private $id;
+	private $title;
+	private $slug; //The url prepared name for the movie
+	private $runtime; //In minutes, as received from OMDb API
+	private $release; //Date
+	private $language; //Array of languages
+	private $plot;
+	private $posterUrl;
+	private $imdbId;
+	private $imdbLink; //Set by using the imdb_id and a configured url from the config file
 	
 	function __construct($id = null)
 	{
 		if(!empty($id))
 		{
 			$this->id = $id;
-			$this->set_values_with_id();
+			$this->setValuesWithId();
 		}
 	}
 	
-	private function set_values_with_id()
+	public function setValuesWithId($id = null)
 	{
 		/*
 		 * Function that receives the movie ID and sets the entire object from it.
 		 * Used when receiving an array of movie to display, or by other functions.
 		 */
+		if(empty($id))
+		{
+			$id = $this->id;
+			if($id == null)
+			{
+				return false;
+			}
+		}
+		global $dbCon;
+		$sql = "SELECT movie_title, movie_slug, movie_plot, movie_release, movie_runtime, movie_imdb_id, movie_poster, movie_language FROM movie WHERE movie_id = ?";
+		$stmt = $dbCon->prepare($sql); //Prepare Statement
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('i', $id); //Bind parameters.
+		$stmt->execute(); //Execute
+		$stmt->bind_result($title, $slug, $plot, $release, $runtime, $imdbId, $posterUrl, $language); //Get ResultSet
+		$stmt->fetch();
+		$stmt->close();
+		$this->setId($id);
+		$this->setTitle($title);
+		$this->setSlug($slug);
+		$this->setPlot($plot);
+		$this->setRelease($release);
+		$this->setRuntime($runtime);
+		$this->setImdbId($imdbId);
+		$this->setImdbLink($imdbId);
+		$this->setPosterUrl($posterUrl);
+		$this->setLanguage($language);
 		
-		$sql = "SELECT * FROM movie WHERE movie_id = '$this->id';";
-		$result = mysql_query($sql);
-		$row = mysql_fetch_assoc($result);
-		$this->title = $row['movie_title'];
-		$this->slug = $row['movie_slug'];
-		$this->runtime = $row['movie_runtime'];
-		$this->year = $row['movie_year'];
-		$this->release = $row['movie_release'];
-		$this->language = $row['movie_language'];
-		$this->plot = $row['movie_plot'];
-		$this->poster_url = $row['movie_poster_url'];
-		$this->imdb_id = $row['movie_imdb_id'];
-		$this->imdb_link = $row['movie_imdb_link'];
-		$this->imdb_rating = $row['movie_imdb_rating'];
+		return true;
 	}
 	
-	public function set_values_with_slug($unesc_slug)
+	public function createMovie($title, $plot, $release, $runtime, $imdbId, $posterUrl, $language)
 	{
-		/*
-		 * Function that receives an URL prepared title and sets the entire object from it.
-		 * Used when visiting a movie detail page
-		 * http://www.domain.com/movie/the-movie-title/
-		 */
+		$this->setTitle($title);
+		$this->setSlug($this->createSlug($this->title));
+		$this->setPlot($plot);
+		$this->setRuntime($runtime);
+		$this->setRelease($release);
+		$this->setImdbId($imdbId);
+		$this->setImdbLink($imdbId);
+		$this->setPosterUrl($posterUrl);
+		$this->setLanguage($language);
 		
-		$slug = mysql_real_escape_string($unesc_slug);
-		$sql = "SELECT movie_id FROM movie WHERE movie_slug = '$slug';";
-		$result = mysql_query($sql);
-		$row = mysql_fetch_assoc($result);
-		$this->id = $row['movie_id'];
-		$this->set_values_with_id();
+		return $this->saveMovieInDb();
 	}
+	
+	private function saveMovieInDb()
+	{
+		global $dbCon;
+		//Create SQL Query
+		$sql = "INSERT INTO user (movie_title, movie_slug, movie_plot, movie_release, movie_runtime, movie_imdb_id, movie_poster, movie_language) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+		
+		//Prepare Statement
+		$stmt = $dbCon->prepare($sql);
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+
+		//Bind parameters.
+		$stmt->bind_param('ssssisss', $this->title, $this->slug, $this->plot, $this->release, $this->runtime, $this->imdb_link, $this->poster_url, $this->language);
+
+		//Execute
+		$stmt->execute();
+
+		//Get ID of user just saved
+		$id = $stmt->insert_id;
+		
+		$stmt->close();
+		if ($id > 0)
+		{
+			$this->setValuesAccordingToId($id);
+			return true;
+		}
+		return $dbCon->error;
+	}
+	
+	private function createSlug($title)
+	{
+		$slug = trim($title);
+		$slug = iconv('UTF-8', 'ASCII//TRANSLIT', $slug);
+		$slug = preg_replace("/[^a-zA-Z0-9\/_|+ -]/", '', $slug);
+		$slug = strtolower(trim($slug, '-'));
+		$slug = preg_replace("/[\/_|+ -]+/", '-', $slug);
+
+		return $slug;
+	}
+	
+	public function saveMovieToCollection($collectionId)
+	{
+		global $dbCon;
+		//Create SQL Query
+		$sql = "INSERT INTO collection_movie (collection_movie_collection_id, collection_movie_movie_id, collection_movie_added) VALUES (?, ?, NOW())";
+		
+		//Prepare Statement
+		$stmt = $dbCon->prepare($sql);
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+
+		//Bind parameters.
+		$stmt->bind_param('ii', $collectionId, $this->id);
+
+		//Execute
+		$stmt->execute();
+
+		$stmt->close();
+		if ($dbCon->error != NULL)
+		{
+			return $dbCon->error;
+		}
+		return true;
+	}
+	
+	public function getId()
+	{
+		return $this->id;
+	}
+
+	public function getTitle()
+	{
+		return $this->title;
+	}
+
+	public function getSlug()
+	{
+		return $this->slug;
+	}
+
+	public function getRuntime()
+	{
+		return $this->runtime;
+	}
+
+	public function getRelease()
+	{
+		return $this->release;
+	}
+
+	public function getLanguage()
+	{
+		return $this->language;
+	}
+
+	public function getPlot()
+	{
+		return $this->plot;
+	}
+
+	public function getPosterUrl()
+	{
+		return $this->posterUrl;
+	}
+
+	public function getImdbId()
+	{
+		return $this->imdbId;
+	}
+
+	public function getImdbLink()
+	{
+		return $this->imdbLink;
+	}
+
+	private function setId($id)
+	{
+		$this->id = $id;
+	}
+
+	private function setTitle($title)
+	{
+		$this->title = $title;
+	}
+
+	private function setSlug($slug)
+	{
+		$this->slug = $slug;
+	}
+
+	private function setRuntime($runtime)
+	{
+		$this->runtime = $runtime;
+	}
+
+	private function setRelease($release)
+	{
+		$this->release = $release;
+	}
+
+	private function setLanguage($language)
+	{
+		$this->language = $language;
+	}
+
+	private function setPlot($plot)
+	{
+		$this->plot = $plot;
+	}
+
+	private function setPosterUrl($posterUrl)
+	{
+		$this->posterUrl = $posterUrl;
+	}
+
+	private function setImdbId($imdbId)
+	{
+		$this->imdb_id = $imdbId;
+	}
+
+	private function setImdbLink($imdbId)
+	{
+		$this->imdbLink = 'http://www.imdb.com/title/'.$imdbId.'/';
+	}
+
+
 }
