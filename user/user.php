@@ -6,8 +6,6 @@
  * @author Mike Jensen < mj@mjsolutions.dk >
  */
 
-session_start();
-
 class User
 {
 	private $id; //Integer
@@ -38,7 +36,6 @@ class User
 	 * users will be using this object to create an instance of each user,
 	 * by using the same object, but changing all attributes.
 	 */
-
 	public function setValuesAccordingToId($id = null)
 	{
 		global $dbCon;
@@ -140,7 +137,7 @@ class User
 		$stmt->bind_result($id); //Get ResultSet
 		$stmt->fetch();
 		$stmt->close();
-		if ($id != null)
+		if ($id == null)
 		{
 			return false;
 		}return true;

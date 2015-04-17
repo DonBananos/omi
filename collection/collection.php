@@ -21,7 +21,8 @@ class Collection
 	{
 		if(!empty($id))
 		{
-			
+			$this->id = $id;
+			$this->setValuesAccordingToId();
 		}
 	}
 	
@@ -135,6 +136,27 @@ class Collection
 		$slug = preg_replace("/[\/_|+ -]+/", '-', $slug);
 
 		return $slug;
+	}
+	
+	public function getAllMoviesInCollection()
+	{
+		global $dbCon;
+		$moviesIds = array();
+		$sql = "SELECT collection_movie_movie_id FROM collection_movie WHERE collection_movie_collection_id = ?";
+		$stmt = $dbCon->prepare($sql); //Prepare Statement
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('i', $id); //Bind parameters.
+		$stmt->execute(); //Execute
+		$stmt->bind_result($movieId); //Get ResultSet
+		while($stmt->fetch())
+		{
+			array_push($moviesIds, $movieId);
+		}
+		$stmt->close();
+		return $moviesIds;
 	}
 	
 	public function getId()

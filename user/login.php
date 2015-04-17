@@ -14,14 +14,16 @@ $answer = $user->login($username, $password);
 if(is_string($answer))
 {
 	?>
-<script>alert('<?php echo $answer ?>');</script>
+<script>
+	alert('<?php echo $answer ?>');
+	window.location = '<?php echo $path ?>';
+</script>
 	<?php
 }
 else
 {
 	?>
 <script>
-	alert('Hello');
 	window.location = '<?php echo $path ?>';
 </script>
 
