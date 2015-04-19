@@ -106,6 +106,14 @@ body h4
     background-color: #333;
 }
 
+.modal-content{
+    background-color: #333;
+}
+
+.form-label-header{
+    color:#99CCFF !important;
+}
+
 @media(max-width:480px)
 {
 

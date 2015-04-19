@@ -44,8 +44,10 @@ if (isset($_POST['search'])) {
 if(isset($_SESSION['signed_in']))
 {
 	require './includes/navbar.php';
+        require './includes/memberStart.php';
+        
 	?>
-		<h1>Welcome Back <?php echo $active_user->getUsername() ?></h1>
+		
 	<?php
 }
 else
