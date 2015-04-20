@@ -5,28 +5,28 @@ Author: Heini L. Ovason
 <form method="post" id="registerForm" role="form" action="/onlineMovieIndex/includes/config/register.php">
 
     <h2>Register</h2>
-
+    <hr>
     <!-- Username -->
     <div class="form-group">
-        <label for="username">Username</label>
+        <label class="form-label-header" for="username">Username</label>
         <input type="text" name="username" id="username" class="form-control" placeholder="Username">   
     </div>
 
     <!-- Email -->
     <div class="form-group">
-        <label for="email">Email</label>
+        <label class="form-label-header" for="email">Email</label>
         <input type="email" name="email" id="email" class="form-control" placeholder="Email Address">
     </div>
 
     <!-- Password -->
     <div class="form-group">
-        <label for="password">Password</label>
+        <label class="form-label-header" for="password">Password</label>
         <input type="password" name="password" id="password" class="form-control" placeholder="Password">
     </div>
 
     <!-- Retype Password -->
     <div class="form-group">
-        <label for="retypePassword">Retype Password</label>
+        <label class="form-label-header" for="retypePassword">Retype Password</label>
         <input type="password" name="retypePassword" id="retypePassword" class="form-control" placeholder="Confirm Password">
     </div>
 

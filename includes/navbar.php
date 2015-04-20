@@ -1,11 +1,12 @@
+<!--
+Author: R. Mike Jensen
+-->
+
 <?php
-if(isset($_SESSION['user_id']))
-{
-	$signed_in = true;
-}
-else
-{
-	$signed_in = true;
+if (isset($_SESSION['user_id'])) {
+    $signed_in = true;
+} else {
+    $signed_in = true;
 }
 ?>
 <nav class="navbar navbar-inverse navbar-fixed-top">
@@ -22,15 +23,17 @@ else
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
                 <li><a href="/onlineMovieIndex/">Home</a></li>
+                <li><a href="/onlineMovieIndex/">Movies</a></li>
+                <li><a href="/onlineMovieIndex/">Collections</a></li>
             </ul>
-			<ul class="nav navbar-nav navbar-right">
-				<li class="dropdown">
+            <ul class="nav navbar-nav navbar-right">
+                <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo $active_user->getUsername(); ?> <span class="caret"></span></a>
-					<ul class="dropdown-menu" role="menu" id="navbar-dropdown-menu">
-						<li><a href="/onlineMovieIndex/user/logout.php">Logout</a></li>
-					</ul>
-				</li>
-			</ul>
+                    <ul class="dropdown-menu" role="menu" id="navbar-dropdown-menu">
+                        <li><a href="/onlineMovieIndex/user/logout.php">Logout</a></li>
+                    </ul>
+                </li>
+            </ul>
         </div><!--/.navbar-collapse -->
     </div>
 </nav>
