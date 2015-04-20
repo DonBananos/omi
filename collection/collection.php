@@ -65,15 +65,16 @@ class Collection
 		{
 			return 'You already have a collection with that name';
 		}
+		$this->name = $name;
+		$this->description = $description;
+		$this->privacy = $private;
+		$this->userId = $userId;
 		$this->slug = $this->createSlug($name);
 		$answer = $this->saveCollectionInDB();
 		if($answer === true)
 		{
 			return $answer;
 		}
-		?>
-		<script>alert('<?php echo $answer ?>');</script>
-		<?php
 	}
 	
 	private function saveCollectionInDB()

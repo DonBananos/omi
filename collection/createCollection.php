@@ -20,20 +20,33 @@ if(isset($_SESSION['signed_in']))
 	$userId = $_SESSION['user_id'];
 	//Create the collection
 	$answer = $collection->createCollection($name, $desc, $priv, $userId);
+	if($answer)
+	{
+		if($answer === true)
+		{
+			
+		}
+		else
+		{
+			?>
+			<script>
+				alert('<?php echo $answer; ?>');
+			</script>
+			<?php
+		}
+	}
+	else
+	{
+		?>
+		<script>
+			alert('There was an error saving the Collection. Please try again.');
+		</script>
+		<?php
+	}
 }
-else
-{
-	?>
-<script>
-window.location = '<?php echo $path ?>';
-</script>
-	<?php
-	die();
-}
-
 ?>
-<script>
-	alert('<?php echo $answer; ?>');
-window.location = '<?php echo $path ?>';
-</script>
-	<?php
+	<script>
+	window.location = '<?php echo $path ?>';
+	</script>
+<?php
+die();
