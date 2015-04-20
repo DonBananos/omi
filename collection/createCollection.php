@@ -1,5 +1,5 @@
 <?php
-
+session_start();
 require './collection.php';
 require '../includes/config/config.php';
 require '../includes/config/database.php';
@@ -15,10 +15,11 @@ $collection = new Collection();
 //Check if user is signed in
 if(isset($_SESSION['signed_in']))
 {
+        //echo 'UserID: '. $_SESSION['user_id'];
 	//Save userId
 	$userId = $_SESSION['user_id'];
 	//Create the collection
-	$answer = $collection->createCollection($name, $description, $private, $userId);
+	$answer = $collection->createCollection($name, $desc, $priv, $userId);
 }
 else
 {

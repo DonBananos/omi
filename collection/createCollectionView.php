@@ -17,7 +17,7 @@ Author: Heini L. Ovason
             </div>
             <div class="modal-body">
                 
-                <form method="post" role="form" id="createCollectionForm" action="">
+                <form method="post" role="form" id="createCollectionForm" action="<?php echo $path ?>collection/createCollection.php">
 
                     <!-- Name -->
                     <div class="form-group">

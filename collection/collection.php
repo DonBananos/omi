@@ -80,7 +80,7 @@ class Collection
 	{
 		global $dbCon;
 		//Create SQL Query
-		$sql = "INSERT INTO (collection_name, collection_description, collection_user_id, collection_private, collection_created, collection_slug) VALUES (?, ?, ?, ?, NOW(), ?)";
+		$sql = "INSERT INTO collection (collection_name, collection_description, collection_user_id, collection_private, collection_created, collection_slug) VALUES (?, ?, ?, ?, NOW(), ?)";
 		
 		//Prepare Statement
 		$stmt = $dbCon->prepare($sql);
@@ -134,7 +134,7 @@ class Collection
 		$slug = preg_replace("/[^a-zA-Z0-9\/_|+ -]/", '', $slug);
 		$slug = strtolower(trim($slug, '-'));
 		$slug = preg_replace("/[\/_|+ -]+/", '-', $slug);
-
+                echo $slug;
 		return $slug;
 	}
 	
