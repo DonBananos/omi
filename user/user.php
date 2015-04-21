@@ -509,7 +509,7 @@ class User
 	private function setValuesAccordingToUsername($username)
 	{
 		global $dbCon;
-		$sql = "SELECT user_id, user_email, user_password, user_created, user_active, user_role_id, user_activation_code, user_salt FROM user WHERE username = ?";
+		$sql = "SELECT user_id FROM user WHERE username = ?";
 		$stmt = $dbCon->prepare($sql); //Prepare Statement
 		if ($stmt === false)
 		{
@@ -517,12 +517,266 @@ class User
 		}
 		$stmt->bind_param('s', $username); //Bind parameters.
 		$stmt->execute(); //Execute
-		$stmt->bind_result($id, $email, $password, $created, $active, $roleId, $activationCode, $salt); //Get ResultSet
+		$stmt->bind_result($id); //Get ResultSet
 		$stmt->fetch();
 		$numRows = $stmt->num_rows();
 		$stmt->close();
 		$this->setId($id);
 		$this->setValuesAccordingToId($id);
+	}
+	
+	private function setValuesAccordingToEmail($email)
+	{
+		global $dbCon;
+		$sql = "SELECT user_id FROM user WHERE user_email = ?";
+		$stmt = $dbCon->prepare($sql); //Prepare Statement
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('s', $username); //Bind parameters.
+		$stmt->execute(); //Execute
+		$stmt->bind_result($id); //Get ResultSet
+		$stmt->fetch();
+		$numRows = $stmt->num_rows();
+		$stmt->close();
+		$this->setId($id);
+		$this->setValuesAccordingToId($id);
+	}
+	
+	public function resetPassword($email)
+	{
+		if($this->checkIfValueExists('email', $email))
+		{
+			$this->setValuesAccordingToEmail($email);
+			$verificationCode = $this->generateRandomString(40, 60);
+			if($this->saveVerification($verificationCode))
+			{
+				$mail = $this->generateResetPasswordEmail($verificationCode);
+				if(mail($mail['to'], $mail['subject'], $mail['content'], $mail['headers']))
+				{
+					//It all went good!
+				}
+			}
+		}
+		else
+		{
+			//You ain't from around here bro!
+		}
+	}
+	
+	private function generateResetPasswordEmail($verificationCode)
+	{
+		$mail = array();
+		$subject = "Password Reset | Online Movie Index";
+		$from = $supportMail;
+		$body =
+				"
+					Can't see this e-mail? No problem, <a href='http://www.omi.heibosoft.com/user/$this->id/$verificationCode/'>follow this link</a>!
+					<html>
+						<body>
+							<style>
+								body
+								{
+									background-image: url(/onlineMovieIndex/includes/img/background/hexabump_@2X.png); //Set in link to background image when online
+								}
+								.wrapper
+								{
+									max-width: 835px;
+									width: 80%;
+									margin: 0 auto;
+									margin-top: 15px;
+								}
+								h1
+								{
+									color: #99ccff;
+								}
+								h3
+								{
+									color: #ccc;
+								}
+								.btn
+								{
+									display: inline-block;
+									padding: 6px 12px;
+									margin-bottom: 0;
+									font-size: 14px;
+									font-weight: normal;
+									line-height: 1.42857143;
+									text-align: center;
+									white-space: nowrap;
+									vertical-align: middle;
+									-ms-touch-action: manipulation;
+										touch-action: manipulation;
+									cursor: pointer;
+									-webkit-user-select: none;
+									   -moz-user-select: none;
+										-ms-user-select: none;
+											user-select: none;
+									background-image: none;
+									border: 1px solid transparent;
+									text-decoration: none;
+								}
+								.btn:focus,
+								.btn:active:focus,
+								.btn.active:focus,
+								.btn.focus,
+								.btn:active.focus,
+								.btn.active.focus 
+								{
+									outline: thin dotted;
+									outline: 5px auto -webkit-focus-ring-color;
+									outline-offset: -2px;
+								}
+								.btn:hover,
+								.btn:focus,
+								.btn.focus 
+								{
+									color: #333;
+									text-decoration: none;
+								}
+								.btn:active,
+								.btn.active 
+								{
+									background-image: none;
+									outline: 0;
+									-webkit-box-shadow: inset 0 3px 5px rgba(0, 0, 0, .125);
+											box-shadow: inset 0 3px 5px rgba(0, 0, 0, .125);
+								}
+								.btn-primary 
+								{
+									color: #fff;
+									background-color: #337ab7;
+									border-color: #2e6da4;
+								}
+								.btn-primary:hover,
+								.btn-primary:focus,
+								.btn-primary.focus,
+								.btn-primary:active,
+								.btn-primary.active,
+								.open > .dropdown-toggle.btn-primary 
+								{
+									color: #fff;
+									background-color: #286090;
+									border-color: #204d74;
+								}
+								.btn-primary:active,
+								.btn-primary.active,
+								.open > .dropdown-toggle.btn-primary 
+								{
+									background-image: none;
+								}
+								.btn-primary.disabled,
+								.btn-primary[disabled],
+								fieldset[disabled] .btn-primary,
+								.btn-primary.disabled:hover,
+								.btn-primary[disabled]:hover,
+								fieldset[disabled] .btn-primary:hover,
+								.btn-primary.disabled:focus,
+								.btn-primary[disabled]:focus,
+								fieldset[disabled] .btn-primary:focus,
+								.btn-primary.disabled.focus,
+								.btn-primary[disabled].focus,
+								fieldset[disabled] .btn-primary.focus,
+								.btn-primary.disabled:active,
+								.btn-primary[disabled]:active,
+								fieldset[disabled] .btn-primary:active,
+								.btn-primary.disabled.active,
+								.btn-primary[disabled].active,
+								fieldset[disabled] .btn-primary.active 
+								{
+									background-color: #337ab7;
+									border-color: #2e6da4;
+								}
+								.btn-primary .badge 
+								{
+									color: #337ab7;
+									background-color: #fff;
+								}
+								a
+								{
+									color: #99ccff;
+								}
+								.bottom-text
+								{
+									color: grey;
+									text-align: center;
+								}
+							</style>
+							<div class='wrapper'>
+								<h1>
+									Password Reset!
+								</h1>
+								<h3>
+									Hi ' . $this->username . '<br>
+									A Password Reset has been requested from your OMI account!<br>
+									If this was not you, please ignore this email.<br>
+									If you've made the request, please follow the link below. The link will expire in 2 hours from your request.<br>
+								</h3>
+								<a href='http://www.omi.heibosoft.com/user/$this->id/$verificationCode/' class='btn btn-primary'>Reset Your Password</a>
+								<br>
+								<br>
+								<h3>
+									Alternatively, your can follow the link below, or paste it into
+									your browser.<br>
+									<a href='http://www.omi.heibosoft.com/user/$this->id/$verificationCode/'>http://www.omi.heibosoft.com/user/$this->id/$verificationCode/</a>
+								</h3>
+								<hr>
+								<small class='bottom-text'>
+									The Online Movie Index Application is created by CincoWare. &copy; 2015 CincoWare
+								</small>
+							</div>
+						</body>
+					</html>
+				";
+		$headers = "FROM: $from \r\n";
+		$headers .= "Reply-To: $from \r\n";
+		$headers .= "MIME-Version: 1.0\r\n";
+		$headers .= "Content-Type: text/html; charset=ISO-8859-1\r\n";
+		$mail['to'] = $this->getEmail();
+		$mail['subject'] = $subject;
+		$mail['content'] = $body;
+		$mail['headers'] = $headers;
+		
+		return $mail;
+	}
+	
+	private function saveVerification($verificationCode)
+	{
+		global $dbCon;
+		
+		$now = date("Y-m-d H:i:s");
+		$experation = date('Y-m-d H:i:s', time()+7200);
+		//Create SQL Query
+		$sql = "INSERT INTO verification (verification_user_id, verification_string, verification_datetime, verification_experation_time, verification_type) VALUES (?, ?, NOW(), DATE_ADD(NOW(), INTERVAL 2 HOUR), 1)";
+		
+		//Prepare Statement
+		$stmt = $dbCon->prepare($sql);
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+
+		//Bind parameters.
+		$stmt->bind_param('is', $this->getId(), $verificationCode);
+
+		//Execute
+		$stmt->execute();
+
+		//Get ID of user just saved
+		$id = $stmt->insert_id;
+		
+		$stmt->close();
+		if ($id > 0)
+		{
+			return true;
+		}
+		return $dbCon->error;
+	}
+	
+	public function updatePassword()
+	{
+		
 	}
 
 	public function logout()
