@@ -24,7 +24,7 @@ if (isset($_SESSION['user_id'])) {
             <ul class="nav navbar-nav">
                 <li><a href="/onlineMovieIndex/">Home</a></li>
                 <li><a href="/onlineMovieIndex/">Movies</a></li>
-                <li><a href="/onlineMovieIndex/collection/collectionsView.php">Collections</a></li>
+                <li><a href="/onlineMovieIndex/">Collections</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 <li class="dropdown">
