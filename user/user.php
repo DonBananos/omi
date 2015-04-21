@@ -139,8 +139,8 @@ class User
 		$stmt->close();
 		if ($id == null)
 		{
-			return false;
-		}return true;
+			return true;
+		}return false;
 	}
 
 	/*
