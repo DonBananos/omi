@@ -1,0 +1,38 @@
+<!doctype html>
+<html class="no-js">
+    <head>
+        <meta charset="utf-8">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width">
+
+        <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css" />
+        <link rel="stylesheet" href="../bower_components/angular-busy/dist/angular-busy.css" />
+
+        <link rel="stylesheet" href="styles/main.css">
+    </head>
+
+    <body ng-app="phpOmiApp">
+        <!--[if lt IE 7]>
+          <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+
+        <div class="container" ng-controller="MainCtrl">
+
+            <a ui-sref="home" style="text-decoration: none;">         
+                Movie Search
+            </a>
+
+
+            <div class="container" ng-controller="SearchCtrl">
+                <div ng-include src="'app/views/list.html'"></div>
+            </div>
+        </div>
+        <div style="min-height: 400px;">
+            <div ui-view=""></div>
+        </div>
+
+
+
+    </body>
+</html>
