@@ -140,7 +140,7 @@ class User
 		if ($id == null)
 		{
 			return true;
-		}return false;
+		}return true;
 	}
 
 	/*
@@ -485,6 +485,7 @@ class User
 	{
 		if ($this->checkIfValueExists('username', $username))
 		{
+                    $respond = "username exists";
 			$this->setValuesAccordingToUsername($username);
 			//Check password identity
 			$hashedTriedPassword = $this->hashPass($password);
@@ -501,6 +502,7 @@ class User
 		}
 		else
 		{
+                        echo $username;
 			$respond = 'Username is incorrect!'; //Username is wrong
 		}
 		return $respond;
@@ -528,6 +530,7 @@ class User
 	private function setValuesAccordingToEmail($email)
 	{
 		global $dbCon;
+                //echo "<script>alert('dbCon: '".$dbCon.");</script>";
 		$sql = "SELECT user_id FROM user WHERE user_email = ?";
 		$stmt = $dbCon->prepare($sql); //Prepare Statement
 		if ($stmt === false)

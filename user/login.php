@@ -4,7 +4,7 @@ session_start();
 
 require '../includes/config/database.php';
 require '../includes/config/config.php';
-require './user.php';
+require '../user/user.php';
 
 $username = $_POST['username'];
 $password = $_POST['password'];
