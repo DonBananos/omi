@@ -39,3 +39,5 @@ $textDateFormat = 'F jS, Y'; // January 31st 2012
 $shortTimeFormat = 'H:i'; // 13:21
 $fullTimeFormat = 'H:i:s'; // 13:21:53
 $shortDateTimeFormat = $shortDateFormat.' '.$shortTimeFormat;
+
+$supportMail = "omiadmin@heibisoft.com";

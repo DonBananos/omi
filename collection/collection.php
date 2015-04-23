@@ -135,7 +135,7 @@ class Collection
 		$slug = preg_replace("/[^a-zA-Z0-9\/_|+ -]/", '', $slug);
 		$slug = strtolower(trim($slug, '-'));
 		$slug = preg_replace("/[\/_|+ -]+/", '-', $slug);
-                echo $slug;
+                
 		return $slug;
 	}
 	
