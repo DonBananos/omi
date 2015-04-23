@@ -2,7 +2,7 @@
 User story ID: OMI_014
 Author: Heini L. Ovason
 -->
-<form method="post" id="registerForm" role="form" action="/onlineMovieIndex/user/register.php">
+<form method="post" id="registerForm" role="form" action="/onlineMovieIndex/user/administration/register.php">
 
     <h2>Register</h2>
     <hr>

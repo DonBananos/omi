@@ -544,7 +544,7 @@ class User
 		$this->setValuesAccordingToId($id);
 	}
 	
-	public function resetPassword($email)
+	public function RequestPasswordReset($email)
 	{
 		if($this->checkIfValueExists('email', $email))
 		{
@@ -555,14 +555,89 @@ class User
 				$mail = $this->generateResetPasswordEmail($verificationCode);
 				if(mail($mail['to'], $mail['subject'], $mail['content'], $mail['headers']))
 				{
-					//It all went good!
+					$message = "An email has been dispatched to ";
+					$message .= $this->getEmail();
 				}
 			}
 		}
 		else
 		{
-			//You ain't from around here bro!
+			$message = "No user with that email adress";
 		}
+		return $message;
+	}
+	
+	public function resetPassword($userId, $verificationCode, $newPassword)
+	{
+		$type = 1;
+		$this->setValuesAccordingToId($userId);
+		$experationTime = $this->getExperationTimeForVerification($verificationCode, $type);
+		if($this->checkIfDatetimeIsPassed($experationTime))
+		{
+			if($this->saveNewPassword($newPassword))
+			{
+				$message = "New Password is Saved. Log in with your new Credentials";
+			}
+			else
+			{
+				$message = "New Password was not saved. Please try again";
+			}
+		}
+		else
+		{
+			$message = "Your request has expired, please request a password reset again.";
+		}
+		return $message;
+	}
+	
+	private function getExperationTimeForVerification($verificationCode, $type)
+	{
+		global $dbCon;
+		$sql = "SELECT verification_experation_time FROM verification WHERE verification_user_id = ? AND verification_string = ? AND verification_type = ?";
+		$stmt = $dbCon->prepare($sql); //Prepare Statement
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('isi', $this->getId(), $verificationCode, $type); //Bind parameters.
+		$stmt->execute(); //Execute
+		$stmt->bind_result($experationTime); //Get ResultSet
+		$stmt->fetch();
+		$stmt->close();
+		
+		return $experationTime;
+	}
+	
+	private function checkIfDatetimeIsPassed($datetime)
+	{
+		$now = date("Y-m-d H:i:s", time());
+		if($datetime >= $now)
+		{
+			return true;
+		}
+		return false;
+	}
+	
+	private function saveNewPassword($password)
+	{
+		$hashedPassword = $this->hashPass($password);
+		$status = $this->updatePasswordInDb($hashedPassword);
+		
+		return $status;
+	}
+	
+	private function updatePasswordInDb($hashedPassword)
+	{
+		global $dbCon;
+		$sql = "UPDATE user SET user_password = ? WHERE user_id = ?";
+		$stmt = $dbCon->prepare($sql); //Prepare Statement
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('si', $hashedPassword, $this->getId()); //Bind parameters.
+		$status = $stmt->execute(); //Execute
+		return $status;
 	}
 	
 	private function generateResetPasswordEmail($verificationCode)
@@ -774,11 +849,6 @@ class User
 		return $dbCon->error;
 	}
 	
-	public function updatePassword()
-	{
-		
-	}
-
 	public function logout()
 	{
 		session_unset();
