@@ -76,7 +76,7 @@ class User
 	public function createUser($username, $email, $password)
 	{
 		$inUse = $this->checkIfValuesAreInUse($username, $email);
-		if ($inUse != false)
+		if ($inUse === true)
 		{
 			return $inUse;
 		}
@@ -91,12 +91,12 @@ class User
 	private function checkIfValuesAreInUse($username, $email)
 	{
 		$errors = 0;
-		if (!$this->checkIfValueExists('username', $username)) //Check if username is in use
+		if ($this->checkIfValueExists('username', $username)) //Check if username is in use
 		{
 			$error = 'Username';
 			$errors++;
 		}
-		if (!$this->checkIfValueExists('email', $email)) //Check if email is in use
+		if ($this->checkIfValueExists('email', $email)) //Check if email is in use
 		{
 			if ($errors == 1)
 			{
