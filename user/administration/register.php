@@ -1,9 +1,9 @@
 <?php
 //This file should only be used to register a user.. Should receive Username, Email and password.
 
-require 'database.php';
-require 'config.php';
-require '../../user/user.php';
+require '../../includes/config/database.php';
+require '../../includes/config/config.php';
+require '../user.php';
 
 $username = $_POST['username'];
 $email = $_POST['email'];
