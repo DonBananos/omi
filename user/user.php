@@ -139,7 +139,7 @@ class User
 		$stmt->close();
 		if ($id == null)
 		{
-			return true;
+			return false;
 		}return true;
 	}
 
@@ -483,7 +483,7 @@ class User
 
 	public function login($username, $password)
 	{
-		if (!$this->checkIfValueExists('username', $username))
+		if ($this->checkIfValueExists('username', $username))
 		{
                     $respond = "username exists";
 			$this->setValuesAccordingToUsername($username);
