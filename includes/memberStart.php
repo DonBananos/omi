@@ -12,6 +12,6 @@ Author: Heini L. Ovason
         <?php require './collection/createCollectionView.php'; ?>
     </div>
     <div class="row"> 
-        <?php require './app/index.html'; ?>
+        <?php //require './app/index.html'; ?>
     </div>
 </div>
