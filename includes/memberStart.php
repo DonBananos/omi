@@ -13,5 +13,9 @@ Author: Heini L. Ovason
     </div>
     <div class="row"> 
         <?php //require './app/index.html'; ?>
+        <?php 
+		require './collection/collectionHandler.php';
+		require './collection/collection.php';
+		require './collection/collectionsView.php'; ?>
     </div>
 </div>
