@@ -143,13 +143,13 @@ class Collection
 	{
 		global $dbCon;
 		$moviesIds = array();
-		$sql = "SELECT collection_movie_movie_id FROM collection_movie WHERE collection_movie_collection_id = ?";
+		$sql = "SELECT collection_movie_movie_id FROM collection_movie INNER JOIN movie ON collection_movie_movie_id = movie_id WHERE collection_movie_collection_id = ? ORDER BY movie_title ASC";
 		$stmt = $dbCon->prepare($sql); //Prepare Statement
 		if ($stmt === false)
 		{
 			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
 		}
-		$stmt->bind_param('i', $id); //Bind parameters.
+		$stmt->bind_param('i', $this->id); //Bind parameters.
 		$stmt->execute(); //Execute
 		$stmt->bind_result($movieId); //Get ResultSet
 		while($stmt->fetch())

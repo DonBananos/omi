@@ -90,7 +90,7 @@ class Movie
 	{
 		global $dbCon;
 		//Create SQL Query
-		$sql = "INSERT INTO user (movie_title, movie_slug, movie_plot, movie_release, movie_runtime, movie_imdb_id, movie_poster, movie_language) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+		$sql = "INSERT INTO movie (movie_title, movie_slug, movie_plot, movie_release, movie_runtime, movie_imdb_id, movie_poster, movie_language) VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
 		
 		//Prepare Statement
 		$stmt = $dbCon->prepare($sql);
@@ -100,7 +100,7 @@ class Movie
 		}
 
 		//Bind parameters.
-		$stmt->bind_param('ssssisss', $this->title, $this->slug, $this->plot, $this->release, $this->runtime, $this->imdb_link, $this->poster_url, $this->language);
+		$stmt->bind_param('ssssssss', $this->title, $this->slug, $this->plot, $this->release, $this->runtime, $this->imdbId, $this->posterUrl, $this->language);
 
 		//Execute
 		$stmt->execute();
@@ -111,7 +111,7 @@ class Movie
 		$stmt->close();
 		if ($id > 0)
 		{
-			$this->setValuesAccordingToId($id);
+			$this->setValuesWithId($id);
 			return true;
 		}
 		return $dbCon->error;
@@ -247,7 +247,7 @@ class Movie
 
 	private function setImdbId($imdbId)
 	{
-		$this->imdb_id = $imdbId;
+		$this->imdbId = $imdbId;
 	}
 
 	private function setImdbLink($imdbId)

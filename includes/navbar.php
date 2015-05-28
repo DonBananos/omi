@@ -1,7 +1,7 @@
 <!--
 Author: R. Mike Jensen
 -->
-
+<?php header('Content-type: text/html; charset=utf-8'); ?>
 <?php
 if (isset($_SESSION['user_id'])) {
     $signed_in = true;

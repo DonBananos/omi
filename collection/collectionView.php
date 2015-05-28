@@ -6,6 +6,8 @@ require '../includes/config/database.php';
 
 require '../user/user.php';
 
+require '../movie/movie.php';
+
 //Instantiate new Collection object
 $collection = new Collection($_GET['id']);
 
@@ -53,54 +55,95 @@ if ($collection->getPrivacy() != 1)
 								</small>
 							</h1>
 						</div>
-						<?php
-						if ($own_collection)
-						{
-							?>
-							<div class="row">
+						<div class="row">
+							<?php
+							if ($own_collection)
+							{
+								?>
 								<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
 									<?php require '../search/movieSearchView.php'; ?>
 								</div>
-							</div>
-							<?php
-						}
-						if ($collection_private AND ! $own_collection)
-						{
-							?>
-							<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-								<p>This Collection is private, and you are not allowed to see it</p>
-							</div>
-							<?php
-						}
-						elseif (!$collection_private OR $own_collection)
-						{
-							if (!$collection_private)
+								<?php
+							}
+							if ($collection_private AND ! $own_collection)
 							{
 								?>
-								<div class="row">
-									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
-										Share on Social Media buttons!
-									</div>
+								<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+									<p>This Collection is private, and you are not allowed to see it</p>
 								</div>
 								<?php
 							}
-							?>
-						<hr>
+							elseif (!$collection_private OR $own_collection)
+							{
+								if (!$collection_private)
+								{
+									?>
+									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+										<div class="pull-right">
+											<button class="btn btn-warning"><span class="fa fa-heart"></span> Favorite</button>
+											<button class="btn btn-facebook"><span class="fa fa-facebook"></span> Share</button>
+											<button class="btn btn-twitter"><span class="fa fa-twitter"></span> Tweet</button>
+											<button class="btn btn-primary"><span class="fa fa-envelope"></span> Share</button>
+										</div>
+									</div>
+									<?php
+								}
+								?>
+							</div>
+							<hr>
 							<div class="row">
 								<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 									<?php
-										$movieIds = $collection->getAllMoviesInCollection();
-										if(count($movieIds) < 1)
+									$movieIds = $collection->getAllMoviesInCollection();
+									if (count($movieIds) < 1)
+									{
+										?>
+										<p>
+											There's no movies in this collection yet.
+										</p>
+										<?php
+									}
+									else
+									{
+										$movie = new Movie();
+										foreach ($movieIds as $movieId)
 										{
+											$movie->setValuesWithId($movieId);
+											if (strlen($movie->getPlot()) > 300)
+											{
+												$plot = substr($movie->getPlot(), 0, 297) . ' (...)';
+											}
+											else
+											{
+												$plot = $movie->getPlot();
+											}
 											?>
-									<p>
-										There's no movies in this collection yet.
-									</p>
+											<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
+												<div class="owned">
+													<div class="movie-box" style="margin-bottom: -35px;">
+														<img src="<?php echo $movie->getPosterUrl() ?>" class="thumbnail img-responsive">
+														<h4><?php echo $movie->getTitle() ?></h4>
+													</div>
+													<p>
+														<a href="<?php echo $movie->getImdbLink() ?>" target="_blank"><img src="http://ia.media-imdb.com/images/G/01/imdb/images/plugins/imdb_46x22-2264473254._CB379390954_.png"></a><br>
+														<b>Release</b>: <?php echo $movie->getRelease() ?><br>
+														<b>Runtime</b>: <?php echo $movie->getRuntime() ?><br>
+														<?php echo $plot ?><br>
+													</p>
+												</div>
+											</div>
 											<?php
 										}
+									}
 									?>
 								</div>
+								<div class="clearfix"></div>
 							</div>
-							<?php
-						}
-						?>
+						</div>
+					</div>
+				</div>
+
+				<?php
+				require '../includes/footer.php';
+			}
+			?>

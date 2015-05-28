@@ -24,14 +24,18 @@ if (isset($_SESSION['signed_in']))
 	{
 		if ($answer === true)
 		{
-			
+			?>
+			<script>
+				window.location = '<?php echo $path ?>collection/<?php echo $collection->getId() ?>/<?php echo $collection->getSlug() ?>/';
+			</script>
+			<?php
 		}
 		else
 		{
 			?>
 			<script>
 				alert('<?php echo $answer; ?>');
-				window.location = '<?php echo $path ?>collection/<?php echo $collection->getSlug() ?>/';
+				window.location = '<?php echo $path ?>collection/<?php echo $collection->getId() ?>/<?php echo $collection->getSlug() ?>/';
 			</script>
 			<?php
 		}
