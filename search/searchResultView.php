@@ -36,6 +36,7 @@ $data = json_decode($json, true);
 						$release = $movieData['Released'];
 						$runtime = $movieData['Runtime'];
 						$language = $movieData['Language'];
+						$genre = $movieData['Genre'];
 						if ($imageUrl != "N/A")
 						{
 							?>
@@ -59,6 +60,7 @@ $data = json_decode($json, true);
 					</h4>
 					<input type="hidden" name="title" value="<?php echo $title ?>">
 					<input type="hidden" name="imdbId" value="<?php echo $imdbId ?>">
+					<input type="hidden" name="genre" value="<?php echo $genre ?>">
 					<input type="hidden" name="collectionId" value="<?php echo $collectionId ?>">
 					<input type="submit" name="submit" class="btn btn-success" value="Select">
 				</div>

@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Movie object for the OMI (Online Movie Index) Project.
  * Project: http://www.github.com/DonBananos/omi
@@ -11,6 +12,7 @@
 
 class Movie
 {
+
 	private $id;
 	private $title;
 	private $slug; //The url prepared name for the movie
@@ -21,26 +23,26 @@ class Movie
 	private $posterUrl;
 	private $imdbId;
 	private $imdbLink; //Set by using the imdb_id and a configured url from the config file
-	
+
 	function __construct($id = null)
 	{
-		if(!empty($id))
+		if (!empty($id))
 		{
 			$this->id = $id;
 			$this->setValuesWithId();
 		}
 	}
-	
+
 	public function setValuesWithId($id = null)
 	{
 		/*
 		 * Function that receives the movie ID and sets the entire object from it.
 		 * Used when receiving an array of movie to display, or by other functions.
 		 */
-		if(empty($id))
+		if (empty($id))
 		{
 			$id = $this->id;
-			if($id == null)
+			if ($id == null)
 			{
 				return false;
 			}
@@ -67,10 +69,10 @@ class Movie
 		$this->setImdbLink($imdbId);
 		$this->setPosterUrl($posterUrl);
 		$this->setLanguage($language);
-		
+
 		return true;
 	}
-	
+
 	public function createMovie($title, $plot, $release, $runtime, $imdbId, $posterUrl, $language)
 	{
 		$this->setTitle($title);
@@ -82,16 +84,16 @@ class Movie
 		$this->setImdbLink($imdbId);
 		$this->setPosterUrl($posterUrl);
 		$this->setLanguage($language);
-		
+
 		return $this->saveMovieInDb();
 	}
-	
+
 	private function saveMovieInDb()
 	{
 		global $dbCon;
 		//Create SQL Query
 		$sql = "INSERT INTO movie (movie_title, movie_slug, movie_plot, movie_release, movie_runtime, movie_imdb_id, movie_poster, movie_language) VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
-		
+
 		//Prepare Statement
 		$stmt = $dbCon->prepare($sql);
 		if ($stmt === false)
@@ -107,7 +109,7 @@ class Movie
 
 		//Get ID of user just saved
 		$id = $stmt->insert_id;
-		
+
 		$stmt->close();
 		if ($id > 0)
 		{
@@ -116,7 +118,7 @@ class Movie
 		}
 		return $dbCon->error;
 	}
-	
+
 	private function createSlug($title)
 	{
 		$slug = trim($title);
@@ -127,13 +129,17 @@ class Movie
 
 		return $slug;
 	}
-	
+
 	public function saveMovieToCollection($collectionId)
 	{
+		if ($this->checkIfMovieIsInCollectionAlready($collectionId))
+		{
+			return true;
+		}
 		global $dbCon;
 		//Create SQL Query
 		$sql = "INSERT INTO collection_movie (collection_movie_collection_id, collection_movie_movie_id, collection_movie_added) VALUES (?, ?, NOW())";
-		
+
 		//Prepare Statement
 		$stmt = $dbCon->prepare($sql);
 		if ($stmt === false)
@@ -154,7 +160,98 @@ class Movie
 		}
 		return true;
 	}
-	
+
+	public function removeMovieFromCollection($collectionId)
+	{
+		if ($this->checkIfMovieIsInCollectionAlready($collectionId))
+		{
+			global $dbCon;
+			//Create SQL Query
+			$sql = "DELETE FROM collection_movie WHERE collection_movie_collection_id = ? AND collection_movie_movie_id = ?";
+
+			//Prepare Statement
+			$stmt = $dbCon->prepare($sql);
+			if ($stmt === false)
+			{
+				trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+			}
+
+			//Bind parameters.
+			$stmt->bind_param('ii', $collectionId, $this->id);
+
+			//Execute
+			$stmt->execute();
+
+			$stmt->close();
+			if ($dbCon->error != NULL)
+			{
+				return $dbCon->error;
+			}
+			return true;
+		}
+	}
+
+	public function checkIfMovieIsInCollectionAlready($collectionId)
+	{
+		global $dbCon;
+		$sql = "SELECT collection_movie_movie_id FROM collection_movie WHERE collection_movie_collection_id = ? AND collection_movie_movie_id = ?;";
+		$stmt = $dbCon->prepare($sql); //Prepare Statement
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('ii', $collectionId, $this->getId()); //Bind parameters.
+		$stmt->execute(); //Execute
+		$stmt->bind_result($id); //Get ResultSet
+		$stmt->fetch();
+		$stmt->close();
+		if ($id > 0)
+		{
+			return true;
+		}return false;
+	}
+
+	public function getAllGenresForMovie()
+	{
+		global $dbCon;
+		$genreIds = array();
+		$sql = "SELECT genre_movie_genre_id FROM genre_movie WHERE genre_movie_movie_id = ?";
+		$stmt = $dbCon->prepare($sql); //Prepare Statement
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('i', $this->getId()); //Bind parameters.
+		$stmt->execute(); //Execute
+		$stmt->bind_result($genreId); //Get ResultSet
+		while ($stmt->fetch())
+		{
+			array_push($genreIds, $genreId);
+		}
+		$stmt->close();
+		return $genreIds;
+	}
+
+	public function checkIfMovieAlreadyExists($imdbId)
+	{
+		global $dbCon;
+		$sql = "SELECT movie_id FROM movie WHERE movie_imdb_id = ? LIMIT 1;";
+		$stmt = $dbCon->prepare($sql); //Prepare Statement
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('s', $imdbId); //Bind parameters.
+		$stmt->execute(); //Execute
+		$stmt->bind_result($id); //Get ResultSet
+		$stmt->fetch();
+		$stmt->close();
+		if ($id > 0)
+		{
+			return true;
+		}return false;
+	}
+
 	public function getId()
 	{
 		return $this->id;
@@ -252,8 +349,7 @@ class Movie
 
 	private function setImdbLink($imdbId)
 	{
-		$this->imdbLink = 'http://www.imdb.com/title/'.$imdbId.'/';
+		$this->imdbLink = 'http://www.imdb.com/title/' . $imdbId . '/';
 	}
-
 
 }

@@ -7,6 +7,7 @@ require '../user/user.php';
 require './collection.php';
 require './collectionHandler.php';
 require '../movie/movie.php';
+require '../genre/genre.php';
 
 $title = $_POST['title'];
 $imdbId = $_POST['imdbId'];
@@ -16,6 +17,7 @@ $poster = $_POST['poster'];
 $runtime = $_POST['runtime'];
 $language = $_POST['language'];
 $collectionId = $_GET['cid'];
+$genreCollection = $_POST['genre'];
 
 $collection = new Collection($collectionId);
 
@@ -41,35 +43,47 @@ if (!$proceed)
 	?>
 	<script>
 		alert("You are not allowed to alter this collection!");
-	</script>
-	<?php
-}
-$movie = new Movie();
-$answer = $movie->createMovie($title, $plot, $release, $runtime, $imdbId, $poster, $language);
-if ($answer === true)
-{
-	$answer = $movie->saveMovieToCollection($collection->getId());
-	if ($answer !== true)
-	{
-		?>
-		<script>
-			alert("ERROR: <?php echo $answer ?>");
-		</script>
-		<?php
-		die();
-	}
-	?>
-	<script>
 		window.location = '<?php echo $path ?>collection/<?php echo $collection->getId() ?>/<?php echo $collection->getSlug() ?>/';
 	</script>
 	<?php
+	die();
+}
+$movie = new Movie();
+if (!$movie->checkIfMovieAlreadyExists($imdbId))
+{
+	$answer = $movie->createMovie($title, $plot, $release, $runtime, $imdbId, $poster, $language);
+	if ($answer === true)
+	{
+		$genre = new Genre();
+		$genres = explode(',', $genreCollection);
+		foreach ($genres as $genreName)
+		{
+			$answer = $genre->createGenre(trim($genreName));
+			if ($answer === true)
+			{
+				$answer = $genre->saveGenreToMovie($movie->getId());
+			}
+		}
+	}
 }
 else
 {
 	?>
 	<script>
-		alert("Error: <?php echo $answer ?>");
+		alert("Movie already in Database");
 	</script>
 	<?php
-	die();
 }
+$answer = $movie->saveMovieToCollection($collection->getId());
+if ($answer !== true)
+{
+	?>
+	<script>
+		alert("Error saving the movie <?php echo $movie->getTitle() ?> to the collection <?php echo $collection->getName() ?>: <?php echo $answer ?>");
+	</script>
+	<?php
+}
+?>
+<script>
+	window.location = '<?php echo $path ?>collection/<?php echo $collection->getId() ?>/<?php echo $collection->getSlug() ?>/';
+</script>

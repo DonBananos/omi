@@ -2,7 +2,7 @@
 User story ID: OMI_014
 Author: Heini L. Ovason
 -->
-<form method="post" id="registerForm" role="form" action="/onlineMovieIndex/user/administration/register.php">
+<form method="post" id="registerForm" role="form" action="<?php echo $path ?>user/administration/register.php">
 
     <h2>Register</h2>
     <hr>
@@ -40,11 +40,6 @@ Author: Heini L. Ovason
     <button type="button" id="registerBtn" class="btn btn-primary">Sign up</button>
 
 </form>
-
-<!-- Access the regex standards variables defined in config.php -->
-<?php 
-    require './includes/config/config.php'; 
-?> 
 
 <!-- 
 jQuery (necessary for Bootstrap's JavaScript plugins)
