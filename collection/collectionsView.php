@@ -2,16 +2,15 @@
 Author: Heini L. Ovason, Mike Jense
 -->
 
-<?php
-$config = new Config();
-?>
-
 <div class="container">
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
             <div class="page-header">
                 <h1>Your Collections</h1>
             </div>
+			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+				<?php require 'createCollectionView.php'; ?>
+			</div>
 
 			<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
 				<?php
@@ -22,8 +21,8 @@ $config = new Config();
 				{
 					$collection->setValuesAccordingToId($cid);
 					?>
-					<div class="col-lg-4">
-						<a href="">
+					<div class="col-lg-4" style="height: 200px;">
+						<a href="<?php echo $path ?>collection/<?php echo $collection->getId() ?>/<?php echo $collection->getSlug() ?>/">
 							<h3>
 								<?php echo $collection->getName() ?>
 							</h3>
@@ -33,7 +32,7 @@ $config = new Config();
 							<?php echo $collection->getDescription() ?>
 						</p>
 						<small>
-							Created on: <b><?php echo $config->formatTextDate($collection->getCreatedDatetime()) ?></b>
+							Created on: <b><?php echo formatTextDate($collection->getCreatedDatetime()) ?></b>
 						</small>
 					</div>
 					<div class="clearfix">

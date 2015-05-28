@@ -4,77 +4,103 @@ require './collection.php';
 require '../includes/config/config.php';
 require '../includes/config/database.php';
 
-//Get the values from the form
-$name = $_POST['name'];
-$desc = $_POST['description'];
-$priv = $_POST['privacy-setting'];
+require '../user/user.php';
 
 //Instantiate new Collection object
-$collection = new Collection();
+$collection = new Collection($_GET['id']);
+
+$owner = new User($collection->getUserId());
+
+$signed_in = false;
+$own_collection = false;
+$collection_private = true;
 
 //Check if user is signed in
-if(isset($_SESSION['signed_in']))
+if (isset($_SESSION['signed_in']))
 {
-        //echo 'UserID: '. $_SESSION['user_id'];
-	//Save userId
 	$userId = $_SESSION['user_id'];
-	//Create the collection
-	$answer = $collection->createCollection($name, $desc, $priv, $userId);
-	if($answer)
+	if ($userId > 0)
 	{
-		if($answer === true)
+		$active_user = new User($userId);
+		$signed_in = true;
+		if ($active_user->getId() == $owner->getId())
 		{
-			
+			$own_collection = true;
 		}
-		else
-		{
-			?>
-			<script>
-				alert('<?php echo $answer; ?>');
-			</script>
-			<?php
-		}
-	}
-	else
-	{
-		?>
-		<script>
-			alert('There was an error saving the Collection. Please try again.');
-		</script>
-		<?php
 	}
 }
+if ($collection->getPrivacy() != 1)
+{
+	$collection_private = false;
+}
 ?>
-	<script>
-	window.location = '<?php echo $path ?>';
-	</script>
-
-
-<div class="col-lg-3 col-md-4">
-        <a href="#">
-             <img src="http://ia.media-imdb.com/images/M/MV5BMjAzOTM4MzEwNl5BMl5BanBnXkFtZTgwMzU1OTc1MDE@._V1_SX300.jpg" class="thumbnail img-responsive">
-        </a>
-        </div>
-        <div class="col-lg-3 col-md-4">
-        <a href="#">
-             <img src="http://ia.media-imdb.com/images/M/MV5BMTc1Njk1NTE3NF5BMl5BanBnXkFtZTgwNjAyMzcxMTE@._V1_SX300.jpg" class="thumbnail img-responsive">
-        </a>
-        </div>
-        <div class="col-lg-3 col-md-4">
-        <a href="#">
-             <img src="http://ia.media-imdb.com/images/M/MV5BMjAzOTM4MzEwNl5BMl5BanBnXkFtZTgwMzU1OTc1MDE@._V1_SX300.jpg" class="thumbnail img-responsive">
-        </a>
-        </div>
-        <div class="col-lg-3 col-md-4">
-        <a href="#">
-             <img src="http://ia.media-imdb.com/images/M/MV5BMTc1Njk1NTE3NF5BMl5BanBnXkFtZTgwNjAyMzcxMTE@._V1_SX300.jpg" class="thumbnail img-responsive">
-        </a>
-        </div>
-        <div class="col-lg-3 col-md-4">
-        <a href="#">
-             <img src="http://ia.media-imdb.com/images/M/MV5BMjAzOTM4MzEwNl5BMl5BanBnXkFtZTgwMzU1OTc1MDE@._V1_SX300.jpg" class="thumbnail img-responsive">
-        </a>
-        </div>
-
-
-
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Your Collections | Online movie Index</title>
+		<?php require '../includes/header.php'; ?>
+	</head>
+	<body>
+		<div class="main-container">
+			<?php require '../includes/navbar.php'; ?>
+			<div class="container">
+				<div class="row">
+					<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+						<div class="page-header">
+							<h1><?php echo $collection->getName() ?><br>
+								<small>
+									Created on: <?php echo formatShortDateTime($collection->getCreatedDatetime()) ?> by <?php echo $owner->getUsername() ?>
+								</small>
+							</h1>
+						</div>
+						<?php
+						if ($own_collection)
+						{
+							?>
+							<div class="row">
+								<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+									<?php require '../search/movieSearchView.php'; ?>
+								</div>
+							</div>
+							<?php
+						}
+						if ($collection_private AND ! $own_collection)
+						{
+							?>
+							<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+								<p>This Collection is private, and you are not allowed to see it</p>
+							</div>
+							<?php
+						}
+						elseif (!$collection_private OR $own_collection)
+						{
+							if (!$collection_private)
+							{
+								?>
+								<div class="row">
+									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+										Share on Social Media buttons!
+									</div>
+								</div>
+								<?php
+							}
+							?>
+						<hr>
+							<div class="row">
+								<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+									<?php
+										$movieIds = $collection->getAllMoviesInCollection();
+										if(count($movieIds) < 1)
+										{
+											?>
+									<p>
+										There's no movies in this collection yet.
+									</p>
+											<?php
+										}
+									?>
+								</div>
+							</div>
+							<?php
+						}
+						?>

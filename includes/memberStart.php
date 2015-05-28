@@ -9,9 +9,6 @@ Author: Heini L. Ovason
 
     </div>
     <div class="row"> 
-        <?php require './collection/createCollectionView.php'; ?>
-    </div>
-    <div class="row"> 
         <?php //require './app/index.html'; ?>
         <?php 
 		require './collection/collectionHandler.php';

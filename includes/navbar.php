@@ -18,19 +18,19 @@ if (isset($_SESSION['user_id'])) {
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="#">Online Movie Index</a>
+            <a class="navbar-brand" href="<?php echo $path ?>">Online Movie Index</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
-                <li><a href="/onlineMovieIndex/">Home</a></li>
-                <li><a href="/onlineMovieIndex/">Movies</a></li>
-                <li><a href="/onlineMovieIndex/collection/collectionsView.php">Collections</a></li>
+                <li><a href="<?php echo $path ?>">Home</a></li>
+                <li><a href="<?php echo $path ?>">Movies</a></li>
+                <li><a href="<?php echo $path ?>collection/">Collections</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?php echo $active_user->getUsername(); ?> <span class="caret"></span></a>
+                    <a href="" class="dropdown-toggle" data-toggle="dropdown"><?php echo $active_user->getUsername(); ?> <span class="caret"></span></a>
                     <ul class="dropdown-menu" role="menu" id="navbar-dropdown-menu">
-                        <li><a href="/onlineMovieIndex/user/logout.php">Logout</a></li>
+                        <li><a href="<?php echo $path ?>user/logout.php">Logout</a></li>
                     </ul>
                 </li>
             </ul>

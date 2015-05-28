@@ -3,9 +3,9 @@ Author: R. Mike Jensen, Heini L. Ovason
 -->
 <?php
 session_start();
-require './includes/config/config.php';
-require './includes/config/database.php';
-require './user/user.php';
+require '../includes/config/config.php';
+require '../includes/config/database.php';
+require '../user/user.php';
 $logged_in = false;
 if (isset($_SESSION['signed_in']))
 {
@@ -15,12 +15,18 @@ if (isset($_SESSION['signed_in']))
 		$active_user = new User($_SESSION['user_id']);
 	}
 }
+else
+{
+	?><script>
+	window.location = '<?php echo $path ?>';
+	</script><?php
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<title>Online movie Index</title>
-		<?php require './includes/header.php'; ?>
+		<title>Search | Online movie Index</title>
+		<?php require '../includes/header.php'; ?>
 	</head>
 	<body>
 
@@ -31,15 +37,9 @@ if (isset($_SESSION['signed_in']))
 		-->
 		<div class="main-container">
 			<?php
-			if (isset($_SESSION['signed_in']))
-			{
-				require './includes/navbar.php';
-				require './includes/memberStart.php';
-			}
-			else
-			{
-				require './includes/loginBar.php';
-				require './includes/start.php';
-			}
-			require './includes/footer.php';
+				require '../includes/navbar.php';
+				require './movieSearchView.php';
+			require '../includes/footer.php';
 			?>
+
+

@@ -13,16 +13,16 @@ $priv = $_POST['privacy-setting'];
 $collection = new Collection();
 
 //Check if user is signed in
-if(isset($_SESSION['signed_in']))
+if (isset($_SESSION['signed_in']))
 {
-        //echo 'UserID: '. $_SESSION['user_id'];
+	//echo 'UserID: '. $_SESSION['user_id'];
 	//Save userId
 	$userId = $_SESSION['user_id'];
 	//Create the collection
 	$answer = $collection->createCollection($name, $desc, $priv, $userId);
-	if($answer)
+	if ($answer)
 	{
-		if($answer === true)
+		if ($answer === true)
 		{
 			
 		}
@@ -31,6 +31,7 @@ if(isset($_SESSION['signed_in']))
 			?>
 			<script>
 				alert('<?php echo $answer; ?>');
+				window.location = '<?php echo $path ?>collection/<?php echo $collection->getSlug() ?>/';
 			</script>
 			<?php
 		}
@@ -40,13 +41,9 @@ if(isset($_SESSION['signed_in']))
 		?>
 		<script>
 			alert('There was an error saving the Collection. Please try again.');
+			window.location = '<?php echo $path ?>collection';
 		</script>
 		<?php
 	}
 }
-?>
-	<script>
-	window.location = '<?php echo $path ?>';
-	</script>
-<?php
 die();

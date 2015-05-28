@@ -29,51 +29,38 @@ $regexPassword = "/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[@#$%_-]*.{8,40}$/";
 $regexEmail = "^[a-zA-Z0-9_.+-]+@[a-z0-9A-Z]+\.[a-z0-9A-Z]*\.?[a-zA-Z]{2,}$";
 
 $supportMail = "omiadmin@heibisoft.com";
-/*
- * Date and Time Formats
- */
 
-class Config
+function formatShortDate($date)
 {
+	// 31/01-12
+	return date('d/m-y', strtotime($date));
+}
 
-	public $shortDateFormat = 'd/m-y'; // 31/01-12
-	public $fullDateFormat = 'd/m-Y'; // 31/01-2012
-	public $textDateFormat = 'F jS, Y'; // January 31st 2012
-	public $shortTimeFormat = 'H:i'; // 13:21
-	public $fullTimeFormat = 'H:i:s'; // 13:21:53
+function formatFullDate($date)
+{
+	// 31/01-2012
+	return date('d/m-Y', strtotime($date));
+}
 
-	function __construct()
-	{
-		
-	}
+function formatTextDate($date)
+{
+	// January 31st 2012
+	return date('F jS, Y', strtotime($date));
+}
 
-	function formatShortDate($date)
-	{
-		return date($this->shortDateFormat, strtotime($date));
-	}
+function formatShortTime($date)
+{
+	// 13:21
+	return date('H:i', strtotime($date));
+}
 
-	function formatFullDate($date)
-	{
-		return date($this->fullDateFormat, strtotime($date));
-	}
-	
-	function formatTextDate($date)
-	{
-		return date($this->textDateFormat, strtotime($date));
-	}
+function formatFullTime($date)
+{
+	// 13:21:53
+	return date('H:i:s', strtotime($date));
+}
 
-	function formatShortTime($date)
-	{
-		return date($this->shortTimeFormat, strtotime($date));
-	}
-	
-	function formatFullTime($date)
-	{
-		return date($this->$fullTimeFormat, strtotime($date));
-	}
-	
-	function formatShortDateTime($date)
-	{
-		return $this->formatShortDate($date).' '.$this->formatShortTime($date);
-	}
+function formatShortDateTime($date)
+{
+	return formatShortDate($date) . ' ' . formatShortTime($date);
 }

@@ -1,0 +1,6 @@
+RewriteEngine On
+
+#Redirect for category list
+RewriteCond %{REQUEST_FILENAME} !-d [NC]
+RewriteCond %{REQUEST_FILENAME} !-f [NC]
+RewriteRule ^collection/(\d+)/[a-z-]+/?$ collection/collectionView.php?id=$1 [NC,L]
