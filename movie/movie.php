@@ -248,7 +248,7 @@ class Movie
 		$stmt->close();
 		if ($id > 0)
 		{
-			return true;
+			return $id;
 		}return false;
 	}
 

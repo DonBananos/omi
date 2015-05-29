@@ -126,3 +126,92 @@ body h4
         padding-top: 0px;
     }
 }
+
+.btn
+{
+	margin-left: 3px;
+	margin-right: 3px;
+	border-radius: 0;
+}
+
+.movie-box
+{
+	margin-bottom: 10px;
+	height: 430px;
+}
+
+.movie-box > .thumbnail
+{
+	height: 325px;
+}
+
+.movie-box > image
+{
+	height: 340px;
+	max-width: 95%;
+	margin: 2.5%;
+}
+
+.owned
+{
+	padding: 5px;
+	margin-bottom: 15px;
+}
+
+.image-box
+{
+	position: relative;
+}
+
+.edit-bar
+{
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	
+	background-color: rgba(0, 0, 0, 0.75);
+	height: 75px;
+	width: 100%;
+	
+	padding: 2px
+}
+
+.edit-bar > .fa
+{
+	margin: 5px;
+	margin-left: 35px;
+	margin-right: 35px;
+}
+
+.edit-bar > .fa-remove
+{
+	color: darkred;
+}
+
+.edit-bar > .fa-remove:hover
+{
+	color: red;
+	cursor: pointer;
+}
+
+.edit-bar > .fa-search
+{
+	color: darkblue;
+}
+
+.edit-bar > .fa-search:hover
+{
+	color: royalblue;
+	cursor: pointer;
+}
+
+.edit-bar > .fa-plus
+{
+	color: darkgreen;
+}
+
+.edit-bar > .fa-plus:hover
+{
+	color: green;
+	cursor: pointer;
+}

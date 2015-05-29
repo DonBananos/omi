@@ -75,14 +75,14 @@ if ($collection->getPrivacy() != 1)
 								</div>
 								<?php
 							}
-							elseif (!$collection_private OR $own_collection)
-							{
-								if (!$collection_private)
-								{
-									?>
-									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
-										<div class="pull-right">
-											<?php
+							?>
+							<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+								<div class="pull-right">
+									<?php
+									if (!$collection_private OR $own_collection)
+									{
+										if (!$collection_private)
+										{
 											if (!$own_collection)
 											{
 												?>
@@ -93,11 +93,17 @@ if ($collection->getPrivacy() != 1)
 											<button class="btn btn-facebook"><span class="fa fa-facebook"></span> Share</button>
 											<button class="btn btn-twitter"><span class="fa fa-twitter"></span> Tweet</button>
 											<button class="btn btn-primary"><span class="fa fa-envelope"></span> Share</button>
-										</div>
+											<?php
+										}
+										if ($own_collection)
+										{
+											?>
+											<button class="btn btn-danger"><span class="fa fa-trash"></span> Delete Collection</button>
+											<?php
+										}
+										?>
 									</div>
-									<?php
-								}
-								?>
+								</div>
 							</div>
 							<br>
 							<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -136,8 +142,15 @@ if ($collection->getPrivacy() != 1)
 													<div class="image-box" id="<?php echo $movie->getImdbId() ?>">
 														<img src="<?php echo $movie->getPosterUrl() ?>" class="thumbnail img-responsive">
 														<div class="edit-bar" id="<?php echo $movie->getImdbId(); ?>-edit-bar" style="display: none;">
-															<span class="fa fa-trash fa-4x pull-right"></span>
-															<span class="fa fa-search fa-4x pull-left" data-toggle="modal" data-target="#<?php echo $movie->getImdbId() ?>DetailsModal"></span>
+															<span class="fa fa-remove fa-4x pull-right" data-toggle="modal" data-target="#<?php echo $movie->getImdbId() ?>DeleteModal"></span>
+															<?php
+															if ($own_collection)
+															{
+																?>
+																<span class="fa fa-search fa-4x pull-left" data-toggle="modal" data-target="#<?php echo $movie->getImdbId() ?>DetailsModal"></span>
+																<?php
+															}
+															?>
 														</div>
 													</div>
 													<h4><?php echo $movie->getTitle() ?> (<?php echo substr($movie->getRelease(), 7) ?>)</h4>
@@ -158,7 +171,7 @@ if ($collection->getPrivacy() != 1)
 															<div class="col-lg-8 col-md-8 col-sm-6 col-xs-6">
 																<p>
 																	<a href="<?php echo $movie->getImdbLink() ?>" target="_blank"><img src="http://ia.media-imdb.com/images/G/01/imdb/images/plugins/imdb_46x22-2264473254._CB379390954_.png"></a><br>
-													
+
 																	<b>Release</b>: <?php echo $movie->getRelease() ?><br>
 																	<b>Runtime</b>: <?php echo $movie->getRuntime() ?><br>
 																	<b>Genre</b>:
@@ -192,6 +205,30 @@ if ($collection->getPrivacy() != 1)
 														<div class="clearfix"></div>
 														<div class="modal-footer">
 															<button type="button" class="btn btn-default" data-dismiss="modal" aria-label="Close">Close</button>
+														</div>
+													</div>
+												</div>
+											</div>
+											<!-- Modal -->
+											<div class="modal fade" id="<?php echo $movie->getImdbId() ?>DeleteModal" aria-labelledby="<?php echo $movie->getImdbId() ?>ModalLabel" >
+												<div class="modal-dialog">
+													<div class="modal-content">
+														<div class="modal-header">
+															<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+															<h4 class="modal-title" id="<?php echo $movie->getImdbId() ?>ModalLabel">Remove <?php echo $movie->getTitle() ?>?</h4>
+														</div>
+														<div class="modal-body">
+															<h4>Are you sure you wan't to remove <b><?php echo $movie->getTitle() ?></b> from your collection <b>"<?php echo $collection->getName() ?></b>"</h4>
+														</div>
+														<div class="clearfix"></div>
+														<div class="modal-footer">
+															<form action="removeMovie/" method="post" style="display: inline">
+																<input type="hidden" name="removeMovieId" value="<?php echo $movie->getId() ?>">
+																<input type="hidden" name="collectionId" value="<?php echo $collection->getId() ?>">
+																<input type="hidden" name="ownCollection" value="<?php echo $own_collection ?>">
+																<input type="submit" name="remove" value="Remove" class="btn btn-danger">
+															</form>
+															<button type="button" class="btn btn-default" data-dismiss="modal" aria-label="Close">Cancel</button>
 														</div>
 													</div>
 												</div>

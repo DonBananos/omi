@@ -49,7 +49,8 @@ if (!$proceed)
 	die();
 }
 $movie = new Movie();
-if (!$movie->checkIfMovieAlreadyExists($imdbId))
+$movieExists = $movie->checkIfMovieAlreadyExists($imdbId);
+if ( $movieExists === false)
 {
 	$answer = $movie->createMovie($title, $plot, $release, $runtime, $imdbId, $poster, $language);
 	if ($answer === true)
@@ -68,18 +69,14 @@ if (!$movie->checkIfMovieAlreadyExists($imdbId))
 }
 else
 {
-	?>
-	<script>
-		alert("Movie already in Database");
-	</script>
-	<?php
+	$movie->setValuesWithId($movieExists);
 }
 $answer = $movie->saveMovieToCollection($collection->getId());
 if ($answer !== true)
 {
 	?>
 	<script>
-		alert("Error saving the movie <?php echo $movie->getTitle() ?> to the collection <?php echo $collection->getName() ?>: <?php echo $answer ?>");
+		alert("Error saving the movie <?php echo $movie->getTitle() ?> to the collection <?php echo $collection->getName() ?>");
 	</script>
 	<?php
 }
