@@ -38,11 +38,12 @@
 		</div>
 	</div>
 	<script async>
+		//In order to make the search function work (with adding movies to collections,the $.get path should be changed to: search/searchResultView.php
 				$("#searchForMovieSubmit").click(function() {
 					$('#movieSearchResultAreaWait').show();
 					$('#movieSearchResultAreaHold').hide();
 					var SearchString = $("#movieSearchInput").val();
-					$.get('<?php echo $path ?>search/searchResultView.php', {searchString: SearchString, cid: <?php echo $collection->getId(); ?> }, function (respons) {
+					$.get('<?php echo $path ?>search/internApiSearchResultView.php', {searchString: SearchString, cid: <?php echo $collection->getId(); ?> }, function (respons) {
 						$('#movieSearchResultAreaWait').hide();
 						$('#movieSearchResultArea').html(respons);
 					});
