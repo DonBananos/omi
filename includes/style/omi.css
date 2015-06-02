@@ -119,27 +119,29 @@ body h4
     color: #fff;
 }
 
-@media(max-width:480px)
-{
-
-    #registerForm {
-        padding-top: 0px;
-    }
-}
-
 .btn
 {
-	margin-left: 3px;
-	margin-right: 3px;
+	margin: 3px;
 	border-radius: 0;
 }
 
-.movie-box
+@media (min-width: 481px) 
 {
-	margin-bottom: 10px;
-	height: 430px;
+	.movie-box
+	{
+		margin-bottom: 10px;
+		height: 410px;
+	}
 }
 
+@media (max-width: 480px) 
+{
+	.movie-box-miniature
+	{
+		margin-bottom: 10px;
+		height: 330px;
+	}
+}
 .movie-box > .thumbnail
 {
 	height: 325px;
@@ -147,7 +149,6 @@ body h4
 
 .movie-box > image
 {
-	height: 340px;
 	max-width: 95%;
 	margin: 2.5%;
 }
@@ -163,55 +164,63 @@ body h4
 	position: relative;
 }
 
+.image-box > image .img-responsive
+{
+	max-height: 100%;
+}
+
+.edit-bottom-bar
+{
+	background-color: rgba(0, 0, 0, 0.75);
+	height: 50px;
+
+}
 .edit-bar
 {
 	position: absolute;
-	bottom: 0;
+	top: 0;
 	left: 0;
-	
+
 	background-color: rgba(0, 0, 0, 0.75);
 	height: 75px;
 	width: 100%;
-	
+
 	padding: 2px
 }
 
-.edit-bar > .fa
+.edit-bar > .fa,
+.edit-bottom-bar > .fa
 {
-	margin: 5px;
-	margin-left: 35px;
-	margin-right: 35px;
+	margin: 5%;
 }
 
-.edit-bar > .fa-remove
+.edit-bar > .fa-remove,
+.edit-bottom-bar > .fa-remove
 {
 	color: darkred;
 }
 
-.edit-bar > .fa-remove:hover
+.edit-bar > .fa-remove:hover,
+.edit-bottom-bar > .fa-remove:hover
 {
 	color: red;
 	cursor: pointer;
 }
 
-.edit-bar > .fa-search
+.edit-bar > .fa-search,
+.edit-bottom-bar > .fa-search
 {
 	color: darkblue;
 }
 
-.edit-bar > .fa-search:hover
+.edit-bar > .fa-search:hover,
+.edit-bottom-bar > .fa-search:hover
 {
 	color: royalblue;
 	cursor: pointer;
 }
 
-.edit-bar > .fa-plus
+.movie-title
 {
-	color: darkgreen;
-}
-
-.edit-bar > .fa-plus:hover
-{
-	color: green;
-	cursor: pointer;
+	//margin-top: 25%
 }

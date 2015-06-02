@@ -19,7 +19,7 @@ $data = json_decode($json, true);
 		{
 			?>
 			<form method="post" role="form" action="./addMovie/">
-				<div class="col-lg-6 movie-box">
+				<div class="col-lg-6 movie-box"style="margin-bottom: 40px;">
 					<?php
 					$title = $movie['Title'];
 					$year = $movie['Year'];

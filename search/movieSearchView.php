@@ -5,7 +5,7 @@
 	//include ($searchControllerPath);
 	?>
 	<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addMovieModal">
-		Add Movie
+		<span class="fa fa-plus"></span><span class="hidden-xs"> Add Movie</span>
 	</button>
 
 	<!-- Modal -->
@@ -17,10 +17,10 @@
 					<h4 class="modal-title" id="myModalLabel">Add Movie</h4>
 				</div>
 				<div class="modal-body">
-					<div class="col-lg-9 col-md-9 col-sm-9 col-xs-9">
-						<input type="text" class="form-control" id="movieSearchInput">
+					<div class="col-lg-9 col-md-9 col-sm-9 col-xs-7">
+						<input type="text" class="form-control" id="movieSearchInput" placeholder="Movie Title">
 					</div>
-					<div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+					<div class="col-lg-3 col-md-3 col-sm-3 col-xs-5">
 						<button id="searchForMovieSubmit" class="btn btn-primary">Search <span class="fa fa-search"></span></button>
 					</div>
 					<div class="clearfix"></div>

@@ -62,7 +62,7 @@ if ($collection->getPrivacy() != 1)
 							if ($own_collection)
 							{
 								?>
-								<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+								<div class="pull-left">
 									<?php require '../search/movieSearchView.php'; ?>
 								</div>
 								<?php
@@ -76,7 +76,6 @@ if ($collection->getPrivacy() != 1)
 								<?php
 							}
 							?>
-							<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
 								<div class="pull-right">
 									<?php
 									if (!$collection_private OR $own_collection)
@@ -86,25 +85,24 @@ if ($collection->getPrivacy() != 1)
 											if (!$own_collection)
 											{
 												?>
-												<button class="btn btn-warning"><span class="fa fa-heart"></span> Favorite</button>
+												<button class="btn btn-warning"><span class="fa fa-heart"></span><span class="hidden-xs"> Favorite</span></button>
 												<?php
 											}
 											?>
-											<button class="btn btn-facebook"><span class="fa fa-facebook"></span> Share</button>
-											<button class="btn btn-twitter"><span class="fa fa-twitter"></span> Tweet</button>
-											<button class="btn btn-primary"><span class="fa fa-envelope"></span> Share</button>
+											<button class="btn btn-facebook"><span class="fa fa-facebook"></span><span class="hidden-xs"> Share</span></button>
+											<button class="btn btn-twitter"><span class="fa fa-twitter"></span><span class="hidden-xs"> Tweet</span></button>
+											<button class="btn btn-primary"><span class="fa fa-envelope"></span><span class="hidden-xs"> Share</span></button>
 											<?php
 										}
 										if ($own_collection)
 										{
 											?>
-											<button class="btn btn-danger"><span class="fa fa-trash"></span> Delete Collection</button>
+											<button class="btn btn-danger"><span class="fa fa-trash-o"></span><span class="hidden-xs"> Delete Collection</span></button>
 											<?php
 										}
 										?>
 									</div>
 								</div>
-							</div>
 							<br>
 							<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 								<p><?php echo $collection->getDescription() ?></p>
@@ -136,12 +134,12 @@ if ($collection->getPrivacy() != 1)
 											$plot = $movie->getPlot();
 										}
 										?>
-										<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
+										<div class="col-lg-3 col-md-3 col-sm-4 col-xs-6">
 											<div class="owned">
-												<div class="movie-box">
+												<div class="movie-box movie-box-miniature">
 													<div class="image-box" id="<?php echo $movie->getImdbId() ?>">
-														<img src="<?php echo $movie->getPosterUrl() ?>" class="thumbnail img-responsive">
-														<div class="edit-bar" id="<?php echo $movie->getImdbId(); ?>-edit-bar" style="display: none;">
+														<img src="<?php echo $movie->getPosterUrl() ?>" class="img-responsive">
+														<div class="edit-bar hidden-xs hidden-sm" id="<?php echo $movie->getImdbId(); ?>-edit-bar" style="display: none;">
 															<span class="fa fa-remove fa-4x pull-right" data-toggle="modal" data-target="#<?php echo $movie->getImdbId() ?>DeleteModal"></span>
 															<?php
 															if ($own_collection)
@@ -152,10 +150,17 @@ if ($collection->getPrivacy() != 1)
 															}
 															?>
 														</div>
+														<div class="edit-bottom-bar visible-xs visible-sm">
+															<span class="fa fa-remove fa-2x pull-right" data-toggle="modal" data-target="#<?php echo $movie->getImdbId() ?>DeleteModal"></span>
+															<span class="fa fa-search fa-2x pull-left" data-toggle="modal" data-target="#<?php echo $movie->getImdbId() ?>DetailsModal"></span>
+														</div>
+														<div class="clearfix"></div>
 													</div>
-													<h4><?php echo $movie->getTitle() ?> (<?php echo substr($movie->getRelease(), 7) ?>)</h4>
+													<div class="clearfix"></div>
+													<h4 class="movie-title"><?php echo $movie->getTitle() ?> (<?php echo substr($movie->getRelease(), 7) ?>)</h4>
 												</div>
 											</div>
+											<div class="clearfix"></div>
 											<!-- Modal -->
 											<div class="modal fade" id="<?php echo $movie->getImdbId() ?>DetailsModal" aria-labelledby="<?php echo $movie->getImdbId() ?>ModalLabel" >
 												<div class="modal-dialog">
