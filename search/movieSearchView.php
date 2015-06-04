@@ -25,7 +25,7 @@
 					</div>
 					<div class="clearfix"></div>
 					<div class="col-lg-12" id="movieSearchResultArea"style="padding: 20px;">
-						<p id="movieSearchResultAreaHold">Please search for a movie</p>
+						<p class="movieSearchResultAreaHold">Please search for a movie</p>
 						<p id="movieSearchResultAreaWait" style="display: none"><span class="fa fa-spinner fa-spin"></span> Loading results...</p>
 						<div class="clearfix"></div>
 					</div>
@@ -40,8 +40,8 @@
 	<script async>
 		//In order to make the search function work (with adding movies to collections,the $.get path should be changed to: search/searchResultView.php
 				$("#searchForMovieSubmit").click(function() {
+					$('.movieSearchResultAreaHold').hide();
 					$('#movieSearchResultAreaWait').show();
-					$('#movieSearchResultAreaHold').hide();
 					var SearchString = $("#movieSearchInput").val();
 					$.get('<?php echo $path ?>search/internApiSearchResultView.php', {searchString: SearchString, cid: <?php echo $collection->getId(); ?> }, function (respons) {
 						$('#movieSearchResultAreaWait').hide();

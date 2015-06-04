@@ -2,13 +2,21 @@
 $searchString = $_GET['searchString'];
 //$collectionId = $_GET['cid'];
 
+/*
+ * Check if the cache folder exists in the imdbphp api.
+ * if it doesn't - then create it!
+ */
+if (!file_exists('../includes/api/imdbphp/cache')) {
+    mkdir('../includes/api/imdbphp/cache', 0777, true);
+}
+
 require '../includes/api/imdbphp/imdb.class.php';
 require '../includes/api/imdbphp/imdbsearch.class.php';
 $search = new imdbsearch();
-$results = $search->search($searchString, [imdbsearch::MOVIE])
+$results = $search->search($searchString, [imdbsearch::MOVIE], 10);
 
 ?>
-<div style="height: 400px; overflow: auto" id="movieSearchResultAreaHold">
+<div style="max-height: 68vh; overflow: auto" class="movieSearchResultAreaHold">
 	<?php
 	foreach ($results as $movie)
 	{
@@ -21,8 +29,13 @@ $results = $search->search($searchString, [imdbsearch::MOVIE])
 						<img src="http://ia.media-imdb.com/images/G/01/imdb/images/plugins/imdb_46x22-2264473254._CB379390954_.png">
 					</a>
 				</h4>
+				<button class="btn btn-success">Add Movie</button>
 			</div>
 		<?php
+	}
+	if(count($results) == 0)
+	{
+		echo '<p>Unfortunately, your search did not give a result. Please try again.</p>';
 	}
 	?>
 </div>
