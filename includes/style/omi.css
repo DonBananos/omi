@@ -224,3 +224,30 @@ body h4
 {
 	//margin-top: 25%
 }
+
+.modal.modal-wide .modal-dialog 
+{
+	width: 70%;
+}
+
+.movie-title-search-link
+{
+	cursor: pointer;
+}
+
+.modal-body
+{
+	height: 80vh;
+}
+
+.search-modal-box-list
+{
+	border-right: solid #fff 1px;
+	overflow-y: auto;
+	height: 65vh
+}
+
+.label-title
+{
+	color: lightgrey;
+}

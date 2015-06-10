@@ -11,8 +11,6 @@ $s = $_GET['s'];
 $query = preg_replace('/\+/', ' ', $s);
 $searchString = '%'.$query.'%';
 
-echo $searchString.'<br>';
-
 $movie = array();
 $result = array();
 
@@ -40,5 +38,4 @@ $stmt->close();
 $searchResult = array();
 $searchResult['Search'] = $result;
 
-echo json_encode($searchResult);
-return json_encode($searchResult);
+exit(json_encode($searchResult));
