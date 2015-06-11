@@ -235,19 +235,45 @@ body h4
 	cursor: pointer;
 }
 
-.modal-body
+.modal-search
 {
 	height: 80vh;
 }
 
 .search-modal-box-list
 {
-	border-right: solid #fff 1px;
 	overflow-y: auto;
 	height: 65vh
 }
 
 .label-title
 {
-	color: lightgrey;
+	color: #99ccff;
+}
+
+.movie-search-poster
+{
+	max-height: 30vh;
+}
+
+#movieSelectedArea
+{
+	border-left: solid #fff 1px;
+	height: 65vh
+}
+
+.cast-list-entry
+{
+	margin: 5px;
+}
+
+.cast-role
+{
+	padding-top: 10px;
+	padding-bottom: 13px;
+}
+
+.cast-thumb
+{
+	border-radius: 25px;
 }

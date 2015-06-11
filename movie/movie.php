@@ -15,12 +15,14 @@ class Movie
 
 	private $id;
 	private $title;
+	private $origTitle; //The original title
 	private $slug; //The url prepared name for the movie
-	private $runtime; //In minutes, as received from OMDb API
-	private $release; //Date
-	private $language; //Array of languages
 	private $plot;
+	private $runtime; //In minutes, as received from OMDb API
 	private $posterUrl;
+	private $posterUrlThumb;
+	private $language; //Array of languages
+	private $year;
 	private $imdbId;
 	private $imdbLink; //Set by using the imdb_id and a configured url from the config file
 
@@ -29,7 +31,7 @@ class Movie
 		if (!empty($id))
 		{
 			$this->id = $id;
-			$this->setValuesWithId();
+			$this->setValuesWithId($id);
 		}
 	}
 
@@ -48,7 +50,7 @@ class Movie
 			}
 		}
 		global $dbCon;
-		$sql = "SELECT movie_title, movie_slug, movie_plot, movie_release, movie_runtime, movie_imdb_id, movie_poster, movie_language FROM movie WHERE movie_id = ?";
+		$sql = "SELECT movie_title, movie_orig_title, movie_slug, movie_plot, movie_runtime, movie_imdb_id, movie_poster, movie_poster_thumb, movie_language, movie_year FROM movie WHERE movie_id = ?";
 		$stmt = $dbCon->prepare($sql); //Prepare Statement
 		if ($stmt === false)
 		{
@@ -56,34 +58,38 @@ class Movie
 		}
 		$stmt->bind_param('i', $id); //Bind parameters.
 		$stmt->execute(); //Execute
-		$stmt->bind_result($title, $slug, $plot, $release, $runtime, $imdbId, $posterUrl, $language); //Get ResultSet
+		$stmt->bind_result($title, $origTitle, $slug, $plot, $runtime, $imdbId, $posterUrl, $posterUrlThumb, $language, $year); //Get ResultSet
 		$stmt->fetch();
 		$stmt->close();
 		$this->setId($id);
 		$this->setTitle($title);
+		$this->setOrigTitle($origTitle);
 		$this->setSlug($slug);
 		$this->setPlot($plot);
-		$this->setRelease($release);
 		$this->setRuntime($runtime);
 		$this->setImdbId($imdbId);
-		$this->setImdbLink($imdbId);
 		$this->setPosterUrl($posterUrl);
+		$this->setPosterUrlThumb($posterUrlThumb);
 		$this->setLanguage($language);
+		$this->setImdbLink($imdbId);
+		$this->setYear($year);
 
 		return true;
 	}
 
-	public function createMovie($title, $plot, $release, $runtime, $imdbId, $posterUrl, $language)
+	public function createMovie($title, $origTitle, $plot, $runtime, $imdbId, $posterUrl, $posterUrlThumb, $language, $year)
 	{
 		$this->setTitle($title);
+		$this->setOrigTitle($origTitle);
 		$this->setSlug($this->createSlug($this->title));
 		$this->setPlot($plot);
 		$this->setRuntime($runtime);
-		$this->setRelease($release);
 		$this->setImdbId($imdbId);
 		$this->setImdbLink($imdbId);
 		$this->setPosterUrl($posterUrl);
+		$this->setPosterUrlThumb($posterUrlThumb);
 		$this->setLanguage($language);
+		$this->setYear($year);
 
 		return $this->saveMovieInDb();
 	}
@@ -92,7 +98,7 @@ class Movie
 	{
 		global $dbCon;
 		//Create SQL Query
-		$sql = "INSERT INTO movie (movie_title, movie_slug, movie_plot, movie_release, movie_runtime, movie_imdb_id, movie_poster, movie_language) VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
+		$sql = "INSERT INTO movie (movie_title, movie_orig_title, movie_slug, movie_plot, movie_runtime, movie_imdb_id, movie_poster, movie_poster_thumb, movie_language, movie_year) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 
 		//Prepare Statement
 		$stmt = $dbCon->prepare($sql);
@@ -102,7 +108,7 @@ class Movie
 		}
 
 		//Bind parameters.
-		$stmt->bind_param('ssssssss', $this->title, $this->slug, $this->plot, $this->release, $this->runtime, $this->imdbId, $this->posterUrl, $this->language);
+		$stmt->bind_param('ssssisssss', $this->title, $this->origTitle, $this->slug, $this->plot, $this->runtime, $this->imdbId, $this->posterUrl, $this->posterUrlThumb, $this->language, $this->year);
 
 		//Execute
 		$stmt->execute();
@@ -190,6 +196,48 @@ class Movie
 			return true;
 		}
 	}
+	
+	public function getFullCast()
+	{
+		global $dbCon;
+		$castList = array();
+		$sql = "SELECT person_movie_person_id, person_movie_role FROM person_movie WHERE person_movie_movie_id = ? AND person_movie_team = 'Cast';";
+		$stmt = $dbCon->prepare($sql); //Prepare Statement
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('i', $this->getId()); //Bind parameters.
+		$stmt->execute(); //Execute
+		$stmt->bind_result($person_id, $role); //Get ResultSet
+		while ($stmt->fetch())
+		{
+			$castList[$person_id] = $role;
+		}
+		$stmt->close();
+		return $castList;
+	}
+	
+	public function getDirectors()
+	{
+		global $dbCon;
+		$directorList = array();
+		$sql = "SELECT person_movie_person_id FROM person_movie WHERE person_movie_movie_id = ? AND person_movie_role = 'Director';";
+		$stmt = $dbCon->prepare($sql); //Prepare Statement
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('i', $this->getId()); //Bind parameters.
+		$stmt->execute(); //Execute
+		$stmt->bind_result($person_id); //Get ResultSet
+		while ($stmt->fetch())
+		{
+			array_push($directorList, $person_id);
+		}
+		$stmt->close();
+		return $directorList;
+	}
 
 	public function checkIfMovieIsInCollectionAlready($collectionId)
 	{
@@ -262,24 +310,14 @@ class Movie
 		return $this->title;
 	}
 
+	public function getOrigTitle()
+	{
+		return $this->origTitle;
+	}
+
 	public function getSlug()
 	{
 		return $this->slug;
-	}
-
-	public function getRuntime()
-	{
-		return $this->runtime;
-	}
-
-	public function getRelease()
-	{
-		return $this->release;
-	}
-
-	public function getLanguage()
-	{
-		return $this->language;
 	}
 
 	public function getPlot()
@@ -287,66 +325,96 @@ class Movie
 		return $this->plot;
 	}
 
+	public function getRuntime()
+	{
+		return $this->runtime;
+	}
+
 	public function getPosterUrl()
 	{
 		return $this->posterUrl;
+	}
+
+	public function getPosterUrlThumb()
+	{
+		return $this->posterUrlThumb;
+	}
+
+	public function getLanguage()
+	{
+		return $this->language;
+	}
+
+	public function getYear()
+	{
+		return $this->year;
 	}
 
 	public function getImdbId()
 	{
 		return $this->imdbId;
 	}
-
+	
 	public function getImdbLink()
 	{
 		return $this->imdbLink;
 	}
 
-	private function setId($id)
+	public function setId($id)
 	{
 		$this->id = $id;
 	}
 
-	private function setTitle($title)
+	public function setTitle($title)
 	{
 		$this->title = $title;
 	}
 
-	private function setSlug($slug)
+	public function setOrigTitle($origTitle)
+	{
+		$this->origTitle = $origTitle;
+	}
+
+	public function setSlug($slug)
 	{
 		$this->slug = $slug;
 	}
 
-	private function setRuntime($runtime)
-	{
-		$this->runtime = $runtime;
-	}
-
-	private function setRelease($release)
-	{
-		$this->release = $release;
-	}
-
-	private function setLanguage($language)
-	{
-		$this->language = $language;
-	}
-
-	private function setPlot($plot)
+	public function setPlot($plot)
 	{
 		$this->plot = $plot;
 	}
 
-	private function setPosterUrl($posterUrl)
+	public function setRuntime($runtime)
+	{
+		$this->runtime = $runtime;
+	}
+
+	public function setPosterUrl($posterUrl)
 	{
 		$this->posterUrl = $posterUrl;
 	}
 
-	private function setImdbId($imdbId)
+	public function setPosterUrlThumb($posterUrlThumb)
+	{
+		$this->posterUrlThumb = $posterUrlThumb;
+	}
+
+	public function setLanguage($language)
+	{
+		$this->language = $language;
+	}
+
+	public function setYear($year)
+	{
+		$this->year = $year;
+	}
+
+	public function setImdbId($imdbId)
 	{
 		$this->imdbId = $imdbId;
 	}
-
+	
 	private function setImdbLink($imdbId)
 	{
 		$this->imdbLink = 'http://www.imdb.com/title/' . $imdbId . '/';

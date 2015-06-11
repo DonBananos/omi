@@ -23,7 +23,7 @@ if (isset($_SESSION['user_id'])) {
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
                 <li><a href="<?php echo $path ?>">Home</a></li>
-                <li><a href="<?php echo $path ?>">Movies</a></li>
+                <li><a href="<?php echo $path ?>movie/">Movies</a></li>
                 <li><a href="<?php echo $path ?>collection/">Collections</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">

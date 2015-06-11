@@ -7,6 +7,7 @@
 require '../includes/config/config.php';
 
 $searchString = $_GET['s'];
+$cid = $_GET['cid'];
 
 $title = preg_replace("/ /", '+', $searchString);
 
@@ -19,11 +20,16 @@ $json = file_get_contents($searchUrl);
 //JSON decode of answer
 $data = json_decode($json, true);
 ?>
-<small id="localSearchIntro">Local results:</small><br>
 <div id="SearchResults">
 	<?php
 	foreach ($data as $result)
 	{
+		if (count($result) > 0)
+		{
+			?>
+			<small id="localSearchIntro">Local results:</small><br>
+			<?php
+		}
 		foreach ($result as $movie)
 		{
 			?>
@@ -51,13 +57,14 @@ $data = json_decode($json, true);
 	?>
 </div>
 <div class="clearfix"></div>
-<script async>
-	$(document).ready(function () {
-		$(".movie-title").click(function () {
-			var selection = $(this).attr('id');
-			$.get('<?php echo $path ?>search/movieSelectView.php', {i: selection}, function (respons) {
-				$('#movieListingArea1').html(respons);
-			});
+<script>
+	$(".movie-title").on("click", function () {
+		$('#movieSelectedArea').hide();
+		$('#MovieWaiting').show();
+		var selection = $(this).attr('id');
+		$.get('<?php echo $path ?>search/movieSelectView.php', {i: selection, cid: <?php echo $cid ?>}, function (respons) {
+			$('#MovieWaiting').hide();
+			$('#movieListingArea').html(respons);
 		});
 	});
 </script>

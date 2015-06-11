@@ -85,19 +85,19 @@ if ($collection->getPrivacy() != 1)
 											if (!$own_collection)
 											{
 												?>
-												<button class="btn btn-warning"><span class="fa fa-heart"></span><span class="hidden-xs"> Favorite</span></button>
+												<button class="btn btn-warning disabled"><span class="fa fa-heart"></span><span class="hidden-xs"> Favorite</span></button>
 												<?php
 											}
 											?>
-											<button class="btn btn-facebook"><span class="fa fa-facebook"></span><span class="hidden-xs"> Share</span></button>
-											<button class="btn btn-twitter"><span class="fa fa-twitter"></span><span class="hidden-xs"> Tweet</span></button>
-											<button class="btn btn-primary"><span class="fa fa-envelope"></span><span class="hidden-xs"> Share</span></button>
+											<button class="btn btn-facebook disabled"><span class="fa fa-facebook"></span><span class="hidden-xs"> Share</span></button>
+											<button class="btn btn-twitter disabled"><span class="fa fa-twitter"></span><span class="hidden-xs"> Tweet</span></button>
+											<button class="btn btn-primary disabled"><span class="fa fa-envelope"></span><span class="hidden-xs"> Share</span></button>
 											<?php
 										}
 										if ($own_collection)
 										{
 											?>
-											<button class="btn btn-danger"><span class="fa fa-trash-o"></span><span class="hidden-xs"> Delete Collection</span></button>
+											<button class="btn btn-danger disabled"><span class="fa fa-trash-o"></span><span class="hidden-xs"> Delete Collection</span></button>
 											<?php
 										}
 										?>
@@ -157,7 +157,7 @@ if ($collection->getPrivacy() != 1)
 														<div class="clearfix"></div>
 													</div>
 													<div class="clearfix"></div>
-													<h4 class="movie-title"><?php echo $movie->getTitle() ?> (<?php echo substr($movie->getRelease(), 7) ?>)</h4>
+													<h4 class="movie-title"><?php echo $movie->getTitle() ?> (<?php echo $movie->getYear() ?>)</h4>
 												</div>
 											</div>
 											<div class="clearfix"></div>
@@ -177,7 +177,7 @@ if ($collection->getPrivacy() != 1)
 																<p>
 																	<a href="<?php echo $movie->getImdbLink() ?>" target="_blank"><img src="http://ia.media-imdb.com/images/G/01/imdb/images/plugins/imdb_46x22-2264473254._CB379390954_.png"></a><br>
 
-																	<b>Release</b>: <?php echo $movie->getRelease() ?><br>
+																	<b>Release</b>: <?php echo $movie->getYear() ?><br>
 																	<b>Runtime</b>: <?php echo $movie->getRuntime() ?><br>
 																	<b>Genre</b>:
 																	<?php
@@ -209,6 +209,7 @@ if ($collection->getPrivacy() != 1)
 														</div>
 														<div class="clearfix"></div>
 														<div class="modal-footer">
+															<a href="<?php echo $path ?>movie/<?php echo $movie->getId() ?>/<?php echo $movie->getSlug() ?>/" class="btn btn-primary">Full Details</a>
 															<button type="button" class="btn btn-default" data-dismiss="modal" aria-label="Close">Close</button>
 														</div>
 													</div>

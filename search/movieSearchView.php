@@ -12,7 +12,7 @@
 					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 					<h4 class="modal-title" id="myModalLabel">Add Movie</h4>
 				</div>
-				<div class="modal-body">
+				<div class="modal-body modal-search">
 					<div class="col-lg-11 col-md-10 col-sm-9 col-xs-7">
 						<input type="text" class="form-control" id="movieSearchInput" placeholder="Movie Title">
 					</div>
@@ -28,8 +28,8 @@
 						?>
 					</div>
 					<div class="col-lg-7 col-md-7 col-sm-12 col-xs-12" id="movieListingArea" class="search-modal-box">
-						<div id="movieListingArea1">
-
+						<div id="MovieWaiting" style="display: none">
+							<p><span class="fa fa-spinner fa-pulse fa-4x"></span></p>
 						</div>
 					</div>
 				</div>
