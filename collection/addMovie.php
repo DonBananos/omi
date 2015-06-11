@@ -17,7 +17,7 @@ $cid = $_POST['cid'];
 $imdbNumberId = $_POST['imdbId'];
 $imdbId = 'tt' . $imdbNumberId;
 
-set_time_limit(180);
+set_time_limit(300);
 
 $collection = new Collection($cid);
 

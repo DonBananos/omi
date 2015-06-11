@@ -69,7 +69,6 @@ class Person
 		$stmt->close();
 		if ($id > 0)
 		{
-			echo 'person was already in db with id: '.$id;
 			return $id;
 		}
 		return false;
@@ -155,6 +154,31 @@ class Person
 		$slug = preg_replace("/[\/_|+ -]+/", '-', $slug);
 
 		return $slug;
+	}
+	
+	public function getAllMovies()
+	{
+		$movieIds = array();
+		$theMovie = array();
+		global $dbCon;
+		$sql = "SELECT person_movie_id, person_movie_movie_id, person_movie_role FROM person_movie WHERE person_movie_person_id = ?;";
+		$stmt = $dbCon->prepare($sql); //Prepare Statement
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('i', $this->id);
+		$stmt->execute(); //Execute
+		$stmt->bind_result($id, $movieId, $role); //Get ResultSet
+		while ($stmt->fetch())
+		{
+			$theMovie['id'] = $id;
+			$theMovie['movie_id'] = $movieId;
+			$theMovie['role'] = $role;
+			array_push($movieIds, $theMovie);
+		}
+		$stmt->close();
+		return $movieIds;
 	}
 	
 	public function getId()

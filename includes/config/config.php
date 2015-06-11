@@ -30,6 +30,8 @@ $regexEmail = "^[a-zA-Z0-9_.+-]+@[a-z0-9A-Z]+\.[a-z0-9A-Z]*\.?[a-zA-Z]{2,}$";
 
 $supportMail = "omiadmin@heibisoft.com";
 
+$qualities = array("Not Set" => "Unknown", "Scr" => "Worst", "240p" => "Very Bad", "360p" => "Bad", "480p" => "Not Good", "Web" => "Web Rip", "DVD" => "DVD Disc", "BluRay" => "BluRay Disc", "720p" => "HD Ready", "1080p" => "Full HD", "3D" => "Overrated", "4K" => "Ultra HD");
+
 function formatShortDate($date)
 {
 	// 31/01-12

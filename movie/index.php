@@ -53,14 +53,16 @@ require './movieHandler.php';
 								?>
 								<div class="col-lg-3 col-md-3 col-sm-4 col-xs-6">
 									<div class="owned">
-										<div class="movie-box movie-box-miniature">
-											<div class="image-box" id="<?php echo $movie->getImdbId() ?>">
-												<img src="<?php echo $movie->getPosterUrl() ?>" class="img-responsive thumbnail">
+										<a href="<?php echo $path ?>movie/<?php echo $movie->getId() ?>/<?php echo $movie->getSlug() ?>/">
+											<div class="movie-box movie-box-miniature">
+												<div class="image-box" id="<?php echo $movie->getImdbId() ?>">
+													<img src="<?php echo $movie->getPosterUrl() ?>" class="img-responsive thumbnail">
+													<div class="clearfix"></div>
+												</div>
 												<div class="clearfix"></div>
+												<h4 class="movie-title"><?php echo $movie->getTitle() ?> (<?php echo $movie->getYear() ?>)</h4>
 											</div>
-											<div class="clearfix"></div>
-											<a href="<?php echo $path ?>movie/<?php echo $movie->getId() ?>/<?php echo $movie->getSlug() ?>/"><h4 class="movie-title"><?php echo $movie->getTitle() ?> (<?php echo $movie->getYear() ?>)</h4></a>
-										</div>
+										</a>
 									</div>
 									<div class="clearfix"></div>
 								</div>

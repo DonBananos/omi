@@ -279,6 +279,115 @@ class Movie
 		$stmt->close();
 		return $genreIds;
 	}
+	
+	public function getAllCollectionIdsForUserInWhichTheMovieIs($user_id)
+	{
+		global $dbCon;
+		$collectionIds = array();
+		$sql = "SELECT collection_movie_collection_id, collection_movie_quality FROM collection_movie INNER JOIN collection ON collection_movie_collection_id = collection_id WHERE collection_user_id = ? AND collection_movie_movie_id = ?";
+		$stmt = $dbCon->prepare($sql); //Prepare Statement
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('ii', $user_id, $this->id); //Bind parameters.
+		$stmt->execute(); //Execute
+		$stmt->bind_result($collectionId, $quality); //Get ResultSet
+		while ($stmt->fetch())
+		{
+			$collectionIds[$collectionId] = $quality;
+		}
+		$stmt->close();
+		return $collectionIds;
+	}
+	
+	public function getAllCollectionIdsForUserInWhichTheMovieIsNot($user_id)
+	{
+		global $dbCon;
+		$collectionIds = array();
+		$sql = "SELECT collection_id FROM collection WHERE collection_user_id = ? AND collection_id NOT IN (SELECT collection_movie_collection_id FROM collection_movie WHERE collection_movie_movie_id = ?)";
+		$stmt = $dbCon->prepare($sql); //Prepare Statement
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('ii', $user_id, $this->id); //Bind parameters.
+		$stmt->execute(); //Execute
+		$stmt->bind_result($collectionId); //Get ResultSet
+		while ($stmt->fetch())
+		{
+			array_push($collectionIds, $collectionId);
+		}
+		$stmt->close();
+		return $collectionIds;
+	}
+	
+	public function getMovieInCollectionQuality($collection)
+	{
+		global $dbCon;
+		$sql = "SELECT collection_movie_quality FROM collection_movie WHERE collection_movie_collection_id = ? AND collection_movie_movie_id = ?";
+		$stmt = $dbCon->prepare($sql); //Prepare Statement
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('ii', $collection, $this->id); //Bind parameters.
+		$stmt->execute(); //Execute
+		$stmt->bind_result($quality); //Get ResultSet
+		$stmt->fetch();
+		$stmt->close();
+		return $quality;
+	}
+	
+	public function updateQualityInCollection($quality, $collectionId)
+	{
+		global $dbCon;
+		$collectionIds = array();
+		$sql = "UPDATE collection_movie SET collection_movie_quality = ? WHERE collection_movie_collection_id = ? AND collection_movie_movie_id = ?";
+		$stmt = $dbCon->prepare($sql); //Prepare Statement
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('sii', $quality, $collectionId, $this->id); //Bind parameters.
+		$stmt->execute(); //Execute
+		$stmt->close();
+	}
+	
+	public function getAllSubsForMovieInCollection($collectionId)
+	{
+		global $dbCon;
+		$subs = array();
+		$sql = "SELECT subtitles_language_code_2 FROM collection_movie_sub INNER JOIN subtitles_language ON collection_movie_subtitle_id = subtitles_language_id WHERE collection_movie_collection_id = ? AND collection_movie_movie_id = ?";
+		$stmt = $dbCon->prepare($sql); //Prepare Statement
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('ii', $collectionId, $this->id); //Bind parameters.
+		$stmt->execute(); //Execute
+		$stmt->bind_result($subCode); //Get ResultSet
+		while ($stmt->fetch())
+		{
+			array_push($subs, $subCode);
+		}
+		$stmt->close();
+		return $subs;
+	}
+	
+	public function saveSubtitleForMovieInCollection($subtitleId, $collectionId)
+	{
+		global $dbCon;
+		$sql = "INSERT INTO collection_movie_sub (collection_movie_collection_id, collection_movie_movie_id, collection_movie_subtitle_id) VALUES (?, ?, ?)";
+		$stmt = $dbCon->prepare($sql); //Prepare Statement
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('iii', $collectionId, $this->id, $subtitleId); //Bind parameters.
+		$stmt->execute(); //Execute
+		$stmt->close();
+	}
 
 	public function checkIfMovieAlreadyExists($imdbId)
 	{

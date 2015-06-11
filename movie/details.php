@@ -10,22 +10,45 @@ require './movie.php';
 require '../user/user.php';
 require '../person/person.php';
 require '../genre/genre.php';
+require '../collection/collection.php';
+require './movieHandler.php';
 
 $movie = new Movie($movie_id);
 $imdbId = $movie->getImdbId();
+
+$mh = new MovieHandler();
 
 $json = file_get_contents("http://www.omdbapi.com/?i=$imdbId&plot=full&r=json");
 
 //JSON decode of answer
 $data = json_decode($json, true);
 
-if($movie->getOrigTitle() == null)
+if ($movie->getOrigTitle() == null)
 {
 	$origTitle = $movie->getTitle();
 }
 else
 {
 	$origTitle = $movie->getOrigTitle();
+}
+
+if (isset($_POST['qualityChange']))
+{
+	$selectedQuality = $_POST['qualitySelect'];
+	$collectionId = $_POST['cid'];
+	$movieId = $movie->getId();
+	$movie->updateQualityInCollection($selectedQuality, $collectionId);
+	$subsSelected = $_POST['checkedSubs'];
+	foreach ($subsSelected as $subId)
+	{
+		$movie->saveSubtitleForMovieInCollection($subId, $collectionId);
+	}
+}
+
+if (isset($_POST['saveInCollection']))
+{
+	$collectionId = $_POST['collectionChooser'];
+	$movie->saveMovieToCollection($collectionId);
 }
 ?>
 <html lang="en">
@@ -55,12 +78,12 @@ else
 						</div>
 						<div class="row">
 							<div class="col-lg-7 col-md-12 col-sm-12 col-xs-12 row">
-								<div class="col-lg-5 col-md-6 col-sm-6 col-xs-12">
+								<div class="col-lg-5 col-md-5 col-sm-6 col-xs-12">
 									<img src="<?php echo $data['Poster'] ?>" class="thumbnail img-responsive pull-left">
 								</div>
-								<div class="col-lg-7 col-md-6 col-sm-6 col-xs-12">
+								<div class="col-lg-7 col-md-7 col-sm-6 col-xs-12">
 									<?php
-									if($movie->getOrigTitle() == null)
+									if ($movie->getOrigTitle() == null)
 									{
 										$origTitle = $movie->getTitle();
 									}
@@ -75,55 +98,271 @@ else
 									<label><span class="label-title">Runtime: </span><?php echo $movie->getRuntime() ?> minutes</label><br>
 									<label><span class="label-title">Language: </span><?php echo $movie->getLanguage(); ?></label><br>
 									<label><span class="label-title">Genres: </span>
-									<?php
-									$genre = new Genre();
-									$movieGenres = $movie->getAllGenresForMovie();
-									$numberOfGenres = count($movieGenres);
-									$counter = 0;
-									foreach($movieGenres as $movieGenre)
-									{
-										$genre->setValuesAccordingToId($movieGenre);
-										echo $genre->getName();
-										$counter++;
-										if($counter < $numberOfGenres)
+										<?php
+										$genre = new Genre();
+										$movieGenres = $movie->getAllGenresForMovie();
+										$numberOfGenres = count($movieGenres);
+										$counter = 0;
+										foreach ($movieGenres as $movieGenre)
 										{
-											echo ', ';
+											$genre->setValuesAccordingToId($movieGenre);
+											echo $genre->getName();
+											$counter++;
+											if ($counter < $numberOfGenres)
+											{
+												echo ', ';
+											}
 										}
-									}
-									?>
+										?>
 									</label><br>
 									<label><span class="label-title">Director: </span>
-									<?php
-									$director = new Person();
-									$directors = $movie->getDirectors();
-									$numberOfDirectors = count($directors);
-									$counter = 0;
-									if($numberOfDirectors == 0)
-									{
-										echo '<i>Not on record</i>';
-									}
-									foreach($directors as $movieDirector)
-									{
-										$director->setValuesAccordingToId($movieDirector);
-										echo $director->getName();
-										$counter++;
-										if($counter < $numberOfDirectors)
+										<?php
+										$director = new Person();
+										$directors = $movie->getDirectors();
+										$numberOfDirectors = count($directors);
+										$counter = 0;
+										if ($numberOfDirectors == 0)
 										{
-											echo ', ';
+											echo '<i>Not on record</i>';
 										}
-									}
-									?>
+										foreach ($directors as $movieDirector)
+										{
+											$director->setValuesAccordingToId($movieDirector);
+											echo $director->getName();
+											$counter++;
+											if ($counter < $numberOfDirectors)
+											{
+												echo ', ';
+											}
+										}
+										?>
 									</label><br>
 									<label><span class="label-title">IMDb Rating: </span><?php echo $data['imdbRating'] ?></label><br>
 									<a href="<?php echo $movie->getImdbLink() ?>" target="_blank">
 										<img src="http://ia.media-imdb.com/images/G/01/imdb/images/plugins/imdb_46x22-2264473254._CB379390954_.png">
 									</a>
 								</div>
+								<?php
+								$collectionIdsWithoutTheMovie = $movie->getAllCollectionIdsForUserInWhichTheMovieIsNot($active_user->getId());
+								$numberOfCollectionsWithoutTheMovie = count($collectionIdsWithoutTheMovie);
+								?>
 								<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 									<hr class="visible-xs">
-									<button class="btn btn-success"><span class="fa fa-plus"></span> Add to Collection</button>
+									<?php
+									if ($numberOfCollectionsWithoutTheMovie > 0)
+									{
+										$newCollection = new Collection();
+										?>
+										<button class="btn btn-success" data-toggle="modal" data-target="#addToCollectionModal"><span class="fa fa-plus"></span> Add to Collection</button>
+										<!-- Modal -->
+										<div class="modal fade" id="addToCollectionModal" aria-labelledby="addToCollectionModalLabel" >
+											<div class="modal-dialog">
+												<div class="modal-content">
+													<div class="modal-header">
+														<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+														<h4 class="modal-title" id="addToCollectionModalLabel">Add <?php echo $origTitle ?> to Collection</h4>
+													</div>
+													<div class="modal-body">
+														<form action="" method="post">
+															<div class="col-lg-8 col-md-8 col-sm-8 col-xs-8">
+																<select name="collectionChooser" class="form-control">
+																	<?php
+																	foreach ($collectionIdsWithoutTheMovie as $collectionId)
+																	{
+																		$newCollection->setValuesAccordingToId($collectionId);
+																		?>
+																		<option value="<?php echo $newCollection->getId() ?>"><?php echo $newCollection->getName() ?></option>
+																		<?php
+																	}
+																	?>
+																</select>
+															</div>
+															<div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+																<input type="submit" class="btn btn-success" value="Add to Collection" name="saveInCollection">
+															</div>
+														</form>
+														<div class="clearfix"></div>
+													</div>
+													<div class="clearfix"></div>
+													<div class="modal-footer">
+														<button type="button" class="btn btn-default" data-dismiss="modal" aria-label="Close">Close</button>
+													</div>
+												</div>
+											</div>
+										</div>
+										<?php
+									}
+									else
+									{
+										?>
+										<button class="btn btn-success disabled"><span class="fa fa-plus"></span> Add to Collection</button>
+										<?php
+									}
+									?>
 									<button class="btn btn-warning disabled"><span class="fa fa-heart"></span> Favorite</button>
 								</div>
+								<?php
+								$collectionIds = $movie->getAllCollectionIdsForUserInWhichTheMovieIs($active_user->getId());
+								$numberOfCollections = count($collectionIds);
+								$collectionSingularis = 'collection';
+								if ($numberOfCollections > 1)
+								{
+									$collectionSingularis .= 's';
+								}
+								if ($numberOfCollections > 0)
+								{
+									?>
+									<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+										<hr>
+										<div class="col-lg-12 col-md-9 col-sm-12 col-xs-12 row">
+											<label><span class="label-title">In your <?php echo $collectionSingularis ?>: </span></label><br>
+											<?php
+											$collection = new Collection();
+											foreach ($collectionIds as $collectionId => $quality)
+											{
+												$collection->setValuesAccordingToId($collectionId);
+												?>
+												<div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+													<p>
+														<span class="fa fa-pencil" id="edit-mov-col" data-toggle="modal" data-target="#<?php echo $collectionId ?>edit" style="cursor: pointer"></span>
+														<a class="label-title" href="<?php echo $path ?>collection/<?php echo $collectionId ?>/<?php echo $collection->getSlug() ?>/"><?php echo $collection->getName() ?></a>
+													</p>
+												</div>
+												<div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+													<p>
+														<i>Quality: </i><?php echo $quality ?>
+													</p>
+												</div>
+												<div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+													<?php
+													$subs = $movie->getAllSubsForMovieInCollection($collectionId);
+													$numberOfSubs = count($subs);
+													?>
+													<p>
+														<i>Subs: </i>
+
+														<?php
+														if ($numberOfSubs == 0)
+														{
+															echo 'No Subtitles';
+														}
+														else
+														{
+															$counter = 0;
+															foreach ($subs as $sub)
+															{
+																echo $sub;
+																$counter++;
+																if ($counter < $numberOfSubs)
+																{
+																	echo ', ';
+																}
+															}
+														}
+														?>
+													</p>
+												</div>
+												<!-- Modal -->
+												<div class="modal fade" id="<?php echo $collectionId ?>edit" aria-labelledby="<?php echo $collectionId ?>ModalLabel" >
+													<div class="modal-dialog">
+														<div class="modal-content">
+															<div class="modal-header">
+																<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+																<h4 class="modal-title" id="<?php echo $collectionId ?>ModalLabel">Change Movie / Collections Details</h4>
+															</div>
+															<div class="modal-body">
+																<form action="" method="post">
+																	<div class="col-lg-3 col-md-3 col-sm-3 col-xs-4">
+																		<label class="label-title pull-right" style="padding: 5px;">Quality: </label>
+																	</div>
+																	<div class="col-lg-9 col-md-9 col-sm-9 col-xs-8">
+																		<input type="hidden" name="cid" value="<?php echo $collectionId ?>">
+																		<input type="hidden" name="mid" value="<?php echo $movie->getId() ?>">
+																		<select class="form-control" name="qualitySelect">
+																			<?php
+																			foreach ($qualities as $quali10 => $explanation)
+																			{
+																				if ($quality == $quali10)
+																				{
+																					?><option value="<?php echo $quali10 ?>" selected><?php echo $quali10 ?> (<?php echo $explanation ?>)</option><?php
+																				}
+																				else
+																				{
+																					?><option value="<?php echo $quali10 ?>"><?php echo $quali10 ?> (<?php echo $explanation ?>)</option><?php
+																				}
+																			}
+																			?>
+																		</select>
+																	</div>
+																	<div class="clearfix"></div>
+																	<br>
+																	<div class="col-lg-3 col-md-3 col-sm-3 col-xs-4">
+																		<label class="label-title pull-right" style="padding: 5px;">Subtitles: </label>
+																	</div>
+																	<div class="col-lg-9 col-md-9 col-sm-9 col-xs-8" style="overflow-y: auto; max-height: 20vh;">
+																		<?php
+																		$allSubs = $mh->getAllPossibleSubs();
+																		$ownedSubs = $movie->getAllSubsForMovieInCollection($collectionId);
+																		foreach ($allSubs as $possibleSubtitle)
+																		{
+																			if (count($ownedSubs) == 0)
+																			{
+																				?>
+																				<div class="checkbox">
+																					<label>
+																						<input type="checkbox" name="checkedSubs[]" value="<?php echo $possibleSubtitle['id'] ?>"> <?php echo $possibleSubtitle['code'] ?> (<?php echo $possibleSubtitle['name'] ?>)
+																					</label>
+																				</div>
+																				<?php
+																			}
+																			else
+																			{
+																				foreach ($ownedSubs as $ownedSubCode)
+																				{
+																					if ($ownedSubCode == $possibleSubtitle['code'])
+																					{
+																						?>
+																						<div class="checkbox">
+																							<label>
+																								<input type="checkbox" name="checkedSubs[]" value="<?php echo $possibleSubtitle['id'] ?>" checked> <?php echo $possibleSubtitle['code'] ?> (<?php echo $possibleSubtitle['name'] ?>)
+																							</label>
+																						</div>
+																						<?php
+																					}
+																					else
+																					{
+																						?>
+																						<div class="checkbox">
+																							<label>
+																								<input type="checkbox" name="checkedSubs[]" value="<?php echo $possibleSubtitle['id'] ?>"> <?php echo $possibleSubtitle['code'] ?> (<?php echo $possibleSubtitle['name'] ?>)
+																							</label>
+																						</div>
+																						<?php
+																					}
+																				}
+																			}
+																		}
+																		?>
+																	</div>
+																<div class="clearfix"></div>
+															</div>
+															<div class="clearfix"></div>
+															<div class="modal-footer">
+																<input type="submit" value="Save" name="qualityChange" class="btn btn-success">
+																<button type="button" class="btn btn-default" data-dismiss="modal" aria-label="Close">Close</button>
+															</div>
+															</form>
+														</div>
+													</div>
+												</div>
+												<?php
+											}
+											?>
+										</div>
+									</div>
+									<?php
+								}
+								?>
 								<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 									<hr>
 									<label><span class="label-title">Short Plot: </span></label><br>
@@ -138,7 +377,7 @@ else
 									<hr class="hidden-lg">
 								</div>
 							</div>
-							<div class="col-lg-5 col-md-12 col-sm-12 col-xs-12">
+							<div class="col-lg-5 col-md-12 col-sm-12 col-xs-12 cast-list">
 								<label><span class="label-title">Cast: </span></label><br>
 								<?php
 								$castList = $movie->getFullCast();
@@ -149,22 +388,24 @@ else
 									?>
 									<div class="cast-list-entry">
 										<div class="col-lg-7 col-md-6 col-sm-6 col-xs-6 row">
-											<?php
-											if ($actor->getPhoto() == null)
-											{
-												?>
-											<img src="http://ia.media-imdb.com/images/G/01/imdb/images/nopicture/32x44/name-2138558783._CB379389446_.png" class="cast-thumb">
+											<a href="<?php echo $path ?>person/<?php echo $actor->getId() ?>/<?php echo $actor->getSlug() ?>/">
+												<?php
+												if ($actor->getPhoto() == null)
+												{
+													?>
+													<img src="http://ia.media-imdb.com/images/G/01/imdb/images/nopicture/32x44/name-2138558783._CB379389446_.png" class="cast-thumb">
 
-												<?php
-											}
-											else
-											{
+													<?php
+												}
+												else
+												{
+													?>
+													<img src = "<?php echo $actor->getPhoto() ?>" class="cast-thumb">
+													<?php
+												}
 												?>
-											<img src = "<?php echo $actor->getPhoto() ?>" class="cast-thumb">
-												<?php
-											}
-											?>
-											<span class="label-title"><?php echo $actor->getName() ?></span><br>
+												<span class="label-title"><?php echo $actor->getName() ?></span>
+											</a>
 										</div>
 										<div class="col-lg-1 col-md-2 col-sm-2 col-xs-2 cast-role">
 											<i style="color: lightgrey" class="pull-right">as</i>

@@ -28,8 +28,8 @@
 						?>
 					</div>
 					<div class="col-lg-7 col-md-7 col-sm-12 col-xs-12" id="movieListingArea" class="search-modal-box">
-						<div id="MovieWaiting" style="display: none">
-							<p><span class="fa fa-spinner fa-pulse fa-4x"></span></p>
+						<div id="MovieWaiting" style="display: none;">
+							<p><span class="fa fa-spinner fa-pulse fa-4x" style="padding:35% 45%;"></span></p>
 						</div>
 					</div>
 				</div>

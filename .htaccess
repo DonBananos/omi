@@ -19,3 +19,8 @@ RewriteRule ^collection/\d+/[a-z-]+/removeMovie/?$ collection/removeMovie.php [N
 RewriteCond %{REQUEST_FILENAME} !-d [NC]
 RewriteCond %{REQUEST_FILENAME} !-f [NC]
 RewriteRule ^movie/(\d+)/[a-z0-9-]+/?$ movie/details.php?mid=$1 [NC,L]
+
+#Redirect for person Details
+RewriteCond %{REQUEST_FILENAME} !-d [NC]
+RewriteCond %{REQUEST_FILENAME} !-f [NC]
+RewriteRule ^person/(\d+)/[a-z0-9-]+/?$ person/details.php?pid=$1 [NC,L]

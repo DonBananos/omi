@@ -121,7 +121,6 @@ body h4
 
 .btn
 {
-	margin: 3px;
 	border-radius: 0;
 }
 
@@ -151,6 +150,11 @@ body h4
 {
 	max-width: 95%;
 	margin: 2.5%;
+}
+
+h4 a:hover
+{
+	text-decoration: none;
 }
 
 .owned
@@ -188,33 +192,28 @@ body h4
 	padding: 2px
 }
 
-.edit-bar > .fa,
-.edit-bottom-bar > .fa
+.movie-listing > .movie-listing-edit > .fa
 {
 	margin: 5%;
 }
 
-.edit-bar > .fa-remove,
-.edit-bottom-bar > .fa-remove
+.movie-listing > .movie-listing-edit > .fa-remove
 {
-	color: darkred;
+	color: #5b3030;
 }
 
-.edit-bar > .fa-remove:hover,
-.edit-bottom-bar > .fa-remove:hover
+.movie-listing > .movie-listing-edit > .fa-remove:hover
 {
 	color: red;
 	cursor: pointer;
 }
 
-.edit-bar > .fa-search,
-.edit-bottom-bar > .fa-search
+.movie-listing > .movie-listing-edit > .fa-search
 {
-	color: darkblue;
+	color: #31305b;
 }
 
-.edit-bar > .fa-search:hover,
-.edit-bottom-bar > .fa-search:hover
+.movie-listing > .movie-listing-edit > .fa-search:hover
 {
 	color: royalblue;
 	cursor: pointer;
@@ -262,6 +261,12 @@ body h4
 	height: 65vh
 }
 
+.movie-listing
+{
+	padding-bottom: 5px;
+	padding-top: 5px;
+}
+
 .cast-list-entry
 {
 	margin: 5px;
@@ -276,4 +281,10 @@ body h4
 .cast-thumb
 {
 	border-radius: 25px;
+}
+
+.cast-list
+{
+	max-height: 80vh;
+	overflow-y: auto;
 }

@@ -9,6 +9,8 @@ require '../user/user.php';
 require '../movie/movie.php';
 
 require '../genre/genre.php';
+require '../person/person.php';
+require '../movie/movieHandler.php';
 
 //Instantiate new Collection object
 $collection = new Collection($_GET['id']);
@@ -18,6 +20,8 @@ $owner = new User($collection->getUserId());
 $signed_in = false;
 $own_collection = false;
 $collection_private = true;
+
+$mh = new MovieHandler();
 
 //Check if user is signed in
 if (isset($_SESSION['signed_in']))
@@ -76,33 +80,33 @@ if ($collection->getPrivacy() != 1)
 								<?php
 							}
 							?>
-								<div class="pull-right">
-									<?php
-									if (!$collection_private OR $own_collection)
+							<div class="pull-right">
+								<?php
+								if (!$collection_private OR $own_collection)
+								{
+									if (!$collection_private)
 									{
-										if (!$collection_private)
-										{
-											if (!$own_collection)
-											{
-												?>
-												<button class="btn btn-warning disabled"><span class="fa fa-heart"></span><span class="hidden-xs"> Favorite</span></button>
-												<?php
-											}
-											?>
-											<button class="btn btn-facebook disabled"><span class="fa fa-facebook"></span><span class="hidden-xs"> Share</span></button>
-											<button class="btn btn-twitter disabled"><span class="fa fa-twitter"></span><span class="hidden-xs"> Tweet</span></button>
-											<button class="btn btn-primary disabled"><span class="fa fa-envelope"></span><span class="hidden-xs"> Share</span></button>
-											<?php
-										}
-										if ($own_collection)
+										if (!$own_collection)
 										{
 											?>
-											<button class="btn btn-danger disabled"><span class="fa fa-trash-o"></span><span class="hidden-xs"> Delete Collection</span></button>
+											<button class="btn btn-warning disabled"><span class="fa fa-heart"></span><span class="hidden-xs"> Favorite</span></button>
 											<?php
 										}
 										?>
-									</div>
+										<button class="btn btn-facebook disabled"><span class="fa fa-facebook"></span><span class="hidden-xs"> Share</span></button>
+										<button class="btn btn-twitter disabled"><span class="fa fa-twitter"></span><span class="hidden-xs"> Tweet</span></button>
+										<button class="btn btn-primary disabled"><span class="fa fa-envelope"></span><span class="hidden-xs"> Share</span></button>
+										<?php
+									}
+									if ($own_collection)
+									{
+										?>
+										<button class="btn btn-danger disabled"><span class="fa fa-trash-o"></span><span class="hidden-xs"> Delete Collection</span></button>
+										<?php
+									}
+									?>
 								</div>
+							</div>
 							<br>
 							<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 								<p><?php echo $collection->getDescription() ?></p>
@@ -122,6 +126,8 @@ if ($collection->getPrivacy() != 1)
 								else
 								{
 									$movie = new Movie();
+									$movieCounter = 0;
+									$numberOfMoviesInCollection = count($movieIds);
 									foreach ($movieIds as $movieId)
 									{
 										$movie->setValuesWithId($movieId);
@@ -133,34 +139,126 @@ if ($collection->getPrivacy() != 1)
 										{
 											$plot = $movie->getPlot();
 										}
+										if ($movie->getOrigTitle() == null)
+										{
+											$origTitle = $movie->getTitle();
+										}
+										else
+										{
+											$origTitle = $movie->getOrigTitle();
+										}
 										?>
-										<div class="col-lg-3 col-md-3 col-sm-4 col-xs-6">
-											<div class="owned">
-												<div class="movie-box movie-box-miniature">
-													<div class="image-box" id="<?php echo $movie->getImdbId() ?>">
-														<img src="<?php echo $movie->getPosterUrl() ?>" class="img-responsive">
-														<div class="edit-bar hidden-xs hidden-sm" id="<?php echo $movie->getImdbId(); ?>-edit-bar" style="display: none;">
-															<span class="fa fa-remove fa-4x pull-right" data-toggle="modal" data-target="#<?php echo $movie->getImdbId() ?>DeleteModal"></span>
-															<?php
-															if ($own_collection)
+										<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 movie-listing">
+											<div class="col-lg-1 col-md-2 col-sm-3 col-xs-4">
+												<a href="<?php echo $path ?>movie/<?php echo $movie->getId() ?>/<?php echo $movie->getSlug() ?>/">
+													<img src="<?php echo $movie->getPosterUrl() ?>" class="img-responsive">
+												</a>
+											</div>
+											<div class="col-lg-10 col-md-9 col-sm-8 col-xs-6">
+												<div class="col-lg-5 col-md-5 col-sm-12 col-xs-12">
+													<h4 class="movie-title"><a href="<?php echo $path ?>movie/<?php echo $movie->getId() ?>/<?php echo $movie->getSlug() ?>/"><?php echo $origTitle ?></a> <span style="color: white">(<?php echo $movie->getYear() ?>)</span></h4>
+												</div>
+												<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12 hidden-xs">
+													<?php
+													$quality = $movie->getMovieInCollectionQuality($collection->getId());
+													?>
+													<label class="movie-title" style="margin: 10px;"><span class="label-title">Quality: </span><?php echo $quality ?></label>
+												</div>
+												<div class="col-lg-4 col-md-4 col-sm-6 col-xs-12 hidden-xs">
+													<?php
+													$subs = $movie->getAllSubsForMovieInCollection($collection->getId());
+													$numberOfSubs = count($subs);
+													?>
+													<label class="movie-title" style="margin: 10px;">
+														<span class="label-title">Subs: </span>
+														<?php
+														if ($numberOfSubs == 0)
+														{
+															echo 'No Subtitles';
+														}
+														else
+														{
+															$counter = 0;
+															foreach ($subs as $sub)
 															{
-																?>
-																<span class="fa fa-search fa-4x pull-left" data-toggle="modal" data-target="#<?php echo $movie->getImdbId() ?>DetailsModal"></span>
-																<?php
+																echo $sub;
+																$counter++;
+																if ($counter < $numberOfSubs)
+																{
+																	echo ', ';
+																}
 															}
-															?>
-														</div>
-														<div class="edit-bottom-bar visible-xs visible-sm">
-															<span class="fa fa-remove fa-2x pull-right" data-toggle="modal" data-target="#<?php echo $movie->getImdbId() ?>DeleteModal"></span>
-															<span class="fa fa-search fa-2x pull-left" data-toggle="modal" data-target="#<?php echo $movie->getImdbId() ?>DetailsModal"></span>
-														</div>
-														<div class="clearfix"></div>
-													</div>
-													<div class="clearfix"></div>
-													<h4 class="movie-title"><?php echo $movie->getTitle() ?> (<?php echo $movie->getYear() ?>)</h4>
+														}
+														?>
+													</label>
+												</div>
+												<div class="clearfix"></div>
+												<div class="col-lg-5 col-md-5 col-sm-6 col-xs-12 hidden-xs">
+													<label class="movie-title" style="margin: 10px;">
+														<span class="label-title">Genre: </span>
+														<?php
+														$genre = new Genre();
+														$genreIds = $movie->getAllGenresForMovie();
+														$numberOfGenres = count($genreIds);
+														$numberOfRuns = 0;
+														foreach ($genreIds as $genreId)
+														{
+															$genre->setValuesAccordingToId($genreId);
+															echo $genre->getName();
+															$numberOfRuns++;
+															if ($numberOfRuns < $numberOfGenres)
+															{
+																echo ', ';
+															}
+															else
+															{
+																echo '<br>';
+															}
+														}
+														?>
+													</label>
+												</div>
+												<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12 hidden-xs">
+													<label class="movie-title" style="margin: 10px;">
+														<span class="label-title">Runtime: </span>
+														<?php echo $movie->getRuntime() ?> minutes
+													</label>
+												</div>
+												<div class="col-lg-4 col-md-4 col-sm-6 col-xs-12 hidden-xs hidden-sm">
+													<label class="movie-title" style="margin: 10px;">
+														<span class="label-title">Language: </span>
+														<?php echo $movie->getLanguage() ?>
+													</label>
+												</div>
+												<div class="clearfix"></div>
+												<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 hidden-xs">
+													<p>
+														<b class="label-title">Plot: </b><?php echo $plot ?>
+													</p>
 												</div>
 											</div>
+											<div class="col-lg-1 col-md-1 col-sm-1 col-xs-2 pull-right movie-listing-edit">
+												<br>
+												<span class="fa fa-search fa-2x pull-right" data-toggle="modal" data-target="#<?php echo $movie->getImdbId() ?>DetailsModal"></span>
+												<div class="clearfix"></div>
+												<br>
+												<?php
+												if ($own_collection)
+												{
+													?>
+													<span class="fa fa-remove fa-2x pull-right" data-toggle="modal" data-target="#<?php echo $movie->getImdbId() ?>DeleteModal"></span>
+													<?php
+												}
+												?>
+											</div>
 											<div class="clearfix"></div>
+											<?php
+											$movieCounter++;
+											if ($movieCounter < $numberOfMoviesInCollection)
+											{
+												echo '<hr>';
+											}
+											?>
 											<!-- Modal -->
 											<div class="modal fade" id="<?php echo $movie->getImdbId() ?>DetailsModal" aria-labelledby="<?php echo $movie->getImdbId() ?>ModalLabel" >
 												<div class="modal-dialog">
@@ -175,10 +273,9 @@ if ($collection->getPrivacy() != 1)
 															</div>
 															<div class="col-lg-8 col-md-8 col-sm-6 col-xs-6">
 																<p>
-																	<a href="<?php echo $movie->getImdbLink() ?>" target="_blank"><img src="http://ia.media-imdb.com/images/G/01/imdb/images/plugins/imdb_46x22-2264473254._CB379390954_.png"></a><br>
-
+																	<b>Original Title</b>: <?php echo $origTitle ?><br>
 																	<b>Release</b>: <?php echo $movie->getYear() ?><br>
-																	<b>Runtime</b>: <?php echo $movie->getRuntime() ?><br>
+																	<b>Runtime</b>: <?php echo $movie->getRuntime() ?> minutes<br>
 																	<b>Genre</b>:
 																	<?php
 																	$genre = new Genre();
@@ -201,7 +298,53 @@ if ($collection->getPrivacy() != 1)
 																	}
 																	?>
 																	<b>Language</b>: <?php echo $movie->getLanguage() ?><br>
+																	<b>Director</b>: 
+																	<?php
+																	$director = new Person();
+																	$directors = $movie->getDirectors();
+																	$numberOfDirectors = count($directors);
+																	$counter = 0;
+																	if ($numberOfDirectors == 0)
+																	{
+																		echo '<i>Not on record</i>';
+																	}
+																	foreach ($directors as $movieDirector)
+																	{
+																		$director->setValuesAccordingToId($movieDirector);
+																		echo $director->getName();
+																		$counter++;
+																		if ($counter < $numberOfDirectors)
+																		{
+																			echo ', ';
+																		}
+																	}
+																	?>
+																	<br>
+																	<b>Quality</b>: <?php echo $quality ?><br>
+																	<b>Subtitles</b>: 
+																	<?php
+																	$subs = $movie->getAllSubsForMovieInCollection($collection->getId());
+																	$numberOfSubs = count($subs);
+																	if ($numberOfSubs == 0)
+																	{
+																		echo 'No Subtitles';
+																	}
+																	else
+																	{
+																		$counter = 0;
+																		foreach ($subs as $sub)
+																		{
+																			echo $sub;
+																			$counter++;
+																			if ($counter < $numberOfSubs)
+																			{
+																				echo ', ';
+																			}
+																		}
+																	}
+																	?>
 																</p>
+																<a href="<?php echo $movie->getImdbLink() ?>" target="_blank"><img src="http://ia.media-imdb.com/images/G/01/imdb/images/plugins/imdb_46x22-2264473254._CB379390954_.png"></a><br>
 															</div>
 															<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 																<p><b>Plot</b>: <?php echo $movie->getPlot() ?><br></p>
