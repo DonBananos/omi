@@ -136,7 +136,9 @@ if (isset($_POST['saveInCollection']))
 										foreach ($directors as $movieDirector)
 										{
 											$director->setValuesAccordingToId($movieDirector);
-											echo $director->getName();
+											?>
+										<a href="<?php echo $path ?>person/<?php echo $director->getId() ?>/<?php echo $director->getSlug() ?>/"><?php echo $director->getName();?></a>
+										<?php
 											$counter++;
 											if ($counter < $numberOfDirectors)
 											{

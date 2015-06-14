@@ -77,14 +77,19 @@ class Movie
 		return true;
 	}
 
-	public function createMovie($title, $imdbId, $posterUrl, $year)
+	public function createMovie($title, $origTitle, $plot, $runtime, $imdbId, $posterUrl, $posterUrlThumb, $language, $year)
 	{
 		$this->setTitle($title);
+		$this->setOrigTitle($origTitle);
 		$this->setSlug($this->createSlug($this->title));
+		$this->setPlot($plot);
+		$this->setRuntime($runtime);
 		$this->setImdbId($imdbId);
+		$this->setImdbLink($imdbId);
 		$this->setPosterUrl($posterUrl);
+		$this->setPosterUrlThumb($posterUrlThumb);
+		$this->setLanguage($language);
 		$this->setYear($year);
-
 		return $this->saveMovieInDb();
 	}
 
@@ -92,24 +97,19 @@ class Movie
 	{
 		global $dbCon;
 		//Create SQL Query
-		$sql = "INSERT INTO movie (movie_title, movie_slug, movie_imdb_id, movie_poster, movie_year) VALUES (?, ?, ?, ?, ?);";
-
+		$sql = "INSERT INTO movie (movie_title, movie_orig_title, movie_slug, movie_plot, movie_runtime, movie_imdb_id, movie_poster, movie_poster_thumb, movie_language, movie_year) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 		//Prepare Statement
 		$stmt = $dbCon->prepare($sql);
 		if ($stmt === false)
 		{
 			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
 		}
-
 		//Bind parameters.
-		$stmt->bind_param('sssss', $this->title, $this->slug, $this->imdbId, $this->posterUrl, $this->year);
-
+		$stmt->bind_param('ssssisssss', $this->title, $this->origTitle, $this->slug, $this->plot, $this->runtime, $this->imdbId, $this->posterUrl, $this->posterUrlThumb, $this->language, $this->year);
 		//Execute
 		$stmt->execute();
-
 		//Get ID of user just saved
 		$id = $stmt->insert_id;
-
 		$stmt->close();
 		if ($id > 0)
 		{
@@ -198,7 +198,7 @@ class Movie
 	{
 		global $dbCon;
 		$sql = "UPDATE movie SET movie_plot = ?, movie_runtime = ?, movie_poster_thumb = ?, movie_language = ? WHERE movie_id = ?;";
-		
+
 		//Prepare Statement
 		$stmt = $dbCon->prepare($sql);
 		if ($stmt === false)

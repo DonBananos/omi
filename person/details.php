@@ -15,7 +15,25 @@ require '../collection/collection.php';
 require '../includes/api/imdbphp/imdb_person.class.php';
 
 $person = new Person($person_id);
-$imdbPerson = new imdb_person(substr($person->getImdbId(), -7))
+$imdbPerson = new imdb_person(substr($person->getImdbId(), -7));
+if (empty($person->getBio()))
+{
+	$person_bio = "";
+	foreach ($imdbPerson->bio() as $bio)
+	{
+		$person_bio .= $bio['desc'];
+	}
+	if (isset($imdbPerson->born()['year']))
+	{
+		$born = $imdbPerson->born()['year'] . '-' . $imdbPerson->born()['mon'] . '-' . $imdbPerson->born()['day'];
+	}
+	else
+	{
+		$born = null;
+	}
+	$person->updatePersonWithFullData($person_bio, $born, $imdbPerson->photo(FALSE));
+	$person->setValuesAccordingToId($person_id);
+}
 ?>
 <html lang="en">
 	<head>
@@ -80,7 +98,7 @@ $imdbPerson = new imdb_person(substr($person->getImdbId(), -7))
 										$origTitle = $movie->getOrigTitle();
 									}
 									?>
-								<a href="<?php echo $path ?>movie/<?php echo $movie->getId() ?>/<?php echo $movie->getSlug() ?>/"><?php echo $origTitle ?></a> <i style="color: lightgrey">playing</i> <?php echo $movieIdAndRole['role'] ?><br>
+									<a href="<?php echo $path ?>movie/<?php echo $movie->getId() ?>/<?php echo $movie->getSlug() ?>/"><?php echo $origTitle ?></a> <i style="color: lightgrey">playing</i> <?php echo $movieIdAndRole['role'] ?><br>
 									<?php
 								}
 								?>

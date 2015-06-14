@@ -74,14 +74,11 @@ class Person
 		return false;
 	}
 	
-	public function createPerson($name, $imdbId, $bio, $born, $bornPlace, $photo)
+	public function createPerson($name, $imdbId, $photo)
 	{
 		$this->setName($name);
 		$this->setSlug($this->createSlug($name));
 		$this->setImdbId($imdbId);
-		$this->setBio($bio);
-		$this->setBorn($born);
-		$this->setBornPlace($bornPlace);
 		$this->setPhoto($photo);
 		
 		return $this->savePersonToDb();
@@ -91,7 +88,7 @@ class Person
 	{
 		global $dbCon;
 		//Create SQL Query
-		$sql = "INSERT INTO person (person_name, person_slug, person_imdb_id, person_bio, person_born, person_born_place, person_photo) VALUES (?, ?, ?, ?, ?, ?, ?);";
+		$sql = "INSERT INTO person (person_name, person_slug, person_imdb_id, person_photo) VALUES (?, ?, ?, ?);";
 
 		//Prepare Statement
 		$stmt = $dbCon->prepare($sql);
@@ -101,7 +98,7 @@ class Person
 		}
 
 		//Bind parameters.
-		$stmt->bind_param('sssssss', $this->name, $this->slug, $this->imdbId, $this->bio, $this->born, $this->bornPlace, $this->photo);
+		$stmt->bind_param('ssss', $this->name, $this->slug, $this->imdbId, $this->photo);
 
 		//Execute
 		$stmt->execute();
@@ -209,6 +206,27 @@ class Person
 		}
 		$stmt->close();
 		return $movieIds;
+	}
+	
+	public function updatePersonWithFullData($bio, $born, $bigPhoto)
+	{
+		global $dbCon;
+		$sql = "UPDATE person SET person_bio = ?, person_born = ?, person_large_photo = ? WHERE person_id = ?;";
+		$stmt = $dbCon->prepare($sql);
+		if($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('sssi', $bio, $born, $bigPhoto, $this->id);
+		$stmt->execute(); //Execute
+		$id = $stmt->insert_id;
+
+		$stmt->close();
+		if ($id > 0)
+		{
+			return true;
+		}
+		return $dbCon->error;
 	}
 	
 	public function getId()

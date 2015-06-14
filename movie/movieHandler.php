@@ -32,14 +32,14 @@ class MovieHandler
 		global $dbCon;
 		$allSubs = array();
 		$subtitle = array();
-		$sql = "SELECT subtitles_language_id, subtitles_language_name, subtitles_language_code_2 FROM subtitles_language;";
+		$sql = "SELECT subtitles_language_id, subtitles_language_name, subtitles_language_code_2, COUNT(subtitles_language_id) AS uses FROM subtitles_language LEFT JOIN collection_movie_sub ON subtitles_language_id = collection_movie_subtitle_id GROUP BY subtitles_language_id ORDER BY uses DESC;";
 		$stmt = $dbCon->prepare($sql); //Prepare Statement
 		if ($stmt === false)
 		{
 			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
 		}
 		$stmt->execute(); //Execute
-		$stmt->bind_result($id, $name, $code); //Get ResultSet
+		$stmt->bind_result($id, $name, $code, $uses); //Get ResultSet
 		while ($stmt->fetch())
 		{
 			$subtitle['id'] = $id;

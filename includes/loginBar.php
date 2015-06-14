@@ -12,7 +12,7 @@ Author: Heini L. Ovason
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="#">Online Movie Index</a>
+            <a class="navbar-brand" href="<?php echo $path ?>"><img src="http://privat.mjsolutions.dk/includes/img/omi-alpha.png" style="max-height:180%; margin-top: -7px;"></a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
