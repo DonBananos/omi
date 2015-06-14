@@ -15,4 +15,6 @@ Author: R. Mike Jensen, Heini L. Ovason
 <link rel="stylesheet" href="<?php echo $path ?>css/bootstrap-social.css">
 <!-- Latest Font Awesome -->
 <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
-<link rel="shortcut icon" href="">
+<link rel="shortcut icon" href="<?php echo $path ?>includes/img/favicon.ico">
+<meta name="theme-color" content="#333">
+<meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' name='viewport' />

@@ -77,10 +77,9 @@ class Movie
 		return true;
 	}
 
-	public function createMovie($title, $origTitle, $plot, $runtime, $imdbId, $posterUrl, $posterUrlThumb, $language, $year)
+	public function createMovie($title, $plot, $runtime, $imdbId, $posterUrl, $posterUrlThumb, $language, $year)
 	{
 		$this->setTitle($title);
-		$this->setOrigTitle($origTitle);
 		$this->setSlug($this->createSlug($this->title));
 		$this->setPlot($plot);
 		$this->setRuntime($runtime);
@@ -97,7 +96,7 @@ class Movie
 	{
 		global $dbCon;
 		//Create SQL Query
-		$sql = "INSERT INTO movie (movie_title, movie_orig_title, movie_slug, movie_plot, movie_runtime, movie_imdb_id, movie_poster, movie_poster_thumb, movie_language, movie_year) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+		$sql = "INSERT INTO movie (movie_title, movie_slug, movie_plot, movie_runtime, movie_imdb_id, movie_poster, movie_poster_thumb, movie_language, movie_year) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
 		//Prepare Statement
 		$stmt = $dbCon->prepare($sql);
 		if ($stmt === false)
@@ -105,7 +104,7 @@ class Movie
 			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
 		}
 		//Bind parameters.
-		$stmt->bind_param('ssssisssss', $this->title, $this->origTitle, $this->slug, $this->plot, $this->runtime, $this->imdbId, $this->posterUrl, $this->posterUrlThumb, $this->language, $this->year);
+		$stmt->bind_param('sssisssss', $this->title, $this->slug, $this->plot, $this->runtime, $this->imdbId, $this->posterUrl, $this->posterUrlThumb, $this->language, $this->year);
 		//Execute
 		$stmt->execute();
 		//Get ID of user just saved

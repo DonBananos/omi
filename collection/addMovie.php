@@ -17,9 +17,6 @@ $cid = $_POST['cid'];
 $imdbNumberId = $_POST['imdbId'];
 $imdbId = 'tt' . $imdbNumberId;
 
-
-set_time_limit(300);
-
 $collection = new Collection($cid);
 
 if ($_SESSION['signed_in'])
@@ -55,19 +52,43 @@ $movieExists = $movie->checkIfMovieAlreadyExists($imdbId);
 if ($movieExists === false)
 {
 	$selectedMovie = new imdb($imdbNumberId);
-	$title = $selectedMovie->title();
-	$origTitle = $selectedMovie->orig_title();
+	if (!empty($selectedMovie->orig_title()))
+	{
+		$title = $selectedMovie->orig_title();
+	}
+	else
+	{
+		$title = $selectedMovie->title();
+	}
 	$plot = $selectedMovie->plotoutline();
 	$runtime = $selectedMovie->runtime();
-	$poster = $selectedMovie->photo();
+	$poster = $selectedMovie->photo(FALSE);
 	$thumbnail = $selectedMovie->photo(true);
 	$language = $selectedMovie->language();
 	$year = $selectedMovie->year();
 
-	$answer = $movie->createMovie($title, $origTitle, $plot, $runtime, $imdbId, $poster, $thumbnail, $language, $year);
+	$answer = $movie->createMovie($title, $plot, $runtime, $imdbId, $poster, $thumbnail, $language, $year);
 
 	if ($answer === true)
 	{
+		$fmt = array();
+		$foreignTitles = array();
+		$languageCodes = array_keys($countryLanguages);
+		foreach ($selectedMovie->alsoknow() as $titles)
+		{
+			$country = $titles['country'];
+			$title = $titles['title'];
+			$foreignTitles[$country] = $title;
+		}
+		foreach ($foreignTitles as $c => $t)
+		{
+			$code = array_search($c, $countryLanguages);
+			if (!empty($code))
+			{
+				$fmt[$code] = $t;
+				$movie->saveAlternativeTitleToDb($t, $code);
+			}
+		}
 		$star = new Person();
 		foreach ($selectedMovie->cast() as $cast)
 		{

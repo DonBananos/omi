@@ -139,13 +139,15 @@ if ($collection->getPrivacy() != 1)
 										{
 											$plot = $movie->getPlot();
 										}
-										if ($movie->getOrigTitle() == null)
+										if ($movie->getLocalTitleIfExists() !== false)
 										{
+											$title = $movie->getLocalTitleIfExists();
 											$origTitle = $movie->getTitle();
 										}
 										else
 										{
-											$origTitle = $movie->getOrigTitle();
+											$title = $movie->getTitle();
+											$origTitle = false;
 										}
 										?>
 										<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 movie-listing">
@@ -156,7 +158,7 @@ if ($collection->getPrivacy() != 1)
 											</div>
 											<div class="col-lg-10 col-md-9 col-sm-8 col-xs-6">
 												<div class="col-lg-5 col-md-5 col-sm-12 col-xs-12">
-													<h4 class="movie-title"><a href="<?php echo $path ?>movie/<?php echo $movie->getId() ?>/<?php echo $movie->getSlug() ?>/"><?php echo $origTitle ?></a> <span style="color: white">(<?php echo $movie->getYear() ?>)</span></h4>
+													<h4 class="movie-title"><a href="<?php echo $path ?>movie/<?php echo $movie->getId() ?>/<?php echo $movie->getSlug() ?>/"><?php echo $title ?></a> <span style="color: white">(<?php echo $movie->getYear() ?>)</span></h4>
 												</div>
 												<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12 hidden-xs">
 													<?php
