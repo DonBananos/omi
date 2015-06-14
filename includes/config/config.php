@@ -32,6 +32,35 @@ $supportMail = "omiadmin@heibisoft.com";
 
 $qualities = array("Not Set" => "Unknown", "Scr" => "Worst", "240p" => "Very Bad", "360p" => "Bad", "480p" => "Not Good", "Web" => "Web Rip", "DVD" => "DVD Disc", "BluRay" => "BluRay Disc", "720p" => "HD Ready", "1080p" => "Full HD", "3D" => "Overrated", "4K" => "Ultra HD");
 
+$countryLanguages = array(
+	"da" => "Denmark",
+	"en-us" => "USA",
+	"en-gb" => "UK",
+	"es-ar" => "Argentina",
+	"bg" => "Bulgaria",
+	"pt-br" => "Brazil",
+	"es-cl" => "Chile",
+	"cs" => "Czech Republic",
+	"de" => "Germany",
+	"es" => "Spain",
+	"fi" => "Finland",
+	"fr" => "France",
+	"el" => "Greece",
+	"hr" => "Croatia",
+	"hu" => "Hungary",
+	"he" => "Israel",
+	"it" => "Italy",
+	"lt" => "Lithuania",
+	"es-mx" => "Mexico",
+	"es-pe" => "Peru",
+	"pl" => "Poland",
+	"pt" => "Portugal",
+	"ro" => "Romania",
+	"sr" => "Serbia",
+	"tr" => "Turkey",
+	"uk" => "Ukraine"
+); 
+
 function formatShortDate($date)
 {
 	// 31/01-12

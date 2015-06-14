@@ -2,14 +2,15 @@
 
 class Genre
 {
+
 	private $id;
 	private $name;
-	
+
 	public function __construct()
 	{
 		
 	}
-	
+
 	public function setValuesAccordingToId($id)
 	{
 		global $dbCon;
@@ -27,20 +28,46 @@ class Genre
 		$this->setId($id);
 		$this->setName($name);
 	}
-	
+
+	public function genreAlreadyInDb($name)
+	{
+		global $dbCon;
+		$sql = "SELECT genre_id FROM genre WHERE genre_name = ?;";
+		$stmt = $dbCon->prepare($sql); //Prepare Statement
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('i', $id); //Bind parameters.
+		$stmt->execute(); //Execute
+		$stmt->bind_result($id); //Get ResultSet
+		$stmt->fetch();
+		$stmt->close();
+		if ($id > 0)
+		{
+			$this->setId($id);
+			$this->setValuesAccordingToId($id);
+			return true;
+		}
+		return false;
+	}
+
 	public function createGenre($name)
 	{
-		$this->setName($name);
-		
-		return $this->saveGenreToDb();
+		if (!$this->genreAlreadyInDb($name))
+		{
+			$this->setName($name);
+			return $this->saveGenreToDb();
+		}
+		return true;
 	}
-	
+
 	private function saveGenreToDb()
 	{
 		global $dbCon;
 		//Create SQL Query
 		$sql = "INSERT INTO genre (genre_name) VALUES (?);";
-		
+
 		//Prepare Statement
 		$stmt = $dbCon->prepare($sql);
 		if ($stmt === false)
@@ -56,7 +83,7 @@ class Genre
 
 		//Get ID of user just saved
 		$id = $stmt->insert_id;
-		
+
 		$stmt->close();
 		if ($id > 0)
 		{
@@ -65,13 +92,13 @@ class Genre
 		}
 		return $dbCon->error;
 	}
-	
+
 	public function saveGenreToMovie($movieId)
 	{
 		global $dbCon;
 		//Create SQL Query
 		$sql = "INSERT INTO genre_movie (genre_movie_genre_id, genre_movie_movie_id) VALUES (?, ?);";
-		
+
 		//Prepare Statement
 		$stmt = $dbCon->prepare($sql);
 		if ($stmt === false)
@@ -87,7 +114,7 @@ class Genre
 
 		//Get ID of user just saved
 		$id = $stmt->insert_id;
-		
+
 		$stmt->close();
 		if ($id > 0)
 		{
@@ -95,7 +122,7 @@ class Genre
 		}
 		return $dbCon->error;
 	}
-	
+
 	public function getId()
 	{
 		return $this->id;
@@ -116,6 +143,4 @@ class Genre
 		$this->name = $name;
 	}
 
-
 }
-

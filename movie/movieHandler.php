@@ -11,7 +11,7 @@ class MovieHandler
 	{
 		global $dbCon;
 		$allMovies = array();
-		$sql = "SELECT movie_id FROM movie;";
+		$sql = "SELECT movie_id FROM movie ORDER BY movie_title ASC;";
 		$stmt = $dbCon->prepare($sql); //Prepare Statement
 		if ($stmt === false)
 		{

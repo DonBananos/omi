@@ -23,13 +23,15 @@ $json = file_get_contents("http://www.omdbapi.com/?i=$imdbId&plot=full&r=json");
 //JSON decode of answer
 $data = json_decode($json, true);
 
-if ($movie->getOrigTitle() == null)
+if ($movie->getLocalTitleIfExists() !== false)
 {
+	$title = $movie->getLocalTitleIfExists();
 	$origTitle = $movie->getTitle();
 }
 else
 {
-	$origTitle = $movie->getOrigTitle();
+	$title = $movie->getTitle();
+	$origTitle = false;
 }
 
 if (isset($_POST['qualityChange']))
@@ -53,7 +55,7 @@ if (isset($_POST['saveInCollection']))
 ?>
 <html lang="en">
 	<head>
-		<title><?php echo $origTitle ?> | Online movie Index</title>
+		<title><?php echo $title ?> | Online movie Index</title>
 		<?php require '../includes/header.php'; ?>
 	</head>
 	<body>
@@ -73,8 +75,7 @@ if (isset($_POST['saveInCollection']))
 				<div class="row">
 					<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
 						<div class="page-header">
-							<h1><?php echo $origTitle ?>
-							</h1>
+							<h1><?php echo $title ?></h1>
 						</div>
 						<div class="row">
 							<div class="col-lg-7 col-md-12 col-sm-12 col-xs-12 row">
@@ -92,8 +93,15 @@ if (isset($_POST['saveInCollection']))
 										$origTitle = $movie->getOrigTitle();
 									}
 									?>
-									<label><span class="label-title">Title: </span><?php echo $movie->getTitle(); ?></label><br>
+									<label><span class="label-title">Title: </span><?php echo $title; ?></label><br>
+									<?php
+									if($origTitle !== false)
+									{
+										?>
 									<label><span class="label-title">Original: </span><?php echo $origTitle; ?></label><br>
+										<?php
+									}
+									?>
 									<label><span class="label-title">Released: </span><?php echo $movie->getYear() ?></label><br>
 									<label><span class="label-title">Runtime: </span><?php echo $movie->getRuntime() ?> minutes</label><br>
 									<label><span class="label-title">Language: </span><?php echo $movie->getLanguage(); ?></label><br>
@@ -344,7 +352,7 @@ if (isset($_POST['saveInCollection']))
 																		}
 																		?>
 																	</div>
-																<div class="clearfix"></div>
+																	<div class="clearfix"></div>
 															</div>
 															<div class="clearfix"></div>
 															<div class="modal-footer">

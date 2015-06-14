@@ -17,7 +17,14 @@ $cid = $_POST['cid'];
 $imdbNumberId = $_POST['imdbId'];
 $imdbId = 'tt' . $imdbNumberId;
 
-set_time_limit(300);
+/*
+ * Make this file only call omdbapi, save only title and poster (together with imdbid)
+ * in the db, and after that call a new function (via async ajax) that makes use
+ * of imdbphp and saves as much data as possible, together with two new tables
+ * with all different titles for a movie (movie_title) and all releases (movie_release).
+ * Both tables should also have the country code 
+ */
+
 
 $collection = new Collection($cid);
 
@@ -50,99 +57,27 @@ if (!$proceed)
 }
 $movie = new Movie();
 $movieExists = $movie->checkIfMovieAlreadyExists($imdbId);
+
 if ($movieExists === false)
 {
-	$selectedMovie = new imdb($imdbNumberId);
-	$title = $selectedMovie->title();
-	$origTitle = $selectedMovie->orig_title();
-	$plot = $selectedMovie->plotoutline();
-	$runtime = $selectedMovie->runtime();
-	$poster = $selectedMovie->photo();
-	$thumbnail = $selectedMovie->photo(true);
-	$language = $selectedMovie->language();
-	$year = $selectedMovie->year();
+	$json = file_get_contents("http://www.omdbapi.com/?i=$imdbId&plot=short&r=json");
+	
+	$movieData = json_decode($json, true);
+	
+	$title = $movieData['Title'];
+	$poster = $movieData['Poster'];
+	$year = $movieData['Year'];
 
-	$answer = $movie->createMovie($title, $origTitle, $plot, $runtime, $imdbId, $poster, $thumbnail, $language, $year);
+	$answer = $movie->createMovie($title, $imdbId, $poster, $year);
+	
 	if ($answer === true)
 	{
-		$star = new Person();
-		foreach ($selectedMovie->cast() as $cast)
-		{
-			$movieStar = new imdb_person($cast['imdb']);
-			$inDb = $star->checkIfPersonIsInDb($cast['imdb']);
-			if ($inDb === false)
-			{
-				$person_bio = "";
-				foreach ($movieStar->bio() as $bio)
-				{
-					$person_bio .= $bio['desc'];
-				}
-				if (isset($movieStar->born()['year']))
-				{
-					$born = $movieStar->born()['year'] . '-' . $movieStar->born()['mon'] . '-' . $movieStar->born()['day'];
-					$bornPlace = $movieStar->born()['place'];
-				}
-				else
-				{
-					$born = null;
-					$bornPlace = null;
-				}
-				if (isset($cast['thumb']))
-				{
-					$thumbnail = $cast['thumb'];
-				}
-				else
-				{
-					$thumbnail = null;
-				}
-				$star_id = $star->createPerson($cast['name'], $cast['imdb'], $person_bio, $born, $bornPlace, $thumbnail);
-			}
-			else
-			{
-				$star_id = $star->setValuesAccordingToId($inDb);
-			}
-			$star->savePersonToMovie($star_id, $movie->getId(), $cast['role'], 'Cast');
-		}
-		$theDirector = new Person();
-		foreach ($selectedMovie->director() as $director)
-		{
-			$movieDirector = new imdb_person();
-			$inDb = $theDirector->checkIfPersonIsInDb($director['imdb']);
-			if ($inDb === false)
-			{
-				$person_bio = "";
-				foreach ($movieDirector->bio() as $bio)
-				{
-					$person_bio .= $bio['desc'];
-				}
-				if (isset($movieDirector->born()['year']))
-				{
-					$born = $movieDirector->born()['year'] . '-' . $movieDirector->born()['mon'] . '-' . $movieDirector->born()['day'];
-					$bornPlace = $movieDirector->born()['place'];
-				}
-				else
-				{
-					$born = null;
-					$bornPlace = null;
-				}
-				$thumbnail = $movieDirector->photo();
-				$director_id = $star->createPerson($director['name'], $director['imdb'], $person_bio, $born, $bornPlace, $thumbnail);
-			}
-			else
-			{
-				$director_id = $theDirector->setValuesAccordingToId($inDb);
-			}
-			$theDirector->savePersonToMovie($director_id, $movie->getId(), 'Director', 'Crew');
-		}
-		$genre = new Genre();
-		foreach ($selectedMovie->genres() as $genreName)
-		{
-			$answer = $genre->createGenre(trim($genreName));
-			if ($answer === true)
-			{
-				$answer = $genre->saveGenreToMovie($movie->getId());
-			}
-		}
+		?>
+	<script>
+		$.get('<?php echo $path ?>collection/getLatestDataForMovie.php', {imdb: <?php echo $imdbId ?>}, function () {
+		});
+	</script>
+		<?php
 	}
 }
 else

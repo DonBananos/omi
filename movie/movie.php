@@ -77,18 +77,12 @@ class Movie
 		return true;
 	}
 
-	public function createMovie($title, $origTitle, $plot, $runtime, $imdbId, $posterUrl, $posterUrlThumb, $language, $year)
+	public function createMovie($title, $imdbId, $posterUrl, $year)
 	{
 		$this->setTitle($title);
-		$this->setOrigTitle($origTitle);
 		$this->setSlug($this->createSlug($this->title));
-		$this->setPlot($plot);
-		$this->setRuntime($runtime);
 		$this->setImdbId($imdbId);
-		$this->setImdbLink($imdbId);
 		$this->setPosterUrl($posterUrl);
-		$this->setPosterUrlThumb($posterUrlThumb);
-		$this->setLanguage($language);
 		$this->setYear($year);
 
 		return $this->saveMovieInDb();
@@ -98,7 +92,7 @@ class Movie
 	{
 		global $dbCon;
 		//Create SQL Query
-		$sql = "INSERT INTO movie (movie_title, movie_orig_title, movie_slug, movie_plot, movie_runtime, movie_imdb_id, movie_poster, movie_poster_thumb, movie_language, movie_year) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+		$sql = "INSERT INTO movie (movie_title, movie_slug, movie_imdb_id, movie_poster, movie_year) VALUES (?, ?, ?, ?, ?);";
 
 		//Prepare Statement
 		$stmt = $dbCon->prepare($sql);
@@ -108,7 +102,7 @@ class Movie
 		}
 
 		//Bind parameters.
-		$stmt->bind_param('ssssisssss', $this->title, $this->origTitle, $this->slug, $this->plot, $this->runtime, $this->imdbId, $this->posterUrl, $this->posterUrlThumb, $this->language, $this->year);
+		$stmt->bind_param('sssss', $this->title, $this->slug, $this->imdbId, $this->posterUrl, $this->year);
 
 		//Execute
 		$stmt->execute();
@@ -120,6 +114,110 @@ class Movie
 		if ($id > 0)
 		{
 			$this->setValuesWithId($id);
+			return true;
+		}
+		return $dbCon->error;
+	}
+
+	public function saveAlternativeTitleToDb($title, $languageCode)
+	{
+		if ($this->checkIfAlternativeTitleIsInDb($title, $languageCode))
+		{
+			return true;
+		}
+		global $dbCon;
+		//Create SQL Query
+		$sql = "INSERT INTO movie_aka_title (movie_aka_title_language_code, movie_aka_title_movie_id, movie_aka_title_title) VALUES (?, ?, ?);";
+
+		//Prepare Statement
+		$stmt = $dbCon->prepare($sql);
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+
+		//Bind parameters.
+		$stmt->bind_param('sis', $languageCode, $this->id, $title);
+
+		//Execute
+		$stmt->execute();
+
+		//Get ID of user just saved
+		$id = $stmt->insert_id;
+
+		$stmt->close();
+		if ($id > 0)
+		{
+			return true;
+		}
+		return $dbCon->error;
+	}
+
+	private function checkIfAlternativeTitleIsInDb($title, $languageCode)
+	{
+		global $dbCon;
+		//Create SQL Query
+		$sql = "SELECT movie_aka_title_id FROM movie_aka_title WHERE movie_aka_title_language_code = ? AND movie_aka_title_movie_id = ? AND movie_aka_title_title = ?;";
+
+		//Prepare Statement
+		$stmt = $dbCon->prepare($sql);
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+
+		//Bind parameters.
+		$stmt->bind_param('sis', $languageCode, $this->id, $title);
+
+		//Execute
+		$stmt->execute();
+
+		//Get ID of user just saved
+		$stmt->bind_result($matid);
+		$stmt->fetch();
+
+		$stmt->close();
+		if ($matid > 0)
+		{
+			return true;
+		}
+		return false;
+	}
+
+	public function updateMovieWithFullData($plot, $runtime, $posterUrlThumb, $language)
+	{
+		$this->setPlot($plot);
+		$this->setRuntime($runtime);
+		$this->setPosterUrlThumb($posterUrlThumb);
+		$this->setLanguage($language);
+
+		$this->insertUpdateInDatabase();
+	}
+
+	private function insertUpdateInDatabase()
+	{
+		global $dbCon;
+		$sql = "UPDATE movie SET movie_plot = ?, movie_runtime = ?, movie_poster_thumb = ?, movie_language = ? WHERE movie_id = ?;";
+		
+		//Prepare Statement
+		$stmt = $dbCon->prepare($sql);
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+
+		//Bind parameters.
+		$stmt->bind_param('sissi', $this->plot, $this->runtime, $this->posterUrlThumb, $this->language, $this->id);
+
+		//Execute
+		$stmt->execute();
+
+		//Get ID of user just saved
+		$id = $stmt->insert_id;
+
+		$stmt->close();
+		if ($id > 0)
+		{
 			return true;
 		}
 		return $dbCon->error;
@@ -196,7 +294,7 @@ class Movie
 			return true;
 		}
 	}
-	
+
 	public function getFullCast()
 	{
 		global $dbCon;
@@ -217,7 +315,7 @@ class Movie
 		$stmt->close();
 		return $castList;
 	}
-	
+
 	public function getDirectors()
 	{
 		global $dbCon;
@@ -279,7 +377,7 @@ class Movie
 		$stmt->close();
 		return $genreIds;
 	}
-	
+
 	public function getAllCollectionIdsForUserInWhichTheMovieIs($user_id)
 	{
 		global $dbCon;
@@ -300,7 +398,7 @@ class Movie
 		$stmt->close();
 		return $collectionIds;
 	}
-	
+
 	public function getAllCollectionIdsForUserInWhichTheMovieIsNot($user_id)
 	{
 		global $dbCon;
@@ -321,7 +419,7 @@ class Movie
 		$stmt->close();
 		return $collectionIds;
 	}
-	
+
 	public function getMovieInCollectionQuality($collection)
 	{
 		global $dbCon;
@@ -338,7 +436,7 @@ class Movie
 		$stmt->close();
 		return $quality;
 	}
-	
+
 	public function updateQualityInCollection($quality, $collectionId)
 	{
 		global $dbCon;
@@ -353,7 +451,7 @@ class Movie
 		$stmt->execute(); //Execute
 		$stmt->close();
 	}
-	
+
 	public function getAllSubsForMovieInCollection($collectionId)
 	{
 		global $dbCon;
@@ -374,7 +472,7 @@ class Movie
 		$stmt->close();
 		return $subs;
 	}
-	
+
 	public function saveSubtitleForMovieInCollection($subtitleId, $collectionId)
 	{
 		global $dbCon;
@@ -407,6 +505,51 @@ class Movie
 		{
 			return $id;
 		}return false;
+	}
+
+	public function getLocalTitleIfExists()
+	{
+		//First, we get the browser prefered languages
+		$lang_str = $_SERVER['HTTP_ACCEPT_LANGUAGE'] . '<br><br>';
+		//Then we only select the first available, since titles should only be
+		//in the users native language, it not the original.
+		$prefered_lang = substr($lang_str, 0, 5);
+		//Get all alternative titles for movie
+		$alternativeTitles = $this->getArrayOfAllAlternativeTitles();
+		if (isset($alternativeTitles[$prefered_lang]))
+		{
+			return $alternativeTitles[$prefered_lang];
+		}
+		elseif (isset($alternativeTitles[substr($prefered_lang, 0, 2)]))
+		{
+			return $alternativeTitles[substr($prefered_lang, 0, 2)];
+		}
+		return false;
+	}
+
+	private function getArrayOfAllAlternativeTitles()
+	{
+		$alternativeTitles = array();
+		global $dbCon;
+		$sql = "SELECT movie_aka_title_language_code, movie_aka_title_title FROM movie_aka_title WHERE movie_aka_title_movie_id = ?;";
+		$stmt = $dbCon->prepare($sql);
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('i', $this->id);
+		$stmt->execute();
+		$stmt->bind_result($languageCode, $title);
+		while ($stmt->fetch())
+		{
+			$alternativeTitles[$languageCode] = $title;
+		}
+		$stmt->close();
+		if (count($alternativeTitles) > 0)
+		{
+			return $alternativeTitles;
+		}
+		return false;
 	}
 
 	public function getId()
@@ -463,7 +606,7 @@ class Movie
 	{
 		return $this->imdbId;
 	}
-	
+
 	public function getImdbLink()
 	{
 		return $this->imdbLink;
@@ -523,7 +666,7 @@ class Movie
 	{
 		$this->imdbId = $imdbId;
 	}
-	
+
 	private function setImdbLink($imdbId)
 	{
 		$this->imdbLink = 'http://www.imdb.com/title/' . $imdbId . '/';

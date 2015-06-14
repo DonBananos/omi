@@ -1,16 +1,16 @@
 RewriteEngine On
 
-#Redirect for category list
+#Redirect for a collection
 RewriteCond %{REQUEST_FILENAME} !-d [NC]
 RewriteCond %{REQUEST_FILENAME} !-f [NC]
 RewriteRule ^collection/(\d+)/[a-z-]+/?$ collection/collectionView.php?id=$1 [NC,L]
 
-#Redirect for category list
+#Redirect for adding movie to a collection
 RewriteCond %{REQUEST_FILENAME} !-d [NC]
 RewriteCond %{REQUEST_FILENAME} !-f [NC]
 RewriteRule ^collection/(\d+)/[a-z-]+/addMovie/$ collection/addMovie.php?cid=$1 [NC,L]
 
-#Redirect for category list
+#Redirect for removing movie from collection
 RewriteCond %{REQUEST_FILENAME} !-d [NC]
 RewriteCond %{REQUEST_FILENAME} !-f [NC]
 RewriteRule ^collection/\d+/[a-z-]+/removeMovie/?$ collection/removeMovie.php [NC,L]

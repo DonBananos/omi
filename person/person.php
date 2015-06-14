@@ -120,6 +120,10 @@ class Person
 	
 	public function savePersonToMovie($id, $movie, $role, $team)
 	{
+		if($this->checkIfPersonIsAlreadyInMovieWithRole($movie, $role, $id, $team))
+		{
+			return;
+		}
 		global $dbCon;
 		//Create SQL Query
 		$sql = "INSERT INTO person_movie (person_movie_person_id, person_movie_movie_id, person_movie_role, person_movie_team) VALUES (?, ?, ?, ?)";
@@ -143,6 +147,32 @@ class Person
 			return $dbCon->error;
 		}
 		return true;
+	}
+	
+	private function checkIfPersonIsAlreadyInMovieWithRole($movie, $role, $id, $team)
+	{
+		global $dbCon;
+		$sql = "SELECT person_movie_id FROM person_movie WHERE person_movie_person_id = ? AND person_movie_movie_id = ? AND person_movie_role = ? AND person_movie_team = ?;";
+		
+		$stmt = $dbCon->prepare($sql);
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		//Bind parameters.
+		$stmt->bind_param('iiss', $id, $movie, $role, $team);
+
+		//Execute
+		$stmt->execute();
+		
+		$stmt->bind_result($moviePersonId);
+		$stmt->fetch();
+		$stmt->close();
+		if($moviePersonId > 0)
+		{
+			return true;
+		}
+		return false;
 	}
 	
 	private function createSlug($name)
