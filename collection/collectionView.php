@@ -233,14 +233,8 @@ if ($collection->getPrivacy() != 1)
 													</label>
 												</div>
 												<div class="clearfix"></div>
-												<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 hidden-xs">
-													<p>
-														<b class="label-title">Plot: </b><?php echo $plot ?>
-													</p>
-												</div>
 											</div>
 											<div class="col-lg-1 col-md-1 col-sm-1 col-xs-2 pull-right movie-listing-edit">
-												<br>
 												<span class="fa fa-search fa-2x pull-right" data-toggle="modal" data-target="#<?php echo $movie->getImdbId() ?>DetailsModal"></span>
 												<div class="clearfix"></div>
 												<br>
@@ -275,7 +269,14 @@ if ($collection->getPrivacy() != 1)
 															</div>
 															<div class="col-lg-8 col-md-8 col-sm-6 col-xs-6">
 																<p>
-																	<b>Original Title</b>: <?php echo $origTitle ?><br>
+																	<?php
+																	if ($origTitle !== false)
+																	{
+																		?>
+																		<b>Original Title</b>: <?php echo $origTitle ?><br>
+																		<?php
+																	}
+																	?>
 																	<b>Release</b>: <?php echo $movie->getYear() ?><br>
 																	<b>Runtime</b>: <?php echo $movie->getRuntime() ?> minutes<br>
 																	<b>Genre</b>:

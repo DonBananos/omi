@@ -40,10 +40,20 @@ if (isset($_POST['qualityChange']))
 	$collectionId = $_POST['cid'];
 	$movieId = $movie->getId();
 	$movie->updateQualityInCollection($selectedQuality, $collectionId);
-	$subsSelected = $_POST['checkedSubs'];
-	foreach ($subsSelected as $subId)
+	if (isset($_POST['checkedSubs']))
 	{
-		$movie->saveSubtitleForMovieInCollection($subId, $collectionId);
+		$subsSelected = $_POST['checkedSubs'];
+		if (count($subsSelected) > 0)
+		{
+			foreach ($subsSelected as $subId)
+			{
+				$movie->saveSubtitleForMovieInCollection($subId, $collectionId);
+			}
+		}
+	}
+	else
+	{
+		$subsSelected[] = 0;
 	}
 	$movie->removeSubtitlesNotSelected($subsSelected, $collectionId);
 }
@@ -85,14 +95,6 @@ if (isset($_POST['saveInCollection']))
 								</div>
 								<div class="col-lg-7 col-md-7 col-sm-6 col-xs-12">
 									<?php
-									if ($movie->getOrigTitle() == null)
-									{
-										$origTitle = $movie->getTitle();
-									}
-									else
-									{
-										$origTitle = $movie->getOrigTitle();
-									}
 									?>
 									<label><span class="label-title">Title: </span><?php echo $title; ?></label><br>
 									<?php
@@ -335,7 +337,7 @@ if (isset($_POST['saveInCollection']))
 																				}
 																			}
 																			$key = array_search($usedSub['id'], $printedSubIds);
-																			if (! is_int($key))
+																			if (!is_int($key))
 																			{
 																				?>
 																				<div class="checkbox">
@@ -350,7 +352,7 @@ if (isset($_POST['saveInCollection']))
 																		foreach ($allSubs as $sub)
 																		{
 																			$key = array_search($sub['id'], $printedSubIds);
-																			if (! is_int($key))
+																			if (!is_int($key))
 																			{
 																				?>
 																				<div class="checkbox">
