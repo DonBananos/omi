@@ -485,6 +485,67 @@ class Movie
 		$stmt->execute(); //Execute
 		$stmt->close();
 	}
+	
+	public function removeSubtitlesNotSelected($subtitlesSelected, $collectionId)
+	{
+		$allCurrentSubsForMovie = $this->getAllSubIdsForMovieInCollection($collectionId);
+		foreach($allCurrentSubsForMovie as $subId)
+		{
+			$key = array_search($subId, $subtitlesSelected);
+			if(!is_int($key))
+			{
+				$this->removeSubIdFromMovieInCollection($subId, $collectionId);
+			}
+		}
+	}
+	
+	private function getAllSubIdsForMovieInCollection($collectionId)
+	{
+		global $dbCon;
+		$subs = array();
+		$sql = "SELECT subtitles_language_id FROM collection_movie_sub INNER JOIN subtitles_language ON collection_movie_subtitle_id = subtitles_language_id WHERE collection_movie_collection_id = ? AND collection_movie_movie_id = ?";
+		$stmt = $dbCon->prepare($sql); //Prepare Statement
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('ii', $collectionId, $this->id); //Bind parameters.
+		$stmt->execute(); //Execute
+		$stmt->bind_result($subId); //Get ResultSet
+		while ($stmt->fetch())
+		{
+			array_push($subs, $subId);
+		}
+		$stmt->close();
+		return $subs;
+	}
+	
+	private function removeSubIdFromMovieInCollection($subId, $collectionId)
+	{
+		global $dbCon;
+			//Create SQL Query
+			$sql = "DELETE FROM collection_movie_sub WHERE collection_movie_collection_id = ? AND collection_movie_movie_id = ? AND collection_movie_subtitle_id = ?";
+
+			//Prepare Statement
+			$stmt = $dbCon->prepare($sql);
+			if ($stmt === false)
+			{
+				trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+			}
+
+			//Bind parameters.
+			$stmt->bind_param('iii', $collectionId, $this->id, $subId);
+
+			//Execute
+			$stmt->execute();
+
+			$stmt->close();
+			if ($dbCon->error != NULL)
+			{
+				return $dbCon->error;
+			}
+			return true;
+	}
 
 	public function checkIfMovieAlreadyExists($imdbId)
 	{

@@ -45,6 +45,7 @@ if (isset($_POST['qualityChange']))
 	{
 		$movie->saveSubtitleForMovieInCollection($subId, $collectionId);
 	}
+	$movie->removeSubtitlesNotSelected($subsSelected, $collectionId);
 }
 
 if (isset($_POST['saveInCollection']))
