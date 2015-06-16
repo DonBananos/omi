@@ -95,10 +95,10 @@ if (isset($_POST['saveInCollection']))
 									?>
 									<label><span class="label-title">Title: </span><?php echo $title; ?></label><br>
 									<?php
-									if($origTitle !== false)
+									if ($origTitle !== false)
 									{
 										?>
-									<label><span class="label-title">Original: </span><?php echo $origTitle; ?></label><br>
+										<label><span class="label-title">Original: </span><?php echo $origTitle; ?></label><br>
 										<?php
 									}
 									?>
@@ -137,8 +137,8 @@ if (isset($_POST['saveInCollection']))
 										{
 											$director->setValuesAccordingToId($movieDirector);
 											?>
-										<a href="<?php echo $path ?>person/<?php echo $director->getId() ?>/<?php echo $director->getSlug() ?>/"><?php echo $director->getName();?></a>
-										<?php
+											<a href="<?php echo $path ?>person/<?php echo $director->getId() ?>/<?php echo $director->getSlug() ?>/"><?php echo $director->getName(); ?></a>
+											<?php
 											$counter++;
 											if ($counter < $numberOfDirectors)
 											{
@@ -310,48 +310,116 @@ if (isset($_POST['saveInCollection']))
 																		<label class="label-title pull-right" style="padding: 5px;">Subtitles: </label>
 																	</div>
 																	<div class="col-lg-9 col-md-9 col-sm-9 col-xs-8" style="overflow-y: auto; max-height: 20vh;">
+																		<small style="color: grey">Used by you:</small>
 																		<?php
+																		$usedSubs = $mh->getAllUsedSubs($active_user->getId());
 																		$allSubs = $mh->getAllPossibleSubs();
 																		$ownedSubs = $movie->getAllSubsForMovieInCollection($collectionId);
-																		foreach ($allSubs as $possibleSubtitle)
+																		$printedSubIds = array();
+																		foreach ($usedSubs as $usedSub)
 																		{
-																			if (count($ownedSubs) == 0)
+																			foreach ($ownedSubs as $code)
+																			{
+																				$key = array_search($usedSub['id'], $printedSubIds);
+																				if ($usedSub['code'] == $code AND ! is_int($key))
+																				{
+																					?>
+																					<div class="checkbox">
+																						<label>
+																							<input type="checkbox" name="checkedSubs[]" value="<?php echo $usedSub['id'] ?>" checked> <?php echo $usedSub['code'] ?> (<?php echo $usedSub['name'] ?>)
+																						</label>
+																					</div>
+																					<?php
+																					array_push($printedSubIds, $usedSub['id']);
+																				}
+																			}
+																			$key = array_search($usedSub['id'], $printedSubIds);
+																			if (! is_int($key))
 																			{
 																				?>
 																				<div class="checkbox">
 																					<label>
-																						<input type="checkbox" name="checkedSubs[]" value="<?php echo $possibleSubtitle['id'] ?>"> <?php echo $possibleSubtitle['code'] ?> (<?php echo $possibleSubtitle['name'] ?>)
+																						<input type="checkbox" name="checkedSubs[]" value="<?php echo $usedSub['id'] ?>"> <?php echo $usedSub['code'] ?> (<?php echo $usedSub['name'] ?>)
 																					</label>
 																				</div>
 																				<?php
 																			}
-																			else
+																		}
+																		echo '<hr>';
+																		foreach ($allSubs as $sub)
+																		{
+																			$key = array_search($sub['id'], $printedSubIds);
+																			if (! is_int($key))
 																			{
-																				foreach ($ownedSubs as $ownedSubCode)
-																				{
-																					if ($ownedSubCode == $possibleSubtitle['code'])
-																					{
-																						?>
-																						<div class="checkbox">
-																							<label>
-																								<input type="checkbox" name="checkedSubs[]" value="<?php echo $possibleSubtitle['id'] ?>" checked> <?php echo $possibleSubtitle['code'] ?> (<?php echo $possibleSubtitle['name'] ?>)
-																							</label>
-																						</div>
-																						<?php
-																					}
-																					else
-																					{
-																						?>
-																						<div class="checkbox">
-																							<label>
-																								<input type="checkbox" name="checkedSubs[]" value="<?php echo $possibleSubtitle['id'] ?>"> <?php echo $possibleSubtitle['code'] ?> (<?php echo $possibleSubtitle['name'] ?>)
-																							</label>
-																						</div>
-																						<?php
-																					}
-																				}
+																				?>
+																				<div class="checkbox">
+																					<label>
+																						<input type="checkbox" name="checkedSubs[]" value="<?php echo $sub['id'] ?>"> <?php echo $sub['code'] ?> (<?php echo $sub['name'] ?>)
+																					</label>
+																				</div>
+																				<?php
 																			}
 																		}
+																		/*
+																		  foreach ($usedSubs as $possibleSubtitle)
+																		  {
+																		  if (count($ownedSubs) == 0)
+																		  {
+																		  ?>
+																		  <div class="checkbox">
+																		  <label>
+																		  <input type="checkbox" name="checkedSubs[]" value="<?php echo $possibleSubtitle['id'] ?>"> <?php echo $possibleSubtitle['code'] ?> (<?php echo $possibleSubtitle['name'] ?>)
+																		  </label>
+																		  </div>
+																		  <?php
+																		  }
+																		  else
+																		  {
+																		  foreach ($ownedSubs as $ownedSubCode)
+																		  {
+																		  if (array_search($possibleSubtitle['id'], $printedSubIds) == false)
+																		  {
+																		  if ($ownedSubCode == $possibleSubtitle['code'])
+																		  {
+																		  ?>
+																		  <div class="checkbox">
+																		  <label>
+																		  <input type="checkbox" name="checkedSubs[]" value="<?php echo $possibleSubtitle['id'] ?>" checked> <?php echo $possibleSubtitle['code'] ?> (<?php echo $possibleSubtitle['name'] ?>)
+																		  </label>
+																		  </div>
+																		  <?php
+																		  }
+																		  else
+																		  {
+																		  ?>
+																		  <div class="checkbox">
+																		  <label>
+																		  <input type="checkbox" name="checkedSubs[]" value="<?php echo $possibleSubtitle['id'] ?>"> <?php echo $possibleSubtitle['code'] ?> (<?php echo $possibleSubtitle['name'] ?>)
+																		  </label>
+																		  </div>
+																		  <?php
+																		  }
+																		  }
+																		  }
+																		  }
+																		  array_push($printedSubIds, $possibleSubtitle['id']);
+																		  }
+																		  echo '<hr>';
+																		  echo '<small style="color: grey">All other subtitles:</small>';
+																		  foreach ($allSubs as $possibleSubtitle)
+																		  {
+																		  if (array_search($possibleSubtitle['id'], $printedSubIds) == FALSE)
+																		  {
+																		  ?>
+																		  <div class="checkbox">
+																		  <label>
+																		  <input type="checkbox" name="checkedSubs[]" value="<?php echo $possibleSubtitle['id'] ?>"> <?php echo $possibleSubtitle['code'] ?> (<?php echo $possibleSubtitle['name'] ?>)
+																		  </label>
+																		  </div>
+																		  <?php
+																		  }
+																		  }
+																		 */
 																		?>
 																	</div>
 																	<div class="clearfix"></div>
