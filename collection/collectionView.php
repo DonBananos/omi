@@ -153,7 +153,7 @@ if ($collection->getPrivacy() != 1)
 										<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 movie-listing">
 											<div class="col-lg-1 col-md-2 col-sm-3 col-xs-4">
 												<a href="<?php echo $path ?>movie/<?php echo $movie->getId() ?>/<?php echo $movie->getSlug() ?>/">
-													<img src="<?php echo $movie->getPosterUrl() ?>" class="img-responsive">
+													<img src="<?php echo $movie->getPosterUrlThumb() ?>" class="img-responsive">
 												</a>
 											</div>
 											<div class="col-lg-10 col-md-9 col-sm-8 col-xs-6">
