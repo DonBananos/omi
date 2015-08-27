@@ -98,7 +98,7 @@ if (empty($person->getBio()))
 										$origTitle = $movie->getOrigTitle();
 									}
 									?>
-									<a href="<?php echo $path ?>movie/<?php echo $movie->getId() ?>/<?php echo $movie->getSlug() ?>/"><?php echo $origTitle ?></a> <i style="color: lightgrey">as</i> <?php echo $movieIdAndRole['role'] ?><br>
+								<a href="<?php echo $path ?>movie/<?php echo $movie->getId() ?>/<?php echo $movie->getSlug() ?>/"><?php echo $origTitle ?> (<?php echo $movie->getYear() ?>)</a> <i style="color: lightgrey">as</i> <b><?php echo $movieIdAndRole['role'] ?></b><br>
 									<?php
 								}
 								?>

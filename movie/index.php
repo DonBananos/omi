@@ -50,6 +50,14 @@ require './movieHandler.php';
 								{
 									$plot = $movie->getPlot();
 								}
+								if($movie->getLocalTitleIfExists() != false)
+								{
+									$title = $movie->getLocalTitleIfExists();
+								}
+								else
+								{
+									$title = $movie->getTitle();
+								}
 								?>
 								<div class="col-lg-3 col-md-3 col-sm-4 col-xs-6">
 									<div class="owned">
@@ -60,7 +68,7 @@ require './movieHandler.php';
 													<div class="clearfix"></div>
 												</div>
 												<div class="clearfix"></div>
-												<h4 class="movie-title"><?php echo $movie->getTitle() ?> (<?php echo $movie->getYear() ?>)</h4>
+												<h4 class="movie-title"><?php echo $title ?> (<?php echo $movie->getYear() ?>)</h4>
 											</div>
 										</a>
 									</div>

@@ -188,7 +188,7 @@ class Person
 		$movieIds = array();
 		$theMovie = array();
 		global $dbCon;
-		$sql = "SELECT person_movie_id, person_movie_movie_id, person_movie_role FROM person_movie WHERE person_movie_person_id = ?;";
+		$sql = "SELECT person_movie_id, person_movie_movie_id, person_movie_role FROM person_movie INNER JOIN movie ON person_movie_movie_id = movie_id WHERE person_movie_person_id = ? ORDER BY movie_year DESC;";
 		$stmt = $dbCon->prepare($sql); //Prepare Statement
 		if ($stmt === false)
 		{
