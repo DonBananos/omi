@@ -5,7 +5,7 @@ Author: R. Mike Jensen, Heini L. Ovason
 <footer>
     <hr>
     <p style="text-align: center; color: grey">
-        Copyright &copy; 2015 <a href="http://www.mjsolutions.dk">MJSolutions.DK</a>
+        Copyright &copy; 2015 <a href="http://www.softion.dk">Softion IVS</a>
     </p>  
 </footer>
 
