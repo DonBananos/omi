@@ -34,12 +34,25 @@ if (isset($_SESSION['signed_in']))
 			if (isset($_SESSION['signed_in']))
 			{
 				require './includes/navbar.php';
-				require './includes/memberStart.php';
+				?>
+				<div class="container">
+					<?php
+					require './includes/memberStart.php';
+					require './includes/footer.php';
+					?>
+				</div>
+				<?php
 			}
 			else
 			{
 				require './includes/loginBar.php';
-				require './includes/start.php';
+				?>
+				<div class="container">
+					<?php
+					require './includes/start.php';
+					require './includes/footer.php';
+					?>
+				</div>
+				<?php
 			}
-			require './includes/footer.php';
 			?>

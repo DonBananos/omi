@@ -41,6 +41,12 @@ if ($collection->getPrivacy() != 1)
 {
 	$collection_private = false;
 }
+
+if(isset($_POST['EditDescriptionSubmit']))
+{
+	$text = trim($_POST['descriptionText']);
+	$collection->updateDescription($text);
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -109,8 +115,21 @@ if ($collection->getPrivacy() != 1)
 							</div>
 							<br>
 							<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-								<p><?php echo $collection->getDescription() ?></p>
+								<p class="collection-description">
+									<?php
+									echo nl2br($collection->getDescription());
+									if ($own_collection)
+									{
+										?>
+										<a href="#" class="edit-pencil" data-toggle="modal" data-target="#editDescriptionModal">
+											<span class="fa fa-pencil"></span>
+										</a>
+										<?php
+									}
+									?>
+								</p>
 							</div>
+							<div class="clearfix"></div>
 							<hr>
 							<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 								<?php
@@ -394,7 +413,49 @@ if ($collection->getPrivacy() != 1)
 							<div class="clearfix"></div>
 						</div>
 					</div>
+				<?php
+					require '../includes/footer.php';
+				?>
 				</div>
+				<?php
+				if ($own_collection)
+				{
+					?>
+					<div class="modal fade" id="editDescriptionModal" aria-labelledby="editDescriptionModalLabel" >
+						<div class="modal-dialog">
+							<div class="modal-content">
+								<div class="modal-header">
+									<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+									<h4 class="modal-title" id="editDescriptionModalLabel">Add/Edit Collection Description</h4>
+								</div>
+								<form action=" " method="POST" name="editDescriptionForm">
+									<div class="modal-body">
+										<?php
+										if($collection->getDescription() == "No description")
+										{
+											$value = "";
+											$placeHolder = $collection->getDescription();
+										}
+										else
+										{
+											$placeHolder = "";
+											$value = $collection->getDescription();
+										}
+										?>
+										<textarea class="form-control" rows="6" name="descriptionText" placeholder="<?php echo $placeHolder ?>"><?php echo $value ?></textarea>
+									</div>
+									<div class="clearfix"></div>
+									<div class="modal-footer">
+										<button type="submit" class="btn btn-primary" name="EditDescriptionSubmit"><span class="fa fa-check"></span> Save</button>
+										<button type="reset" class="btn btn-default" data-dismiss="modal" aria-label="Close"><span class="fa fa-times"></span> Cancel</button>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+					<?php
+				}
+				?>
 				<script>
 					$(".image-box").hover(function () {
 						var element = $(this).attr('id');
@@ -407,6 +468,6 @@ if ($collection->getPrivacy() != 1)
 				</script>
 
 				<?php
-				require '../includes/footer.php';
 			}
 			?>
+		</div>

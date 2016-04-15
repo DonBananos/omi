@@ -3,8 +3,8 @@ Author: Heini L. Ovason
 -->
 
 <!-- Button trigger modal -->
-<button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">
-    Create Movie Collection
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
+    <span class="fa fa-plus"></span> Create Movie Collection
 </button>
 
 <!-- Modal -->

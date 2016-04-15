@@ -160,6 +160,25 @@ class Collection
 		return $moviesIds;
 	}
 	
+	public function updateDescription($text)
+	{
+		global $dbCon;
+		
+		$sql = "UPDATE collection SET collection_description = ? WHERE collection_id = ?;";
+		$stmt = $dbCon->prepare($sql); //Prepare Statement
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('si', $text, $this->id); //Bind parameters.
+		$status = $stmt->execute(); //Execute
+		if($status)
+		{
+			$this->setDescription($text);
+		}
+		return $status;
+	}
+	
 	public function getId()
 	{
 		return $this->id;
@@ -172,6 +191,10 @@ class Collection
 
 	public function getDescription()
 	{
+		if(empty($this->description))
+		{
+			return "No description";
+		}
 		return $this->description;
 	}
 

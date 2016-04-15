@@ -288,3 +288,19 @@ h4 a:hover
 	max-height: 80vh;
 	overflow-y: auto;
 }
+
+.collection-description
+{
+	font-style: italic;
+	color: #aaa;
+}
+
+.collection-description > a.edit-pencil
+{
+	display: none;
+}
+
+.collection-description:hover > a.edit-pencil
+{
+	display: inline;
+}
