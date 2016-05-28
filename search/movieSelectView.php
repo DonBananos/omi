@@ -27,6 +27,11 @@ require '../collection/collection.php';
 $collection = new Collection($cid);
 $movie = new imdb($imdbId);
 $year = $movie->year();
+
+$json = file_get_contents("http://www.omdbapi.com/?i=$searchImdbId&plot=full&r=json");
+
+//JSON decode of answer
+$data = json_decode($json, true);
 ?>
 <div id = "movieSelectedArea">
 	<hr class="visible-xs">
@@ -36,7 +41,7 @@ $year = $movie->year();
 	</p>
 	<div class = "col-lg-8 col-md-8 col-sm-8 col-xs-12" style="height: 30vh; overflow-y: auto">
 		<label><span class="label-title">Title: </span><?php echo $movie->title(); ?></label><br>
-		<label><span class="label-title">Original: </span><?php echo $movie->orig_title(); ?></label><br>
+		<label><span class="label-title">Original: </span><?php echo $data['Title'] ?></label><br>
 		<label><span class="label-title">Released: </span><?php echo $year ?></label><br>
 		<label><span class="label-title">Runtime: </span><?php echo $movie->runtime() ?> minutes</label><br>
 		<label><span class="label-title">Language: </span>
@@ -72,12 +77,12 @@ $year = $movie->year();
 		</a>
 	</div>
 	<div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
-		<img class="thumbnail img-responsive pull-right movie-search-poster" src="<?php echo $movie->photo(true) ?>">
+		<img class="thumbnail img-responsive pull-right movie-search-poster" src="<?php echo $data['Poster'] ?>">
 	</div>
 	<div class="clearfix"></div>
 	<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
 		<label><span class="label-title">Plot: </span></label><br>
-		<p><?php echo $movie->plotoutline() ?></p>
+		<p><?php echo $data['Plot'] ?></p>
 	</div>
 	<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
 		<p>
@@ -100,7 +105,7 @@ $year = $movie->year();
 	</div>
 	<div class="clearfix"></div>
 	<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-		<form action="<?php echo $path ?>collection/<?php echo $collection->getId() ?>/<?php echo $collection->getName() ?>/addMovie/" method="post">
+		<form action="<?php echo $path ?>collection/<?php echo $collection->getId() ?>/<?php echo $collection->getSlug() ?>/addMovie/" method="post">
 			<input type="hidden" value="<?php echo $movie->imdbid() ?>" name="imdbId">
 			<input type="hidden" value="<?php echo $cid ?>" name="cid">
 			<input type="submit" value="Save to Collection" class="btn btn-success">
