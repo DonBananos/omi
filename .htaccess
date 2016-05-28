@@ -15,6 +15,11 @@ RewriteCond %{REQUEST_FILENAME} !-d [NC]
 RewriteCond %{REQUEST_FILENAME} !-f [NC]
 RewriteRule ^collection/\d+/[a-z-]+/removeMovie/?$ collection/removeMovie.php [NC,L]
 
+#Redirect for movie Discussion
+RewriteCond %{REQUEST_FILENAME} !-d [NC]
+RewriteCond %{REQUEST_FILENAME} !-f [NC]
+RewriteRule ^movie/(\d+)/[a-z0-9-]+/discussion/?$ movie/discussion.php?id=$1 [NC,L]
+
 #Redirect for movie Details
 RewriteCond %{REQUEST_FILENAME} !-d [NC]
 RewriteCond %{REQUEST_FILENAME} !-f [NC]
