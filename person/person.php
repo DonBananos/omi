@@ -251,7 +251,12 @@ class Person
 
 	public function getBio()
 	{
-		return $this->bio;
+		return strip_tags($this->bio, '<br></br>');
+	}
+	
+	public function getBioForEditor()
+	{
+		return trim(preg_replace('#<br\s*/?>#i', "\n", $this->getBio()));
 	}
 
 	public function getBorn()
