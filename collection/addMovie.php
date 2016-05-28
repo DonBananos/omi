@@ -51,19 +51,16 @@ $movieExists = $movie->checkIfMovieAlreadyExists($imdbId);
 
 if ($movieExists === false)
 {
+	$json = file_get_contents("http://www.omdbapi.com/?i=$imdbId&plot=full&r=json");
+
+	//JSON decode of answer
+	$data = json_decode($json, true);
 	$selectedMovie = new imdb($imdbNumberId);
-	if (!empty($selectedMovie->orig_title()))
-	{
-		$title = $selectedMovie->orig_title();
-	}
-	else
-	{
-		$title = $selectedMovie->title();
-	}
-	$plot = $selectedMovie->plotoutline();
+	$title = $data['Title'];
+	$plot = $data['Plot'];
 	$runtime = $selectedMovie->runtime();
-	$poster = $selectedMovie->photo(FALSE);
-	$thumbnail = $selectedMovie->photo(true);
+	$poster = $data['Poster'];
+	$thumbnail = $poster;
 	$language = $selectedMovie->language();
 	$year = $selectedMovie->year();
 
