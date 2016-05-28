@@ -32,7 +32,7 @@ require './movieHandler.php';
 				<div class="row">
 					<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
 						<div class="page-header">
-							<h1>Movies in Users Collections</h1>
+							<h1>Movies in Users' Collections</h1>
 						</div>
 						<div class="row">
 							<?php
@@ -50,7 +50,7 @@ require './movieHandler.php';
 								{
 									$plot = $movie->getPlot();
 								}
-								if($movie->getLocalTitleIfExists() != false)
+								if ($movie->getLocalTitleIfExists() != false)
 								{
 									$title = $movie->getLocalTitleIfExists();
 								}
@@ -59,20 +59,25 @@ require './movieHandler.php';
 									$title = $movie->getTitle();
 								}
 								?>
-								<div class="col-lg-3 col-md-3 col-sm-4 col-xs-6">
+								<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
 									<div class="owned">
 										<a href="<?php echo $path ?>movie/<?php echo $movie->getId() ?>/<?php echo $movie->getSlug() ?>/">
-											<div class="movie-box movie-box-miniature">
-												<div class="image-box" id="<?php echo $movie->getImdbId() ?>">
-													<img src="<?php echo $movie->getPosterUrl() ?>" class="img-responsive thumbnail">
-													<div class="clearfix"></div>
+											<div class="mbb" style="background: url(<?php echo $movie->getPosterUrl() ?>)" id="movie-<?php echo $movie->getImdbId() ?>">
+												<div class="mbbt">
+													<h4>
+														<?php echo $title ?>
+													</h4>
+													<h5>
+														<?php echo $movie->getYear() ?>
+														<span class="pull-right">
+															<span class="fa fa-heart fa-fw fa-clr-warning"></span>
+															<span class="fa fa-plus fa-fw fa-clr-success"></span>
+														</span>
+													</h5>
 												</div>
-												<div class="clearfix"></div>
-												<h4 class="movie-title"><?php echo $title ?> (<?php echo $movie->getYear() ?>)</h4>
 											</div>
 										</a>
 									</div>
-									<div class="clearfix"></div>
 								</div>
 								<?php
 							}
@@ -85,5 +90,13 @@ require './movieHandler.php';
 		<?php
 		require '../includes/footer.php';
 		?>
+		<script>
+			$(".mbb").mouseenter(function () {
+				$(this).find(".mbbt").slideToggle();
+			});
+			$(".mbb").mouseleave(function () {
+				$(this).find(".mbbt").slideToggle();
+			});
+		</script>
 	</body>
 </html>

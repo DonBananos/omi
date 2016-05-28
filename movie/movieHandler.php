@@ -100,4 +100,26 @@ class MovieHandler
 		return $allSubs;
 	}
 
+	public function get_latest_added_movies($limit = 4)
+	{
+		$movie_ids = array();
+		
+		global $dbCon;
+		
+		$sql = "SELECT movie_id FROM movie ORDER BY movie_id DESC LIMIT ?;";
+		$stmt = $dbCon->prepare($sql);
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('i', $limit);
+		$stmt->execute();
+		$stmt->bind_result($movie_id);
+		while ($stmt->fetch())
+		{
+			$movie_ids[] = $movie_id;
+		}
+		$stmt->close();
+		return $movie_ids;
+	}
 }
