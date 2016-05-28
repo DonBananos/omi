@@ -42,7 +42,7 @@ if ($collection->getPrivacy() != 1)
 	$collection_private = false;
 }
 
-if(isset($_POST['EditDescriptionSubmit']))
+if (isset($_POST['EditDescriptionSubmit']))
 {
 	$text = trim($_POST['descriptionText']);
 	$collection->updateDescription($text);
@@ -60,79 +60,125 @@ if(isset($_POST['EditDescriptionSubmit']))
 			<div class="container">
 				<div class="row">
 					<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-						<div class="page-header">
-							<h1><?php echo $collection->getName() ?><br>
-								<small>
-									Created on: <?php echo formatShortDateTime($collection->getCreatedDatetime()) ?> by <?php echo $owner->getUsername() ?>
-								</small>
-							</h1>
+						<div class="row">
+							<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+								<div class="collection-header">
+									<div class="collection-header-title">
+										<h1>
+											<?php echo $collection->getName() ?>
+										</h1>
+										<small class="lead collection-lead">
+											Created on: <?php echo formatShortDateTime($collection->getCreatedDatetime()) ?> by <?php echo $owner->getUsername() ?>
+										</small>
+									</div>
+								</div>
+							</div>
 						</div>
 						<div class="row">
-							<?php
-							if ($own_collection)
-							{
-								?>
-								<div class="pull-left">
-									<?php require '../search/movieSearchView.php'; ?>
-								</div>
+							<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 								<?php
-							}
-							if ($collection_private AND ! $own_collection)
-							{
-								?>
-								<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-									<p>This Collection is private, and you are not allowed to see it</p>
-								</div>
-								<?php
-							}
-							?>
-							<div class="pull-right">
-								<?php
-								if (!$collection_private OR $own_collection)
+								if ($own_collection)
 								{
-									if (!$collection_private)
+									?>
+									<div class="pull-left">
+										<?php require '../search/movieSearchView.php'; ?>
+									</div>
+									<?php
+								}
+								if ($collection_private AND ! $own_collection)
+								{
+									?>
+									<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+										<p>This Collection is private, and you are not allowed to see it</p>
+									</div>
+									<?php
+								}
+								?>
+								<div class="pull-right">
+									<?php
+									if (!$collection_private OR $own_collection)
 									{
-										if (!$own_collection)
+										if (!$collection_private)
+										{
+											if (!$own_collection)
+											{
+												?>
+												<button class="btn btn-warning disabled"><span class="fa fa-heart"></span><span class="hidden-xs"> Favorite</span></button>
+												<?php
+											}
+											?>
+											<button class="btn btn-facebook disabled"><span class="fa fa-facebook"></span><span class="hidden-xs"> Share</span></button>
+											<button class="btn btn-twitter disabled"><span class="fa fa-twitter"></span><span class="hidden-xs"> Tweet</span></button>
+											<button class="btn btn-primary disabled"><span class="fa fa-envelope"></span><span class="hidden-xs"> Share</span></button>
+											<?php
+										}
+										if ($own_collection)
 										{
 											?>
-											<button class="btn btn-warning disabled"><span class="fa fa-heart"></span><span class="hidden-xs"> Favorite</span></button>
+											<button class="btn btn-danger disabled"><span class="fa fa-trash-o"></span><span class="hidden-xs"> Delete Collection</span></button>
 											<?php
 										}
 										?>
-										<button class="btn btn-facebook disabled"><span class="fa fa-facebook"></span><span class="hidden-xs"> Share</span></button>
-										<button class="btn btn-twitter disabled"><span class="fa fa-twitter"></span><span class="hidden-xs"> Tweet</span></button>
-										<button class="btn btn-primary disabled"><span class="fa fa-envelope"></span><span class="hidden-xs"> Share</span></button>
-										<?php
-									}
-									if ($own_collection)
+									</div>
+								</div>
+							</div>
+							<br>
+							<div class="row">
+								<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12">
+									<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+										<p class="collection-description">
+											<?php
+											echo nl2br($collection->getDescription());
+											if ($own_collection)
+											{
+												?>
+												<a href="#" class="edit-pencil" data-toggle="modal" data-target="#editDescriptionModal">
+													<span class="fa fa-pencil"></span>
+												</a>
+												<?php
+											}
+											?>
+										</p>
+									</div>
+								</div>
+								<div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
+									<div class="row">
+										<div class="col-lg-8 col-md-8 col-sm-7 col-xs-7">
+											<div class="input-group">
+												<span class="input-group-addon"><span class="fa fa-search"></span></span>
+												<input type="text" class="form-control" placeholder="Search in collection..." id="titleSearchField">
+											</div>
+										</div>
+										<div class="col-lg-4 col-md-4 col-sm-5 col-xs-5">
+											<button class="btn btn-warning form-control" onclick="toggleFilters()"><span class="fa fa-filter"></span> Filters</button>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+								<div id="collection-filters">
+									filters
+								</div>
+							</div>
+							<div class="clearfix"></div>
+							<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+								<div class="movie-tags collection-tags">
+									<?php
+									$collection_tags = $collection->get_all_movie_tags_in_collection();
+									foreach ($collection_tags as $collection_tag_id => $collection_tag_name)
 									{
 										?>
-										<button class="btn btn-danger disabled"><span class="fa fa-trash-o"></span><span class="hidden-xs"> Delete Collection</span></button>
+										<div class="movie-tag" id="mt-<?php echo $collection_tag_id ?>" tag_id="<?php echo $collection_tag_id ?>"><?php echo $collection_tag_name ?></div>
 										<?php
 									}
 									?>
 								</div>
-							</div>
-							<br>
-							<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-								<p class="collection-description">
-									<?php
-									echo nl2br($collection->getDescription());
-									if ($own_collection)
-									{
-										?>
-										<a href="#" class="edit-pencil" data-toggle="modal" data-target="#editDescriptionModal">
-											<span class="fa fa-pencil"></span>
-										</a>
-										<?php
-									}
-									?>
-								</p>
 							</div>
 							<div class="clearfix"></div>
 							<hr>
 							<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 								<?php
+								$collection->save_collection_viewed_by_user($active_user->getId());
 								$movieIds = $collection->getAllMoviesInCollection();
 								if (count($movieIds) < 1)
 								{
@@ -150,6 +196,12 @@ if(isset($_POST['EditDescriptionSubmit']))
 									foreach ($movieIds as $movieId)
 									{
 										$movie->setValuesWithId($movieId);
+										$movies_tags = $movie->get_all_movies_tags($active_user->getId());
+										$movies_tags_array = array();
+										foreach ($movies_tags as $tag_id => $tag_name)
+										{
+											$movies_tags_array[] = $tag_id;
+										}
 										if (strlen($movie->getPlot()) > 300)
 										{
 											$plot = substr($movie->getPlot(), 0, 297) . ' (...)';
@@ -169,10 +221,10 @@ if(isset($_POST['EditDescriptionSubmit']))
 											$origTitle = false;
 										}
 										?>
-										<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 movie-listing">
+										<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 movie-listing" movie-tags="<?php echo implode(",", $movies_tags_array) ?>">
 											<div class="col-lg-1 col-md-2 col-sm-3 col-xs-4">
 												<a href="<?php echo $path ?>movie/<?php echo $movie->getId() ?>/<?php echo $movie->getSlug() ?>/">
-													<img src="<?php echo $movie->getPosterUrlThumb() ?>" class="img-responsive">
+													<img src="<?php echo $movie->getPosterUrl() ?>" class="img-responsive">
 												</a>
 											</div>
 											<div class="col-lg-10 col-md-9 col-sm-8 col-xs-6">
@@ -413,9 +465,9 @@ if(isset($_POST['EditDescriptionSubmit']))
 							<div class="clearfix"></div>
 						</div>
 					</div>
-				<?php
+					<?php
 					require '../includes/footer.php';
-				?>
+					?>
 				</div>
 				<?php
 				if ($own_collection)
@@ -431,7 +483,7 @@ if(isset($_POST['EditDescriptionSubmit']))
 								<form action=" " method="POST" name="editDescriptionForm">
 									<div class="modal-body">
 										<?php
-										if($collection->getDescription() == "No description")
+										if ($collection->getDescription() == "No description")
 										{
 											$value = "";
 											$placeHolder = $collection->getDescription();
@@ -465,6 +517,65 @@ if(isset($_POST['EditDescriptionSubmit']))
 								var element = $(this).attr('id');
 								$("#" + element + "-edit-bar").fadeOut();
 							});
+
+					$("#titleSearchField").keyup(function () {
+						var SearchString = $(this).val();
+						if (SearchString.length > 0)
+						{
+							$(".movie-listing").each(function () {
+								if ($(this).find("div div .movie-title a").text().search(new RegExp(SearchString, "i")) < 0)
+								{
+									// Show the list item if the phrase matches and increase the count by 1
+									$(this).fadeOut();
+								}
+								else
+								{
+									$(this).fadeIn();
+								}
+							});
+						}
+					});
+
+					$(".movie-tag").click(function () {
+						var TagId = $(this).attr("tag_id");
+						if ($(this).hasClass("active-tag-link"))
+						{
+							$(".movie-tag").each(function () {
+								$(this).removeClass("active-tag-link");
+								$(this).removeClass("inactive-tag-link");
+							});
+							$(".movie-listing").each(function () {
+								$(this).slideDown();
+							});
+						}
+						else
+						{
+							$(".movie-tag").each(function () {
+								$(this).removeClass("active-tag-link");
+								$(this).addClass("inactive-tag-link");
+							});
+							$(this).addClass("active-tag-link");
+							$(".movie-listing").each(function () {
+								var movieTagArray = $(this).attr("movie-tags").split(",");
+								if (isInArray(TagId, movieTagArray))
+								{
+									$(this).slideDown();
+								}
+								else
+								{
+									$(this).slideUp();
+								}
+							});
+						}
+					});
+					function isInArray(value, array) {
+						return array.indexOf(value) > -1;
+					}
+
+					function toggleFilters()
+					{
+						$("#collection-filters").slideToggle();
+					}
 				</script>
 
 				<?php

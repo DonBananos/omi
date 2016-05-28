@@ -179,6 +179,51 @@ class Collection
 		return $status;
 	}
 	
+	public function get_all_movie_tags_in_collection()
+	{
+		$tags = array();
+		
+		global $dbCon;
+		
+		$sql = "SELECT tag.tag_id, tag_name FROM tag INNER JOIN movie_tag ON tag.tag_id = movie_tag.tag_id WHERE movie_id IN (SELECT collection_movie_movie_id FROM collection_movie INNER JOIN movie ON collection_movie_movie_id = movie_id WHERE collection_movie_collection_id = ?) AND user_id = ?;";
+		$stmt = $dbCon->prepare($sql);
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('ii', $this->id, $this->userId);
+		$stmt->execute();
+		$stmt->bind_result($tag_id, $tag_name);
+		while ($stmt->fetch())
+		{
+			$tags[$tag_id] = $tag_name;
+		}
+		$stmt->close();
+		return $tags;
+	}
+	
+	public function save_collection_viewed_by_user($user_id)
+	{
+		global $dbCon;
+		
+		$sql = "INSERT INTO collection_user_view (collection_id, user_id) VALUES (?, ?);";
+		//Prepare Statement
+		$stmt = $dbCon->prepare($sql);
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('ii', $this->id, $user_id);
+		$stmt->execute();
+		$id = $stmt->insert_id;
+		$stmt->close();
+		if ($id > 0)
+		{
+			return true;
+		}
+		return false;
+	}
+	
 	public function getId()
 	{
 		return $this->id;
@@ -186,7 +231,7 @@ class Collection
 
 	public function getName()
 	{
-		return $this->name;
+		return htmlspecialchars($this->name);
 	}
 
 	public function getDescription()
@@ -195,7 +240,7 @@ class Collection
 		{
 			return "No description";
 		}
-		return $this->description;
+		return htmlspecialchars($this->description);
 	}
 
 	public function getUserId()
@@ -215,7 +260,7 @@ class Collection
 
 	public function getSlug()
 	{
-		return $this->slug;
+		return htmlspecialchars($this->slug);
 	}
 
 	private function setId($id)
