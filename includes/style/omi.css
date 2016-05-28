@@ -280,13 +280,17 @@ h4 a:hover
 
 .cast-thumb
 {
-	border-radius: 25px;
+	border-radius: 0%;
 }
 
 .cast-list
 {
 	max-height: 80vh;
 	overflow-y: auto;
+	width: 100%;
+	border-bottom: 3px solid #555;
+	border-right: 2px solid #555;
+	border-radius: 4px;
 }
 
 .collection-description
@@ -303,4 +307,236 @@ h4 a:hover
 .collection-description:hover > a.edit-pencil
 {
 	display: inline;
+}
+
+.tag-list
+{
+	width: 100%;
+	background-color: #fff;
+	border: 1px solid #333;
+}
+
+.tag-list > ul
+{
+	list-style: none;
+	padding-left: 10px;
+	padding-top: 5px;
+}
+
+.tag-list > ul > li
+{
+	padding: 2px;
+}
+
+.tag-remover
+{
+	color: #ddd;
+	cursor: pointer;
+}
+
+.tag-list > ul > li.current-tag-typing:after
+{
+	border-top: 1px solid #ccc;
+	display: block;
+	color: #777;
+	font-size: 80%;
+	content: "Existing:";
+}
+
+.others-tags-delimiter
+{
+	border-top: 1px solid #ccc;
+	display: block;
+	color: #777;
+	font-size: 80%;
+	margin-left: 10px;
+}
+
+.movie-tags > .movie-tag
+{
+	display: inline-block;
+	background-color: #00699F;
+	padding: 5px;
+	border-radius: 0px 5px 5px 0px;
+	color: #fff;
+	margin-top: 5px;
+}
+
+.movie-tag.inactive-tag-link
+{
+	background-color: #777;
+}
+
+.movie-tag.active-tag-link
+{
+	background-color: #00699F;
+	border: 1px solid #99CCFF;
+	margin: -1px;
+}
+
+.collection-tags > .movie-tag
+{
+	cursor: pointer;
+}
+
+.mbb
+{
+	height: 400px;
+	background-position: center !important;
+	background-repeat: no-repeat !important;
+	background-size: cover !important;
+	position: relative;
+}
+
+.mbb:hover > .mbbo
+{
+	background-color: rgba(0,0,0,0);
+}
+
+.mbbt
+{
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	width: 100%;
+	background-color: rgba(0, 0, 0, 0.7);
+	padding: 5px;
+	color: white;
+	display: none;
+}
+
+.mbbt > h4,
+.mbbt > h5
+{
+	transition: .5s;
+	color: white;
+}
+
+.mbb:hover > .mbbt > h4,
+.mbb:hover > .mbbt > h5
+{
+	color: #99CCFF;
+}
+
+.cast-role
+{
+	overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+	color: #99CCFF;
+}
+
+.cast-role > .label-title
+{
+	width: 100%;
+}
+
+.edit-poster-area
+{
+	position: absolute;
+	bottom: 18px;
+	right: 25px;
+	display: none;
+}
+
+.mpa > .mbb
+{
+	margin-bottom: 10px;
+}
+
+.fa-clr-warning
+{
+	color: #EB9316;
+}
+
+.fa-clr-success
+{
+	color: #419641;
+}
+
+.movie-poster
+{
+	margin-bottom: 10px;
+}
+
+.movie-poster > img
+{
+	width: 100%;
+}
+
+#collection-filters
+{
+	display: none;
+}
+
+.header-image
+{
+	height: 400px;
+	background-position: top !important;
+	background-repeat: no-repeat !important;
+	background-size: cover !important;
+	position: relative;
+	margin-bottom: 10px;
+}
+
+.header-image > .movie-title
+{
+	position: absolute;
+	background-color: rgba(0, 0, 0, 0.5);
+	padding: 5px;
+	color: white;
+	bottom: 0;
+	left: 0;
+	padding-left: 20px;
+	padding-right: 10px;
+}
+
+.person-options
+{
+	display: inline-block;
+	margin: 0px 10px;
+}
+
+.person-options > .btn
+{
+	margin: 0px 5px;
+}
+
+.form-row
+{
+	margin-bottom: 10px;
+}
+
+.form-row > div > .form-control,
+.form-row > div > .input-group
+{
+	margin-bottom: 5px;
+}
+
+.collection-lead
+{
+	color: #fff !important;
+	font-size: 115% !important;
+}
+
+.collection-header
+{
+	width: 100%;
+	background-position: center !important;
+	background-size: cover !important;
+	height: 220px;
+	background: url(http://cdn.home-designing.com/wp-content/uploads/2011/11/home-movie-collection.jpg);
+	position: relative;
+	margin-bottom: 20px;
+}
+
+.collection-header-title
+{
+	width: 100%;
+	position: absolute;
+	background: rgba(0,0,0,0.5);
+	bottom: 0;
+	left: 0;
+	padding: 0px 15px 5px 15px;
+	font-size: 85%;
 }
