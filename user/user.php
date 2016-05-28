@@ -858,6 +858,29 @@ class User
 	{
 		session_unset();
 	}
+	
+	public function get_most_popular_collection()
+	{
+		global $dbCon;
+		
+		$sql = "SELECT COUNT(id), collection_id FROM collection_user_view WHERE user_id = ? GROUP BY collection_id ORDER BY COUNT(id) DESC;";
+		$stmt = $dbCon->prepare($sql); //Prepare Statement
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('i', $this->id); //Bind parameters.
+		$stmt->execute(); //Execute
+		$stmt->bind_result($count, $collection_id); //Get ResultSet
+		$stmt->fetch();
+		$numRows = $stmt->num_rows();
+		$stmt->close();
+		if($collection_id)
+		{
+			return $collection_id;
+		}
+		return false;
+	}
 
 	/*
 	 * All Getters and Setters (Getters are public, Setters are private)
