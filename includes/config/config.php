@@ -3,6 +3,30 @@
 $path = "/onlineMovieIndex/";
 $url = "localhost/onlineMovieIndex/";
 
+define("IMAGE_PATH", "_uploads/_images/");
+define("BASE_URL", $path);
+
+/*
+ * Cookie settings
+ */
+$domain = "localhost";
+$cookie_path = "/omi";
+
+/*
+ * Defining the other stuff..
+ */
+define("ROOT_PATH", "C:/xampp/htdocs".$path);
+define("IMAGE_LOCATION", "_uploads/_images/");
+define("SERVER", "http://localhost");
+define("BASE", $path);
+
+/*
+ * Accepted filetypes for image upload.
+ */
+$accepted_filetypes = array("jpg", "jpeg", "JPG", "png", "PNG", "gif", "GIF");
+define("HEADER_MAX_WIDTH", 1200);
+define("BACKGROUND_MAX_WIDTH", 2500);
+
 /*
  * Regular Expressions for Register and Login
  */
@@ -94,4 +118,183 @@ function formatFullTime($date)
 function formatShortDateTime($date)
 {
 	return formatShortDate($date) . ' ' . formatShortTime($date);
+}
+
+function generateRandomString($least_number_of_characters, $max_number_of_characters)
+{
+	$characters = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	$number_of_characters = rand($least_number_of_characters, $max_number_of_characters);
+	$random_string = "";
+	for ($i = 0; $i < $number_of_characters; $i++)
+	{
+		$random_string .= $characters[rand(0, strlen($characters) - 1)];
+	}
+	return $random_string;
+}
+
+function upload_image($max_width, $file_input_name)
+{
+	$path = '';
+	$upload_directory = ROOT_PATH . IMAGE_LOCATION;
+	$uploaded_url = SERVER . BASE;
+
+	$image_path = $path;
+	$upload_directory .= $image_path;
+	if (!file_exists($upload_directory))
+	{
+		mkdir($upload_directory, 0777, true);
+	}
+	$image_name = get_free_image_name($upload_directory, getImageType($_FILES[$file_input_name]['name']));
+
+	$upload_file = $upload_directory . $image_name;
+	$image_path .= IMAGE_LOCATION . $image_name;
+	$uploaded_url .= $image_path;
+
+	$file_type = trim(getImageType($_FILES[$file_input_name]['name']));
+	global $accepted_filetypes;
+	if (!in_array($file_type, $accepted_filetypes))
+	{
+		return FALSE;
+	}
+
+	if ($_FILES[$file_input_name]['size'] > 20000000)
+	{
+		?>
+		<script>alert("The file you're trying to upload is too large. Max size is 20mb");</script>
+		<?php
+		return FALSE;
+	}
+	if (move_uploaded_file($_FILES[$file_input_name]['tmp_name'], $upload_file))
+	{
+		if (substr(strrchr($upload_file, "."), 1) == 'jpg' OR substr(strrchr($upload_file, "."), 1) == 'jpeg' OR substr(strrchr($upload_file, "."), 1) == 'JPG')
+		{
+			$image = imagecreatefromjpeg($upload_file);
+		}
+		elseif (substr(strrchr($upload_file, "."), 1) == 'png' OR substr(strrchr($upload_file, "."), 1) == 'PNG')
+		{
+			$image = imagecreatefrompng($upload_file);
+		}
+		elseif (substr(strrchr($upload_file, "."), 1) == 'gif' OR substr(strrchr($upload_file, "."), 1) == 'GIF')
+		{
+			$image = imagecreatefromgif($upload_file);
+		}
+		else
+		{
+			return FALSE;
+		}
+		//Check for image resizing
+		list($width, $height) = getimagesize($upload_file);
+		if ($width > $max_width)
+		{
+			$new_width = $max_width;
+			$new_height = $height / $width * $new_width;
+
+			$tmp = imagecreatetruecolor($new_width, $new_height);
+
+			imagecopyresampled($tmp, $image, 0, 0, 0, 0, $new_width, $new_height, $width, $height);
+
+			if (substr(strrchr($upload_file, "."), 1) == 'jpg' OR substr(strrchr($upload_file, "."), 1) == 'jpeg' OR substr(strrchr($upload_file, "."), 1) == 'JPG')
+			{
+				$exif = exif_read_data($upload_file);
+				if (!empty($exif['Orientation']))
+				{
+					switch ($exif['Orientation'])
+					{
+						case 8:
+							$tmp = imagerotate($tmp, 90, 0);
+							break;
+						case 3:
+							$tmp = imagerotate($tmp, 180, 0);
+							break;
+						case 6:
+							$tmp = imagerotate($tmp, -90, 0);
+							break;
+					}
+				}
+			}
+			if (substr(strrchr($upload_file, "."), 1) == 'jpg' OR substr(strrchr($upload_file, "."), 1) == 'jpeg' OR substr(strrchr($upload_file, "."), 1) == 'JPG')
+			{
+				imagejpeg($tmp, $upload_file, 100);
+			}
+			elseif (substr(strrchr($upload_file, "."), 1) == 'png' OR substr(strrchr($upload_file, "."), 1) == 'PNG')
+			{
+				imagepng($tmp, $upload_file, 0);
+			}
+			elseif (substr(strrchr($upload_file, "."), 1) == 'gif' OR substr(strrchr($upload_file, "."), 1) == 'GIF')
+			{
+				imagegif($tmp, $upload_file, 100);
+			}
+			imagedestroy($tmp);
+		}
+		else
+		{
+			$tmp = imagecreatetruecolor($width, $height);
+
+			imagecopyresampled($tmp, $image, 0, 0, 0, 0, $width, $height, $width, $height);
+
+			if (substr(strrchr($upload_file, "."), 1) == 'jpg' OR substr(strrchr($upload_file, "."), 1) == 'jpeg' OR substr(strrchr($upload_file, "."), 1) == 'JPG')
+			{
+				$exif = exif_read_data($upload_file);
+				if (!empty($exif['Orientation']))
+				{
+					switch ($exif['Orientation'])
+					{
+						case 8:
+							$tmp = imagerotate($tmp, 90, 0);
+							break;
+						case 3:
+							$tmp = imagerotate($tmp, 180, 0);
+							break;
+						case 6:
+							$tmp = imagerotate($tmp, -90, 0);
+							break;
+					}
+				}
+			}
+			if (substr(strrchr($upload_file, "."), 1) == 'jpg' OR substr(strrchr($upload_file, "."), 1) == 'jpeg' OR substr(strrchr($upload_file, "."), 1) == 'JPG')
+			{
+				imagejpeg($tmp, $upload_file, 100);
+			}
+			elseif (substr(strrchr($upload_file, "."), 1) == 'png' OR substr(strrchr($upload_file, "."), 1) == 'PNG')
+			{
+				imagepng($tmp, $upload_file, 0);
+			}
+			elseif (substr(strrchr($upload_file, "."), 1) == 'gif' OR substr(strrchr($upload_file, "."), 1) == 'GIF')
+			{
+				imagegif($tmp, $upload_file, 100);
+			}
+			imagedestroy($tmp);
+		}
+
+		imagedestroy($image);
+		return $image_name;
+	}
+	return false;
+}
+
+function get_free_image_name($folder, $extension)
+{
+	$name_exists = TRUE;
+
+	while ($name_exists === TRUE)
+	{
+		$name = generateRandomString(40, 50);
+
+		if (!file_exists($folder . $name . '.' . $extension))
+		{
+			$name_exists = FALSE;
+			return $name . '.' . $extension;
+		}
+	}
+}
+
+function getImageType($imageName)
+{
+	$extension = substr($imageName, strpos($imageName, '.') + 1);
+	return $extension;
+}
+
+function get_image_path()
+{
+	return "http://".$_SERVER['SERVER_NAME'].BASE_URL.IMAGE_PATH;
 }
