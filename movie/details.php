@@ -129,7 +129,7 @@ if (isset($_POST['ifsub']))
 							<div class="col-lg-7 col-md-12 col-sm-12 col-xs-12">
 								<div class="row">
 
-									<div class="col-lg-5 col-md-5 col-sm-6 col-xs-12 mpa">
+									<div class="col-lg-5 col-md-5 col-sm-6 col-xs-6 mpa">
 										<div class="movie-poster">
 											<img src="<?php echo $movie->getPosterUrl() ?>" alt="<?php echo $movie->getTitle() ?> poster">
 											<div class="edit-poster-area">
@@ -139,7 +139,7 @@ if (isset($_POST['ifsub']))
 											</div>
 										</div>
 									</div>
-									<div class="col-lg-7 col-md-7 col-sm-6 col-xs-12">
+									<div class="col-lg-7 col-md-7 col-sm-6 col-xs-6">
 										<?php
 										?>
 										<label><span class="label-title">Title: </span><?php echo $title; ?></label><br>
