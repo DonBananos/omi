@@ -479,6 +479,14 @@ h4 a:hover
 	margin-bottom: 10px;
 }
 
+@media (max-width: 480px) 
+{
+	.header-image
+	{
+		height: 200px;
+	}
+}
+
 .header-image > .movie-title
 {
 	position: absolute;
@@ -539,4 +547,185 @@ h4 a:hover
 	left: 0;
 	padding: 0px 15px 5px 15px;
 	font-size: 85%;
+}
+
+#full-front
+{
+	display: none;
+}
+
+#front-first
+{
+	width: 100%;
+	height: 650px;
+	background-position: center;
+	background-size: cover;
+	background-attachment: fixed;
+	position: relative;
+}
+
+.overlay
+{
+	background: rgba(0,0,0,0.65);
+	width: 100%;
+	height: 100%;
+	position: absolute;
+}
+
+#front-headline
+{
+	margin-top: 15%;
+}
+
+#front-headline > h1
+{
+	color: #fff !important;
+}
+
+.front-lead
+{
+	color: #ddd;
+}
+
+.front-hr
+{
+	border: none;
+    margin: 15px auto;
+    display: block;
+    -webkit-margin-before: 0.5em;
+    -webkit-margin-after: 0.5em;
+    -webkit-margin-start: auto;
+    -webkit-margin-end: auto;
+	margin-bottom: 25px;
+}
+
+.front-hr:before
+{
+	content: "";
+    display: block;
+    height: 2px;
+    background: linear-gradient(to right, 
+		transparent 15%, 
+		rgba(0,0,0,0.25), 
+		transparent 85%);
+}
+
+.front-hr:after
+{
+	content: "";
+    display: block;
+    height: 2px;
+    background: linear-gradient(to right, rgba(255,255,255,0) 15%, rgba(255,255,255,0.4), rgba(255,255,255,0) 85%);
+}
+
+.intro-text > h3
+{
+	color: #0079b7
+}
+
+.lg-omi-input
+{
+	height: 50px;
+	font-size: 25px;
+}
+
+.omi-front-input
+{
+	background: rgba(256,256,256, 0.7) !important;
+    transition: .8s;
+    text-align: center;
+}
+
+.omi-front-input::-webkit-input-placeholder { /* WebKit, Blink, Edge */
+	color: rgba(0,105,159,0.7) !important;
+}
+.omi-front-input:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+	color: rgba(0,105,159,0.7) !important;
+	opacity:  .7;
+}
+.omi-front-input::-moz-placeholder { /* Mozilla Firefox 19+ */
+	color: rgba(0,105,159,0.7) !important;
+	opacity:  .7;
+}
+.omi-front-input:-ms-input-placeholder { /* Internet Explorer 10-11 */
+	color: rgba(0,105,159,0.7) !important;
+}
+.omi-front-input:placeholder-shown { /* Standard (https://drafts.csswg.org/selectors-4/#placeholder) */
+	color: rgba(0,105,159,0.7) !important;
+}
+
+.omi-front-input:hover,
+.omi-front-input:focus,
+.omi-front-input:active
+{
+	background: rgba(256,256,256, 0.9) !important;
+	color: rgba(0,105,159,1) !important;
+}
+
+.btn-omi
+{
+	background-color: #00699F;
+	color: white;
+	border: 1px solid #005885;
+}
+
+.btn-omi:hover
+{
+	background-color: #00699F;
+	color: white;
+	border: 1px solid #0079b7;
+}
+
+.omi-front-btn
+{
+	background-color: rgba(0,105,159,0.7) !important;
+}
+
+#front-existing-user-area
+{
+	margin-top: 35px;
+}
+
+#front-existing-user-area > a
+{
+	color: #00699F;
+	transition: .3s;
+}
+
+#front-existing-user-area > a:hover
+{
+	text-decoration: none;
+	color: #0079b7;
+}
+
+#front-about
+{
+	color: #fff;
+	padding: 100px;
+	border-top: 2px solid;
+	border-top-color: #0079b7;
+	background: #0079b7; /* For browsers that do not support gradients */
+}
+
+#front-about h1,
+#front-about h2,
+#front-about h3
+{
+	color: #fff;
+	text-align: center;
+}
+
+#login
+{
+	padding: 100px;
+}
+
+#login .input-group
+{
+	margin: 5px;
+}
+
+#login .input-group .fa
+{
+	color: #0079b7;
 }

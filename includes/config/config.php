@@ -17,7 +17,7 @@ $cookie_path = "/omi";
  */
 define("ROOT_PATH", "C:/xampp/htdocs".$path);
 define("IMAGE_LOCATION", "_uploads/_images/");
-define("SERVER", "http://localhost");
+define("SERVER", "http://".$_SERVER['SERVER_NAME']);
 define("BASE", $path);
 
 /*

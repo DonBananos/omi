@@ -22,37 +22,14 @@ if (isset($_SESSION['signed_in']))
 		<title>Online movie Index</title>
 		<?php require './includes/header.php'; ?>
 	</head>
-	<body>
-
-		<!--
-		This makes sure that all content has a margin of 50px below navbar. 
-		Without this "tweek" in mobile viewport the content will slide up behind 
-		the navbar.
-		-->
-		<div class="main-container">
-			<?php
-			if (isset($_SESSION['signed_in']))
-			{
-				require './includes/navbar.php';
-				?>
-				<div class="container">
-					<?php
-					require './includes/memberStart.php';
-					require './includes/footer.php';
-					?>
-				</div>
-				<?php
-			}
-			else
-			{
-				require './includes/loginBar.php';
-				?>
-				<div class="container">
-					<?php
-					require './includes/start.php';
-					require './includes/footer.php';
-					?>
-				</div>
-				<?php
-			}
-			?>
+	<?php
+	if ($logged_in)
+	{
+		require_once './includes/memberStart.php';
+	}
+	else
+	{
+		require_once './includes/landing.php';
+	}
+	?>
+</html>
