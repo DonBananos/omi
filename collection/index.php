@@ -43,9 +43,6 @@ else
 			require '../includes/navbar.php';
 			?>
 			<div class="container">
-				<div class="page-header">
-					<h1>Your Collections</h1>
-				</div>
 				<?php 
 				require 'createCollectionView.php';
 				require './collectionsView.php';

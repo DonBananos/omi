@@ -3,10 +3,13 @@ Author: R. Mike Jensen
 -->
 <?php header('Content-type: text/html; charset=utf-8'); ?>
 <?php
-if (isset($_SESSION['user_id'])) {
-    $signed_in = true;
-} else {
-    $signed_in = true;
+if (isset($_SESSION['user_id']))
+{
+	$signed_in = true;
+}
+else
+{
+	$signed_in = true;
 }
 ?>
 <nav class="navbar navbar-inverse navbar-fixed-top">
@@ -27,9 +30,18 @@ if (isset($_SESSION['user_id'])) {
                 <li><a href="<?php echo $path ?>collection/">Collections</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
+				<form class="navbar-form navbar-left" role="search" action="<?php echo BASE_URL ?>quicksearch" method="GET">
+					<div class="form-group">
+						<div class="input-group">
+							<span class="input-group-addon"><span class="fa fa-search fa-omi-blue"></span></span>
+							<input type="text" class="form-control" placeholder="Search" name="q">
+						</div>
+					</div>
+				</form>
                 <li class="dropdown">
                     <a href="" class="dropdown-toggle" data-toggle="dropdown"><?php echo $active_user->getUsername(); ?> <span class="caret"></span></a>
                     <ul class="dropdown-menu" role="menu" id="navbar-dropdown-menu">
+                        <li><a href="<?php echo $path ?>user/<?php echo $active_user->getId(); ?>">Profile</a></li>
                         <li><a href="<?php echo $path ?>user/logout.php">Logout</a></li>
                     </ul>
                 </li>

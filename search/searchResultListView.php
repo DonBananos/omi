@@ -17,24 +17,37 @@
 </div>
 
 
-<script async>
-	//In order to make the search function work (with adding movies to collections,the $.get path should be changed to: search/searchResultView.php
-	$("#searchForMovieSubmit").click(function () {
-		$('#beforeLocalSearchText').hide();
-		$('.movie-title-search-link').hide();
-		$('#waitingLocalSearchText').show();
-		var SearchString = $("#movieSearchInput").val();
-		$.get('<?php echo $path ?>search/internDbSearchResultView.php', {s: SearchString, cid: <?php echo $collection->getId(); ?>}, function (respons) {
-			$('#waitingLocalSearchText').hide();
-			$('#localSearchIntro').show();
-			$('#waitingExternalSearchText').show();
-			$('#movieSearchResultArea').addClass('search-modal-box-list');
-			$('#localResultArea').html(respons);
-		});
-		$.get('<?php echo $path ?>search/searchResultView.php', {s: SearchString, cid: <?php echo $collection->getId(); ?>}, function (respons) {
-			$('#externSearchIntro').show();
-			$('#waitingExternalSearchText').hide();
-			$('#externResultArea').html(respons);
+<script>
+	$(document).ready(function(){
+		$("#searchForMovieSubmit").click(searchForMovie());
+		$("#movieSearchInput").keyup(function (e) {
+			if (e.keyCode == 13) {
+				searchForMovie();
+			}
 		});
 	});
+	//In order to make the search function work (with adding movies to collections,the $.get path should be changed to: search/searchResultView.php
+
+	function searchForMovie()
+	{
+		var SearchString = $("#movieSearchInput").val();
+		if(SearchString.length > 0)
+		{
+			$('#beforeLocalSearchText').hide();
+			$('.movie-title-search-link').hide();
+			$('#waitingLocalSearchText').show();
+			$.get('<?php echo $path ?>search/internDbSearchResultView.php', {s: SearchString, cid: <?php echo $collection->getId(); ?>}, function (respons) {
+				$('#waitingLocalSearchText').hide();
+				$('#localSearchIntro').show();
+				$('#waitingExternalSearchText').show();
+				$('#movieSearchResultArea').addClass('search-modal-box-list');
+				$('#localResultArea').html(respons);
+			});
+			$.get('<?php echo $path ?>search/searchResultView.php', {s: SearchString, cid: <?php echo $collection->getId(); ?>}, function (respons) {
+				$('#externSearchIntro').show();
+				$('#waitingExternalSearchText').hide();
+				$('#externResultArea').html(respons);
+			});
+		}
+	}
 </script>

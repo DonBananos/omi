@@ -13,13 +13,15 @@ require '../genre/genre.php';
 require '../collection/collection.php';
 require './movieHandler.php';
 
+$movie = new Movie($movie_id);
+$imdbId = $movie->getImdbId();
+
 if (isset($_SESSION['signed_in']))
 {
 	$active_user = new User($_SESSION['user_id']);
+	$movie->save_movie_viewed_by_user($active_user->getId());
 }
 
-$movie = new Movie($movie_id);
-$imdbId = $movie->getImdbId();
 
 $mh = new MovieHandler();
 
@@ -80,6 +82,16 @@ if (isset($_POST['ifsub']))
 	$image_file_name = upload_image(1500, "image-file");
 	$movie->save_uploaded_image_file($image_file_name, $active_user->getId());
 }
+
+if (isset($_POST['favmovsub']))
+{
+	$movie->mark_movie_as_favorite($active_user->getId());
+}
+
+if (isset($_POST['unfavmovsub']))
+{
+	$movie->unfavorise_movie($active_user->getId());
+}
 ?>
 <html lang="en">
 	<head>
@@ -104,31 +116,111 @@ if (isset($_POST['ifsub']))
 						<div class="row">
 							<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 								<?php
+								$favorite = $movie->check_if_movie_is_favorite($active_user->getId());
 								if ($movie->get_if_there_is_movie_images())
 								{
 									?>
 									<div class="header-image" style="background: url(<?php echo $movie->get_movie_image_for_header(); ?>)">
-										<div class="movie-title">
-											<h1><?php echo $title ?></h1>
-										</div>
+										<a href="<?php echo BASE_URL ?>movie/<?php echo $movie->getId() ?>/<?php echo $movie->getSlug() ?>/">
+											<div class="movie-title-area">
+												<h1 class="movie-title">
+													<?php
+													if ($favorite)
+													{
+														?>
+														<span class="fa fa-heart fa-darkred"></span>
+														<?php
+													}
+													?>
+													<?php echo $title ?> (<?php echo $movie->getYear() ?>)
+												</h1>
+											</div>
+										</a>
 									</div>
 									<?php
 								}
 								else
 								{
 									?>
-									<div class="page-header">
-										<h1><?php echo $title ?></h1>
+									<div class="page-header movie-page">
+										<h1>
+											<?php
+											if ($favorite)
+											{
+												?>
+												<span class="fa fa-heart fa-darkred"></span>
+												<?php
+											}
+											?>
+											<?php echo $title ?> (<?php echo $movie->getYear() ?>)
+										</h1>
 									</div>
 									<?php
 								}
 								?>
+								<div class="movie-options">
+									<ul>
+										<li class="dropdown">
+											<a href="" class="dropdown-toggle" data-toggle="dropdown">
+												<span class="fa fa-plus fa-green"></span><span class="hidden-xs"> Add</span> <span class="fa fa-caret-down"></span>
+											</a>
+											<ul class="dropdown-menu" role="menu" id="add-movie-dropdown-menu">
+												<?php
+												$collectionIdsWithoutTheMovie = $movie->getAllCollectionIdsForUserInWhichTheMovieIsNot($active_user->getId());
+												$numberOfCollectionsWithoutTheMovie = count($collectionIdsWithoutTheMovie);
+												?>
+												<li>
+													<?php
+													if ($numberOfCollectionsWithoutTheMovie > 0)
+													{
+														$newCollection = new Collection();
+														?>
+														<a href="#" data-toggle="modal" data-target="#addToCollectionModal"><span class="fa fa-plus fa-green"></span> Add to Collection</a>
+														<?php
+													}
+													else
+													{
+														?>
+														<a class="disabled"><span class="fa fa-plus fa-grey"></span> Add to Collection</a>
+														<?php
+													}
+													?>
+												</li>
+												<li><a href="#"><span class="fa fa-plus fa-green"></span> Add to List</a></li>
+											</ul>
+										</li>
+										<li>
+											<?php
+											if ($movie->check_if_movie_is_favorite($active_user->getId()))
+											{
+												?>
+												<form class="form-inline" action="" method="POST" style="display: inline;">
+													<button type="submit" class="btn-as-li" name="unfavmovsub"><span class="fa fa-heart-o fa-red"></span><span class="hidden-xs"> Unfavorise</span></button>
+												</form>
+												<?php
+											}
+											else
+											{
+												?>
+												<form class="form-inline" action="" method="POST" style="display: inline;">
+													<button type="submit" class="btn-as-li" name="favmovsub"><span class="fa fa-heart fa-red"></span><span class="hidden-xs"> Favorite</span></button>
+												</form>
+												<?php
+											}
+											?>
+										</li>
+										<li id="tag-toggler"><span class="fa fa-tag fa-omi-blue"></span><span class="hidden-xs"> Tags</span></li>
+										<li><a href="<?php echo $path ?>movie/<?php echo $movie->getId() ?>/<?php echo $movie->getSlug() ?>/discussion/"><span class="fa fa-comments fa-orange"></span><span class="hidden-xs"> Discussion</span></a></li>
+									</ul>
+									<ul class="pull-right">
+										<li><a href="#" data-toggle="modal" data-target="#edit_movie_details_modal"><span class="fa fa-edit fa-orange"></span><span class="hidden-xs"> Edit</span></a></li>
+									</ul>
+								</div>
 							</div>
 						</div>
 						<div class="row">
 							<div class="col-lg-7 col-md-12 col-sm-12 col-xs-12">
 								<div class="row">
-
 									<div class="col-lg-5 col-md-5 col-sm-6 col-xs-6 mpa">
 										<div class="movie-poster">
 											<img src="<?php echo $movie->getPosterUrl() ?>" alt="<?php echo $movie->getTitle() ?> poster">
@@ -196,7 +288,7 @@ if (isset($_POST['ifsub']))
 											}
 											?>
 										</label><br>
-										<label><span class="label-title">IMDb Rating: </span><?php echo $data['imdbRating'] ?></label><br>
+										<label><span class="label-title">IMDb Rating: </span><?php echo $movie->get_latest_imdb_rating() ?></label><br>
 										<a href="<?php echo $movie->getImdbLink() ?>" target="_blank">
 											<img src="http://ia.media-imdb.com/images/G/01/imdb/images/plugins/imdb_46x22-2264473254._CB379390954_.png">
 										</a>
@@ -245,70 +337,6 @@ if (isset($_POST['ifsub']))
 									</div>
 								</div>
 								<?php
-								$collectionIdsWithoutTheMovie = $movie->getAllCollectionIdsForUserInWhichTheMovieIsNot($active_user->getId());
-								$numberOfCollectionsWithoutTheMovie = count($collectionIdsWithoutTheMovie);
-								?>
-								<div class="row">
-
-									<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-										<hr class="visible-xs">
-										<?php
-										if ($numberOfCollectionsWithoutTheMovie > 0)
-										{
-											$newCollection = new Collection();
-											?>
-											<button class="btn btn-success" data-toggle="modal" data-target="#addToCollectionModal"><span class="fa fa-plus"></span> Add to Collection</button>
-											<!-- Modal -->
-											<div class="modal fade" id="addToCollectionModal" aria-labelledby="addToCollectionModalLabel" >
-												<div class="modal-dialog">
-													<div class="modal-content">
-														<div class="modal-header">
-															<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-															<h4 class="modal-title" id="addToCollectionModalLabel">Add <?php echo $origTitle ?> to Collection</h4>
-														</div>
-														<div class="modal-body">
-															<form action="" method="post">
-																<div class="col-lg-8 col-md-8 col-sm-8 col-xs-8">
-																	<select name="collectionChooser" class="form-control">
-																		<?php
-																		foreach ($collectionIdsWithoutTheMovie as $collectionId)
-																		{
-																			$newCollection->setValuesAccordingToId($collectionId);
-																			?>
-																			<option value="<?php echo $newCollection->getId() ?>"><?php echo $newCollection->getName() ?></option>
-																			<?php
-																		}
-																		?>
-																	</select>
-																</div>
-																<div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
-																	<input type="submit" class="btn btn-success" value="Add to Collection" name="saveInCollection">
-																</div>
-															</form>
-															<div class="clearfix"></div>
-														</div>
-														<div class="clearfix"></div>
-														<div class="modal-footer">
-															<button type="button" class="btn btn-default" data-dismiss="modal" aria-label="Close">Close</button>
-														</div>
-													</div>
-												</div>
-											</div>
-											<?php
-										}
-										else
-										{
-											?>
-											<button class="btn btn-success disabled"><span class="fa fa-plus"></span> Add to Collection</button>
-											<?php
-										}
-										?>
-										<button class="btn btn-warning disabled"><span class="fa fa-heart"></span> Favorite</button>
-										<button class="btn btn-primary" id="tag-toggler"><span class="fa fa-tag"></span> Tags</button>
-										<a href="<?php echo $path ?>movie/<?php echo $movie->getId() ?>/<?php echo $movie->getSlug() ?>/discussion/"><button class="btn btn-info"><span class="fa fa-comments"></span> Discussion</button></a>
-									</div>
-								</div>
-								<?php
 								$collectionIds = $movie->getAllCollectionIdsForUserInWhichTheMovieIs($active_user->getId());
 								$numberOfCollections = count($collectionIds);
 								$collectionSingularis = 'collection';
@@ -320,11 +348,11 @@ if (isset($_POST['ifsub']))
 								{
 									?>
 									<div class="row">
-
 										<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-											<hr>
 											<div class="col-lg-12 col-md-9 col-sm-12 col-xs-12 row">
-												<label><span class="label-title">In your <?php echo $collectionSingularis ?>: </span></label><br>
+												<div class="details-section-header">
+													In your <?php echo $collectionSingularis ?>
+												</div>
 												<?php
 												$collection = new Collection();
 												foreach ($collectionIds as $collectionId => $quality)
@@ -483,36 +511,58 @@ if (isset($_POST['ifsub']))
 								?>
 								<div class="row">
 									<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-										<hr>
-										<div>
-											<label>
-												<span class="label-title">
-													Movie Images: 
-												</span>
-											</label>
-											<span class="pull-right">
-												<button class="btn btn-default btn-sm"  data-toggle="modal" data-target="#upload-image-modal">
-													<span class="fa fa-plus"></span> Upload
-												</button>
-											</span>
+										<div class="row">
+											<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+												<div class="details-section-header">
+													<div class="row">
+														<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+															Movie Images 
+															<span class="pull-right">
+																<button class="btn btn-omi btn-sm" data-toggle="modal" data-target="#upload-image-modal">
+																	<span class="fa fa-plus"></span> Upload
+																</button>
+															</span>
+														</div>
+													</div>
+												</div>
+											</div>
 										</div>
-										<hr>
-										<label><span class="label-title">Short Plot: </span></label><br>
+										<div class="row">
+											<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+												<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 movie-images">
+													<?php
+													$images = $movie->get_all_header_images();
+													foreach ($images as $image)
+													{
+														?>
+														<img src="<?php echo get_image_path() . $image ?>" class="miniature-hi" alt="<?php echo $movie->getTitle() ?>">
+														<?php
+													}
+													?>
+												</div>
+											</div>
+										</div>
+										<div class="details-section-header">
+											Short Plot
+										</div>
 										<p>
 											<?php echo $movie->getPlot() ?>
 										</p>
-										<label><span class="label-title" id="full-plot-toggle" style="cursor: pointer">Full Plot: (Can contain spoilers)</span></label><br>
+										<div class="details-section-header" id="full-plot-toggle" style="cursor: pointer">
+											Full Plot (Can contain spoilers)
+										</div>
 										<p id="full-plot" style="display: none">
 											<?php echo $data['Plot']; ?><br><br>
 											<i><label class="label-title" id="hide-full-plot" style="color: lightgray; cursor: pointer; text-decoration: underline">Hide Full plot</label></i>	
 										</p>
-										<hr class="hidden-lg">
 									</div>
 								</div>
 							</div>
 							<div class="col-lg-5 col-md-12 col-sm-12 col-xs-12">
+								<div class="details-section-header">
+									Cast
+								</div>
 								<div class="cast-list">
-									<label><span class="label-title">Cast: </span></label><br>
 									<?php
 									$castList = $movie->getFullCast();
 									$actor = new Person();
@@ -552,6 +602,44 @@ if (isset($_POST['ifsub']))
 										<?php
 									}
 									?>
+								</div>
+								<div class="details-section-header">
+									Top Discussions
+								</div>
+								<div class="discussion-overview">
+									<div style="background-color: #ccc; border: 1px solid; border-color: #0079b7; padding: 5px 10px; margin: 5px 0;">
+										<div style="color: #0079b7;">
+											<h4 style="margin: 0 auto; color: #0079b7;">Discussion Title</h4>
+										</div>
+										<div style="color: #2c4762;">
+											<time>June 3rd, 16:21</time> <i>by</i> <a href="#">Username</a>
+										</div>
+										<div class="color: #000;">
+											Lorem ipsum dolor sit...
+										</div>
+									</div>
+									<div style="background-color: #ccc; border: 1px solid; border-color: #0079b7; padding: 5px 10px; margin: 5px 0;">
+										<div style="color: #0079b7;">
+											<h4 style="margin: 0 auto; color: #0079b7;">Discussion Title</h4>
+										</div>
+										<div style="color: #2c4762;">
+											<time>June 3rd, 16:21</time> <i>by</i> <a href="#">Username</a>
+										</div>
+										<div class="color: #000;">
+											Lorem ipsum dolor sit...
+										</div>
+									</div>
+									<div style="background-color: #ccc; border: 1px solid; border-color: #0079b7; padding: 5px 10px; margin: 5px 0;">
+										<div style="color: #0079b7;">
+											<h4 style="margin: 0 auto; color: #0079b7;">Discussion Title</h4>
+										</div>
+										<div style="color: #2c4762;">
+											<time>June 3rd, 16:21</time> <i>by</i> <a href="#">Username</a>
+										</div>
+										<div class="color: #000;">
+											Lorem ipsum dolor sit...
+										</div>
+									</div>
 								</div>
 							</div>
 						</div>
@@ -602,6 +690,63 @@ if (isset($_POST['ifsub']))
 						<div class="modal-footer">
 							<button type="input" class="btn btn-success" name="ifsub"><span class="fa fa-check"></span> Upload</button>
 							<button type="button" class="btn btn-default" data-dismiss="modal" aria-label="Close"><span class="fa fa-times"></span> Close</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+		<!-- Modal -->
+		<div class="modal fade" id="addToCollectionModal" aria-labelledby="addToCollectionModalLabel" >
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+						<h4 class="modal-title" id="addToCollectionModalLabel">Add <?php echo $origTitle ?> to Collection</h4>
+					</div>
+					<form action="" method="post">
+						<div class="modal-body">
+							<div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+								<h4 class="label-title pull-right">Add to:</h4>
+							</div>
+							<div class="col-lg-8 col-md-8 col-sm-8 col-xs-8">
+								<select name="collectionChooser" class="form-control">
+									<?php
+									foreach ($collectionIdsWithoutTheMovie as $collectionId)
+									{
+										$newCollection->setValuesAccordingToId($collectionId);
+										?>
+										<option value="<?php echo $newCollection->getId() ?>"><?php echo $newCollection->getName() ?></option>
+										<?php
+									}
+									?>
+								</select>
+							</div>
+							<div class="clearfix"></div>
+						</div>
+						<div class="clearfix"></div>
+						<div class="modal-footer">
+							<button type="submit" class="btn btn-default" name="saveInCollection"><span class="fa fa-check fa-green"></span> Add to Collection</button>
+							<button type="button" class="btn btn-default" data-dismiss="modal" aria-label="Close"><span class="fa fa-times fa-red"></span> Close</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+		<!-- Modal -->
+		<div class="modal fade" id="edit_movie_details_modal" aria-labelledby="edit_movie_details_modal_label" >
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close fa-omi-blue" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+						<h4 class="modal-title" id="edit_movie_details_modal_label">Edit Details</h4>
+					</div>
+					<form action="" method="post" name="emd_form">
+						<div class="modal-body">
+
+						</div>
+						<div class="modal-footer">
+							<button type="submit" class="btn btn-default" name="edmosbm"><span class="fa fa-check fa-green"></span> Add to Collection</button>
+							<button type="button" class="btn btn-default" data-dismiss="modal" aria-label="Close"><span class="fa fa-times fa-red"></span> Close</button>
 						</div>
 					</form>
 				</div>

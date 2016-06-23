@@ -1,6 +1,6 @@
 <?php
 
-$path = "/onlineMovieIndex/";
+$path = "/";
 $url = "localhost/onlineMovieIndex/";
 
 define("IMAGE_PATH", "_uploads/_images/");
@@ -20,6 +20,8 @@ define("IMAGE_LOCATION", "_uploads/_images/");
 define("SERVER", "http://".$_SERVER['SERVER_NAME']);
 define("BASE", $path);
 
+define("DEFAULT_COLLECTION_IMAGE","../../includes/img/movcol.jpg");
+
 /*
  * Accepted filetypes for image upload.
  */
@@ -31,19 +33,19 @@ define("BACKGROUND_MAX_WIDTH", 2500);
  * Regular Expressions for Register and Login
  */
 
-//Username: Only 'A-Z', 'a-z', '0-9' and '-_'. 
+//Username: Only 'A-Z', 'a-z', '0-9' and '-_'.
 //Only 'A-Z', 'a-z' or '0-9' as first character
 //Between 6 and 40 characters of length
 $regexUsername = "^[a-zA-Z0-9][a-zA-Z0-9_-]{5,39}$";
 
 //  KILDE: http://www.mkyong.com/regular-expressions/how-to-validate-password-with-regular-expression/
-//  (                   Start of group      
+//  (                   Start of group
 //  (?=.*\d)		must contains one digit from 0-9
 //  (?=.*[a-z])		must contains one lowercase characters
 //  (?=.*[A-Z])		must contains one uppercase characters
 //  (?=.*[@#$%])	must contains one special symbols in the list "@#$%_-"
 //  .                   match anything with previous condition checking
-//  {8,40}              length at least 8 characters and maximum of 40	
+//  {8,40}              length at least 8 characters and maximum of 40
 //  )			End of group
 $regexPassword = "/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[@#$%_-]*.{8,40}$/";
 
@@ -83,7 +85,7 @@ $countryLanguages = array(
 	"sr" => "Serbia",
 	"tr" => "Turkey",
 	"uk" => "Ukraine"
-); 
+);
 
 function formatShortDate($date)
 {

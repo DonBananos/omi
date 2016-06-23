@@ -29,3 +29,13 @@ RewriteRule ^movie/(\d+)/[a-z0-9-]+/?$ movie/details.php?mid=$1 [NC,L]
 RewriteCond %{REQUEST_FILENAME} !-d [NC]
 RewriteCond %{REQUEST_FILENAME} !-f [NC]
 RewriteRule ^person/(\d+)/[a-z0-9-]+/?$ person/details.php?pid=$1 [NC,L]
+
+#Redirect for user Details
+RewriteCond %{REQUEST_FILENAME} !-d [NC]
+RewriteCond %{REQUEST_FILENAME} !-f [NC]
+RewriteRule ^user/(\d+)/? user/profile.php?id=$1 [NC,L]
+
+#Redirect for quicksearch
+RewriteCond %{REQUEST_FILENAME} !-d [NC]
+RewriteCond %{REQUEST_FILENAME} !-f [NC]
+RewriteRule ^quicksearch? quicksearch.php [NC,L]

@@ -1,30 +1,23 @@
-<!--
-Author: Heini L. Ovason
--->
-
-<!-- Button trigger modal -->
-<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
-    <span class="fa fa-plus"></span> Create Movie Collection
+<br/>
+<button type="button" class="btn btn-default" data-toggle="modal" data-target="#createCollectionModal">
+    <span class="fa fa-plus fa-green"></span> New Collection
 </button>
 
 <!-- Modal -->
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal fade" id="createCollectionModal" tabindex="-1" role="dialog" aria-labelledby="createCollectionModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="myModalLabel">Create Movie Collection</h4>
+                <h4 class="modal-title" id="createCollectionModalLabel">Create Movie Collection</h4>
             </div>
-            <div class="modal-body">
-                
-                <form method="post" role="form" id="createCollectionForm" action="<?php echo $path ?>collection/createCollection.php">
-
+			<form method="post" role="form" id="createCollectionForm" action="<?php echo $path ?>collection/createCollection.php">
+				<div class="modal-body">
                     <!-- Name -->
                     <div class="form-group">
                         <label class="form-label-header" for="name">Name</label>
                         <input type="text" name="name" id="name" class="form-control" placeholder="Enter name of collection">   
                     </div>
-
                     <!-- Description -->
                     <div class="form-group">
                         <label class="form-label-header" for="description">Description</label>
@@ -42,12 +35,12 @@ Author: Heini L. Ovason
                             <input type="radio" name="privacy-setting" value="0">Public
                         </label>
                     </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal" aria-label="Close">Close</button>
-                <button type="button" id="savebtn" name="savebtn" class="btn btn-primary">Save</button>
-            </div>
+				</div>
+				<div class="modal-footer">
+					<button type="submit" id="savebtn" name="savebtn" class="btn btn-default disabled"><span class="fa fa-check fa-omi-blue"></span> Save</button>
+					<button type="reset" class="btn btn-default" data-dismiss="modal" aria-label="Close"><span class="fa fa-times fa-darkred"></span> Close</button>
+				</div>
+			</form>
         </div>
     </div>
 </div>
@@ -63,15 +56,17 @@ Author: Heini L. Ovason
             div.addClass("has-error has-feedback");
             div.append('<span id="glyphName" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>');
             div.append('<div id="infoName" class="alert alert-info" role="alert">Please enter a collection name!</div>');
+			$("#savebtn").addClass("disabled");
             return false;
-        } else if ($("#name").val().length < 2) {
+        } else if ($("#name").val().length < 2 || $("#name").val().length > 40) {
             var div = $("#name").closest("div");
             div.removeClass("has-success");
             $("#glyphName").remove();
             $("#infoName").remove();
             div.addClass("has-error has-feedback");
             div.append('<span id="glyphName" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>');
-            div.append('<div id="infoName" class="alert alert-info" role="alert">Colection name must be between 2-40 characters.</div>');
+            div.append('<div id="infoName" class="alert alert-info" role="alert">Collection name must be between 2-40 characters.</div>');
+			$("#savebtn").addClass("disabled");
             return false;
         } else {
             var div = $("#name").closest("div");
@@ -80,34 +75,14 @@ Author: Heini L. Ovason
             div.addClass("has-success has-feedback");
             $("#glyphName").remove();
             div.append('<span id="glyphName" class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true"></span>');
+			$("#savebtn").removeClass("disabled");
             return true;
         }
     }
 
     $(document).ready(function () {
-
-        /*
-         * Listening to fieldd based on related CSS selector ID's.
-         * If focus is removed then the focusout() triggers a function
-         * which calls the correct validation-function.
-         */
         $("#name").focusout(function () {
             validateCollectionName();
-        });
-
-        /*
-         * Listening to form button based on related CSS selector ID.
-         * Again we verify that input is correct before we are able
-         * to perform form action.
-         */
-        $("#savebtn").click(function () {
-            if (validateCollectionName())
-            {
-                // ### TEST ### Console print form input values.
-                console.log("Name: " + $("#name").val() + ", " + "Description: " + $("#description").val() + ", " + "Privacy settings: " + jQuery('input[name=privacy-setting]:checked').val());
-
-                $("form#createCollectionForm").submit();
-            }
         });
     }
 

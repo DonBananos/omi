@@ -484,20 +484,20 @@ class Movie
 		$stmt->execute(); //Execute
 		$stmt->close();
 	}
-	
+
 	public function removeSubtitlesNotSelected($subtitlesSelected, $collectionId)
 	{
 		$allCurrentSubsForMovie = $this->getAllSubIdsForMovieInCollection($collectionId);
-		foreach($allCurrentSubsForMovie as $subId)
+		foreach ($allCurrentSubsForMovie as $subId)
 		{
 			$key = array_search($subId, $subtitlesSelected);
-			if(!is_int($key))
+			if (!is_int($key))
 			{
 				$this->removeSubIdFromMovieInCollection($subId, $collectionId);
 			}
 		}
 	}
-	
+
 	private function getAllSubIdsForMovieInCollection($collectionId)
 	{
 		global $dbCon;
@@ -518,32 +518,32 @@ class Movie
 		$stmt->close();
 		return $subs;
 	}
-	
+
 	private function removeSubIdFromMovieInCollection($subId, $collectionId)
 	{
 		global $dbCon;
-			//Create SQL Query
-			$sql = "DELETE FROM collection_movie_sub WHERE collection_movie_collection_id = ? AND collection_movie_movie_id = ? AND collection_movie_subtitle_id = ?";
+		//Create SQL Query
+		$sql = "DELETE FROM collection_movie_sub WHERE collection_movie_collection_id = ? AND collection_movie_movie_id = ? AND collection_movie_subtitle_id = ?";
 
-			//Prepare Statement
-			$stmt = $dbCon->prepare($sql);
-			if ($stmt === false)
-			{
-				trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
-			}
+		//Prepare Statement
+		$stmt = $dbCon->prepare($sql);
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
 
-			//Bind parameters.
-			$stmt->bind_param('iii', $collectionId, $this->id, $subId);
+		//Bind parameters.
+		$stmt->bind_param('iii', $collectionId, $this->id, $subId);
 
-			//Execute
-			$stmt->execute();
+		//Execute
+		$stmt->execute();
 
-			$stmt->close();
-			if ($dbCon->error != NULL)
-			{
-				return $dbCon->error;
-			}
-			return true;
+		$stmt->close();
+		if ($dbCon->error != NULL)
+		{
+			return $dbCon->error;
+		}
+		return true;
 	}
 
 	public function checkIfMovieAlreadyExists($imdbId)
@@ -610,11 +610,11 @@ class Movie
 		}
 		return false;
 	}
-	
+
 	public function save_tag_for_movie($tag_id, $user_id, $collection_id = NULL)
 	{
 		global $dbCon;
-		
+
 		$sql = "INSERT INTO movie_tag (tag_id, movie_id, collection_id, user_id) VALUES (?, ?, ?, ?);";
 		$stmt = $dbCon->prepare($sql);
 		if ($stmt === false)
@@ -631,13 +631,13 @@ class Movie
 		}
 		return $dbCon->error;
 	}
-	
+
 	public function get_all_movies_tags($user_id)
 	{
 		$tags = array();
-		
+
 		global $dbCon;
-		
+
 		$sql = "SELECT tag.tag_id, tag_name FROM tag INNER JOIN movie_tag ON tag.tag_id = movie_tag.tag_id WHERE movie_id = ? AND user_id = ?;";
 		$stmt = $dbCon->prepare($sql);
 		if ($stmt === false)
@@ -654,13 +654,13 @@ class Movie
 		$stmt->close();
 		return $tags;
 	}
-	
+
 	public function get_others_movie_tag($user_id)
 	{
 		$tags = array();
-		
+
 		global $dbCon;
-		
+
 		$sql = "SELECT tag.tag_id, tag_name FROM tag INNER JOIN movie_tag ON tag.tag_id = movie_tag.tag_id WHERE movie_id = ? AND user_id != ?;";
 		$stmt = $dbCon->prepare($sql);
 		if ($stmt === false)
@@ -677,11 +677,11 @@ class Movie
 		$stmt->close();
 		return $tags;
 	}
-	
+
 	public function remove_tag_from_movie($tag_id, $user_id)
 	{
 		global $dbCon;
-		
+
 		$sql = "DELETE FROM movie_tag WHERE movie_id = ? AND tag_id = ? AND user_id = ?;";
 		$stmt = $dbCon->prepare($sql);
 		if ($stmt === false)
@@ -692,7 +692,7 @@ class Movie
 		$stmt->execute();
 		$ar = $stmt->affected_rows;
 		$stmt->close();
-		if($ar > 0)
+		if ($ar > 0)
 		{
 			return true;
 		}
@@ -702,7 +702,7 @@ class Movie
 	public function update_poster_file($filename)
 	{
 		global $dbCon;
-		
+
 		$sql = "UPDATE movie SET movie_poster_name = ? WHERE movie_id = ?;";
 		$stmt = $dbCon->prepare($sql);
 		if ($stmt === false)
@@ -713,18 +713,18 @@ class Movie
 		$stmt->execute();
 		$ar = $stmt->affected_rows;
 		$stmt->close();
-		if($ar > 0)
+		if ($ar > 0)
 		{
 			$this->setPosterUrl($filename);
 			return true;
 		}
 		return false;
 	}
-	
+
 	public function save_uploaded_image_file($filename, $user_id)
 	{
 		global $dbCon;
-		
+
 		$sql = "INSERT INTO movie_image (movie_id, image_name, image_uploader) VALUES (?, ?, ?);";
 		$stmt = $dbCon->prepare($sql);
 		if ($stmt === false)
@@ -745,13 +745,13 @@ class Movie
 
 	public function get_movie_image_for_header()
 	{
-		if(!$this->get_if_there_is_movie_images())
+		if (!$this->get_if_there_is_movie_images())
 		{
 			return false;
 		}
 		$image_names = array();
 		global $dbCon;
-		
+
 		$sql = "SELECT image_name FROM movie_image WHERE movie_id = ? AND image_status = 1;";
 		$stmt = $dbCon->prepare($sql); //Prepare Statement
 		if ($stmt === false)
@@ -761,22 +761,22 @@ class Movie
 		$stmt->bind_param('i', $this->id); //Bind parameters.
 		$stmt->execute(); //Execute
 		$stmt->bind_result($image_name); //Get ResultSet
-		while($stmt->fetch())
+		while ($stmt->fetch())
 		{
 			$image_names[] = $image_name;
 		}
 		$stmt->close();
 		if (count($image_names) > 0)
 		{
-			return get_image_path().$image_names[rand(0, count($image_names)-1)];
+			return get_image_path() . $image_names[rand(0, count($image_names) - 1)];
 		}
 		return false;
 	}
-	
+
 	public function get_if_there_is_movie_images()
 	{
 		global $dbCon;
-		
+
 		$sql = "SELECT COUNT(*) FROM movie_image WHERE movie_id = ? AND image_status = 1;";
 		$stmt = $dbCon->prepare($sql); //Prepare Statement
 		if ($stmt === false)
@@ -794,13 +794,36 @@ class Movie
 		}
 		return false;
 	}
-	
+
+	public function get_all_header_images()
+	{
+		$images = array();
+
+		global $dbCon;
+
+		$sql = "SELECT image_name FROM movie_image WHERE movie_id = ? AND image_status = 1;";
+		$stmt = $dbCon->prepare($sql); //Prepare Statement
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('i', $this->id); //Bind parameters.
+		$stmt->execute(); //Execute
+		$stmt->bind_result($image_name); //Get ResultSet
+		while ($stmt->fetch())
+		{
+			$images[] = $image_name;
+		}
+		$stmt->close();
+		return $images;
+	}
+
 	public function get_all_movie_discussions()
 	{
 		$movie_discussions = array();
-		
+
 		global $dbCon;
-		
+
 		$sql = "SELECT movie_discussion_id, movie_discussion_headline, "
 				. "movie_discussion_starter, movie_discussion_datetime, "
 				. "movie_discussion_public FROM movie_discussion "
@@ -814,7 +837,7 @@ class Movie
 		$stmt->bind_param('i', $this->id); //Bind parameters.
 		$stmt->execute(); //Execute
 		$stmt->bind_result($id, $headline, $starter, $datetime, $public);
-		while($stmt->fetch())
+		while ($stmt->fetch())
 		{
 			$movie_discussion = array();
 			$movie_discussion['headline'] = $headline;
@@ -825,6 +848,180 @@ class Movie
 		}
 		$stmt->close();
 		return $movie_discussions;
+	}
+
+	public function mark_movie_as_favorite($user_id)
+	{
+		if (!$this->check_if_movie_is_favorite($user_id))
+		{
+			global $dbCon;
+
+			$sql = "INSERT INTO user_favorite_movie (user_id, movie_id) VALUES (?, ?);";
+			$stmt = $dbCon->prepare($sql);
+			if ($stmt === false)
+			{
+				trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+			}
+			$stmt->bind_param('ii', $user_id, $this->id);
+			$stmt->execute();
+			$id = $stmt->insert_id;
+			$stmt->close();
+			if ($id > 0)
+			{
+				return true;
+			}
+			echo $dbCon->error;
+			return $dbCon->error;
+		}
+	}
+
+	public function unfavorise_movie($user_id)
+	{
+		if ($this->check_if_movie_is_favorite($user_id))
+		{
+			global $dbCon;
+
+			$sql = "UPDATE user_favorite_movie SET removed = 1 WHERE user_id = ? AND movie_id = ? AND removed = 0;";
+			$stmt = $dbCon->prepare($sql); //Prepare Statement
+			if ($stmt === false)
+			{
+				trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+			}
+			$stmt->bind_param('ii', $user_id, $this->id); //Bind parameters.
+			$stmt->execute(); //Execute
+			$stmt->close();
+		}
+	}
+
+	public function check_if_movie_is_favorite($user_id)
+	{
+		global $dbCon;
+
+		$sql = "SELECT id FROM user_favorite_movie WHERE user_id = ? AND movie_id = ? AND removed = 0;";
+		$stmt = $dbCon->prepare($sql); //Prepare Statement
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('ii', $user_id, $this->id); //Bind parameters.
+		$stmt->execute(); //Execute
+		$stmt->bind_result($id);
+		$stmt->fetch();
+		$stmt->close();
+		if (!$id)
+		{
+			return false;
+		}
+		return true;
+	}
+
+	public function save_movie_viewed_by_user($user_id)
+	{
+		global $dbCon;
+
+		$sql = "INSERT INTO movie_user_view (movie_id, user_id) VALUES (?, ?);";
+		//Prepare Statement
+		$stmt = $dbCon->prepare($sql);
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('ii', $this->id, $user_id);
+		$stmt->execute();
+		$id = $stmt->insert_id;
+		$stmt->close();
+		if ($id > 0)
+		{
+			return true;
+		}
+		return false;
+	}
+
+	private function store_todays_imdb_rating($rating)
+	{
+		if ($this->check_if_imdb_rating_has_been_updated_today())
+		{
+			return true;
+		}
+		if($rating == "N/A")
+		{
+			return false;
+		}
+		global $dbCon;
+
+		$sql = "INSERT INTO movie_imdb_rating (movie_id, imdb_rating, date) VALUES (?, ?, ?)";
+		//Prepare Statement
+		$stmt = $dbCon->prepare($sql);
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('iss', $this->id, $rating, date("Y-m-d", time()));
+		$stmt->execute();
+		$id = $stmt->insert_id;
+		$stmt->close();
+		if ($id > 0)
+		{
+			return true;
+		}
+		return false;
+	}
+
+	private function check_if_imdb_rating_has_been_updated_today()
+	{
+		global $dbCon;
+
+		$sql = "SELECT COUNT(*) AS todays_update FROM movie_imdb_rating WHERE movie_id = ? AND DATE(date) = CURDATE();";
+		//Prepare Statement
+		$stmt = $dbCon->prepare($sql);
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('i', $this->id);
+		$stmt->execute();
+		$stmt->bind_result($todays_update);
+		$stmt->fetch();
+		$stmt->close();
+		if ($todays_update > 0)
+		{
+			return true;
+		}
+		return false;
+	}
+
+	public function get_latest_imdb_rating()
+	{
+		if (!$this->check_if_imdb_rating_has_been_updated_today())
+		{
+			$this->get_current_imdb_rating_from_api();
+		}
+		
+		global $dbCon;
+		
+		$sql = "SELECT imdb_rating FROM movie_imdb_rating WHERE movie_id = ? AND DATE(date) = CURDATE();";
+		//Prepare Statement
+		$stmt = $dbCon->prepare($sql);
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('i', $this->id);
+		$stmt->execute();
+		$stmt->bind_result($rating);
+		$stmt->fetch();
+		$stmt->close();
+		return $rating;
+	}
+
+	public function get_current_imdb_rating_from_api()
+	{
+		$json = file_get_contents("http://www.omdbapi.com/?i=$this->imdbId&plot=full&r=json");
+		//JSON decode of answer
+		$data = json_decode($json, true);
+		$imdbRating = $data['imdbRating'];
+		
+		return $this->store_todays_imdb_rating($imdbRating);
 	}
 
 	public function getId()
@@ -859,11 +1056,11 @@ class Movie
 
 	public function getPosterUrl()
 	{
-		if($this->posterUrl == NULL)
+		if ($this->posterUrl == NULL)
 		{
 			return "http://www.reelviews.net/resources/img/default_poster.jpg";
 		}
-		return get_image_path().$this->posterUrl;
+		return get_image_path() . $this->posterUrl;
 	}
 
 	public function getPosterUrlThumb()

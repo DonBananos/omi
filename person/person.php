@@ -224,6 +224,7 @@ class Person
 		$stmt->close();
 		if ($id > 0)
 		{
+			$this->setBio($bio);
 			return true;
 		}
 		return $dbCon->error;
@@ -251,7 +252,7 @@ class Person
 
 	public function getBio()
 	{
-		return strip_tags($this->bio, '<br></br>');
+		return nl2br(strip_tags($this->bio, '<br></br>'));
 	}
 	
 	public function getBioForEditor()

@@ -34,6 +34,13 @@ if (empty($person->getBio()))
 	$person->updatePersonWithFullData($person_bio, $born, $imdbPerson->photo(FALSE));
 	$person->setValuesAccordingToId($person_id);
 }
+
+if(isset($_POST['pesubmit']))
+{
+	$bio = $_POST['pebio'];
+	$born = $_POST['pebd'];
+	$person->updatePersonWithFullData($bio, date("Y-m-d", strtotime($born)), NULL);
+}
 ?>
 <html lang="en">
 	<head>
@@ -62,22 +69,22 @@ if (empty($person->getBio()))
 						<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 							<span class="pull-right">
 								<div class="person-options">
-									<a href="http://www.facebook.com">
+									<a href="http://www.facebook.com" target="_blank">
 										<button class="btn btn-facebook">
 											<span class="fa fa-facebook"></span> <?php echo $person->getName() ?>
 										</button>
 									</a>
-									<a href="http://www.twitter.com">
+									<a href="http://www.twitter.com" target="_blank">
 										<button class="btn btn-twitter">
 											<span class="fa fa-twitter"></span> @actorname
 										</button>
 									</a>
-									<a href="http://www.instagram.com">
+									<a href="http://www.instagram.com" target="_blank">
 										<button class="btn btn-instagram">
 											<span class="fa fa-instagram"></span> <?php echo $person->getName() ?>
 										</button>
 									</a>
-									<a href="http://www.domain.com">
+									<a href="http://www.domain.com" target="_blank">
 										<button class="btn btn-default">
 											<span class="fa fa-at"></span> Website
 										</button>
@@ -87,7 +94,7 @@ if (empty($person->getBio()))
 											<span class="fa fa-edit"></span> Edit
 										</button>
 									</a>
-									<a href="http://www.imdb.com/name/<?php echo $person->getImdbId() ?>">
+									<a href="http://www.imdb.com/name/nm<?php echo $person->getImdbId() ?>" target="_blank">
 										<button class="btn btn-default btn-sm">
 											<img src="<?php echo $path ?>includes/img/imdblogo.png" alt="IMDb logo">
 										</button>
@@ -194,7 +201,7 @@ if (empty($person->getBio()))
 										<div class="col-lg-12 col-sm-12 col-sm-12 col-xs-12">
 											<div class="input-group">
 												<span class="input-group-addon" id="bd-in-ad"><span class="fa fa-calendar fa-fw"></span></span>
-												<input type="date" class="form-control" describedby="bd-in-ad" placeholder="birthday">
+												<input type="date" class="form-control" describedby="bd-in-ad" placeholder="birthday" name="pebd" value="<?php echo date("Y-m-d", strtotime($person->getBorn())) ?>">
 											</div>
 											<div class="input-group">
 												<span class="input-group-addon" id="bp-in-ad"><span class="fa fa-map-pin fa-fw"></span></span>
@@ -240,7 +247,7 @@ if (empty($person->getBio()))
 											</label>
 										</div>
 										<div class="col-lg-12 col-sm-12 col-sm-12 col-xs-12">
-											<textarea class="form-control" rows="10"><?php echo $person->getBioForEditor() ?></textarea>
+											<textarea class="form-control" rows="10" name="pebio"><?php echo $person->getBioForEditor() ?></textarea>
 										</div>
 									</div>
 								</div>

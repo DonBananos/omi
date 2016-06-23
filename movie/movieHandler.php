@@ -122,4 +122,93 @@ class MovieHandler
 		$stmt->close();
 		return $movie_ids;
 	}
+	
+	public function get_most_popular_movies($limit = 6)
+	{
+		$movie_ids = array();
+		global $dbCon;
+
+		$sql = "SELECT COUNT(id), movie_id FROM movie_user_view GROUP BY movie_id ORDER BY COUNT(id) DESC LIMIT ?;";
+		$stmt = $dbCon->prepare($sql); //Prepare Statement
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('i', $limit); //Bind parameters.
+		$stmt->execute(); //Execute
+		$stmt->bind_result($count, $movie_id); //Get ResultSet
+		while ($stmt->fetch())
+		{
+			$movie_ids[] = $movie_id;
+		}
+		$stmt->close();
+		return $movie_ids;
+	}
+	
+	public function get_newest_added_movies($limit = 6)
+	{
+		$movie_ids = array();
+		global $dbCon;
+
+		$sql = "SELECT movie_id FROM movie ORDER BY movie_added DESC LIMIT ?;";
+		$stmt = $dbCon->prepare($sql); //Prepare Statement
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('i', $limit); //Bind parameters.
+		$stmt->execute(); //Execute
+		$stmt->bind_result($movie_id); //Get ResultSet
+		while ($stmt->fetch())
+		{
+			$movie_ids[] = $movie_id;
+		}
+		$stmt->close();
+		return $movie_ids;
+	}
+	
+	public function get_movies_from_search_string($string, $start = 0, $limit = 10)
+	{
+		$string = "%".$string."%";
+		$movie_ids = array();
+		global $dbCon;
+		
+		$sql = "SELECT DISTINCT(movie_id) FROM movie INNER JOIN movie_aka_title ON movie_id = movie_aka_title_movie_id WHERE movie_title LIKE ? OR movie_orig_title LIKE ? OR movie_aka_title_title LIKE ? LIMIT ?,?;";
+		$stmt = $dbCon->prepare($sql); //Prepare Statement
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('sssii', $string, $string, $string, $start, $limit); //Bind parameters.
+		$stmt->execute(); //Execute
+		$stmt->bind_result($movie_id); //Get ResultSet
+		while ($stmt->fetch())
+		{
+			$movie_ids[] = $movie_id;
+		}
+		$stmt->close();
+		return $movie_ids;
+	}
+	
+	public function get_highest_imdb_rated_movies($limit = 6)
+	{
+		$movie_ids = array();
+		global $dbCon;
+
+		$sql = "SELECT movie_id FROM movie_imdb_rating ORDER BY imdb_rating DESC LIMIT ?;";
+		$stmt = $dbCon->prepare($sql); //Prepare Statement
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('i', $limit); //Bind parameters.
+		$stmt->execute(); //Execute
+		$stmt->bind_result($movie_id); //Get ResultSet
+		while ($stmt->fetch())
+		{
+			$movie_ids[] = $movie_id;
+		}
+		$stmt->close();
+		return $movie_ids;
+	}
 }

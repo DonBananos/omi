@@ -1,7 +1,7 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 <div class="col-lg-6 center-block">
-	<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addMovieModal">
-		<span class="fa fa-plus"></span><span class="hidden-xs"> Add Movie</span>
+	<button type="button" class="btn btn-default" data-toggle="modal" data-target="#addMovieModal">
+		<span class="fa fa-plus fa-omi-blue"></span><span class="hidden-xs"> Add Movie</span>
 	</button>
 
 	<!-- Modal -->

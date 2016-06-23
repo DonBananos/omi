@@ -858,11 +858,11 @@ class User
 	{
 		session_unset();
 	}
-	
+
 	public function get_most_popular_collection()
 	{
 		global $dbCon;
-		
+
 		$sql = "SELECT COUNT(id), collection_id FROM collection_user_view WHERE user_id = ? GROUP BY collection_id ORDER BY COUNT(id) DESC;";
 		$stmt = $dbCon->prepare($sql); //Prepare Statement
 		if ($stmt === false)
@@ -875,13 +875,48 @@ class User
 		$stmt->fetch();
 		$numRows = $stmt->num_rows();
 		$stmt->close();
-		if($collection_id)
+		if ($collection_id)
 		{
 			return $collection_id;
 		}
 		return false;
 	}
 
+	public function get_most_popular_collections($limit = 2)
+	{
+		$collection_ids = array();
+		global $dbCon;
+
+		$sql = "SELECT COUNT(id), collection.collection_id FROM collection_user_view INNER JOIN collection ON collection_user_view.collection_id = collection.collection_id WHERE collection_user_id = ? GROUP BY collection_id ORDER BY COUNT(id) DESC LIMIT ?;";
+		$stmt = $dbCon->prepare($sql); //Prepare Statement
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('ii', $this->id, $limit); //Bind parameters.
+		$stmt->execute(); //Execute
+		$stmt->bind_result($count, $collection_id); //Get ResultSet
+		while ($stmt->fetch())
+		{
+			$collection_ids[] = $collection_id;
+		}
+		$stmt->close();
+		return $collection_ids;
+	}
+
+	public function get_possessed_username()
+	{
+		if (substr($this->getUsername(), -1) == 's' OR substr($this->getUsername(), -1) == 'z')
+		{
+			$username_label = $this->getUsername() . '\'';
+		}
+		else
+		{
+			$username_label = $this->getUsername() . '\'s';
+		}
+		return $username_label;
+	}
+	
 	/*
 	 * All Getters and Setters (Getters are public, Setters are private)
 	 */
