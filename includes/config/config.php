@@ -1,7 +1,7 @@
 <?php
 
-$path = "/";
-$url = "localhost/onlineMovieIndex/";
+$path = "/Mike/omi/";
+$url = "localhost/Mike/omi/";
 
 define("IMAGE_PATH", "_uploads/_images/");
 define("BASE_URL", $path);
@@ -15,7 +15,7 @@ $cookie_path = "/omi";
 /*
  * Defining the other stuff..
  */
-define("ROOT_PATH", "C:/xampp/htdocs".$path);
+define("ROOT_PATH", "D:/Workbench".$path);
 define("IMAGE_LOCATION", "_uploads/_images/");
 define("SERVER", "http://".$_SERVER['SERVER_NAME']);
 define("BASE", $path);
