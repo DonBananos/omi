@@ -8,6 +8,7 @@
 
 class User
 {
+
 	private $id; //Integer
 	private $username; //String
 	private $email; //String
@@ -36,6 +37,7 @@ class User
 	 * users will be using this object to create an instance of each user,
 	 * by using the same object, but changing all attributes.
 	 */
+
 	public function setValuesAccordingToId($id = null)
 	{
 		global $dbCon;
@@ -82,7 +84,7 @@ class User
 		}
 		$this->setSalt($this->generateSalt());
 		$this->hashedPassword = $this->hashPass($password);
-		
+
 		$this->generateActivationCode();
 
 		return $this->saveCreatedUser();
@@ -146,6 +148,7 @@ class User
 	/*
 	 * Hashing the password with the awesome Blowfish method. Awesomeness ftw.
 	 */
+
 	private function hashPass($password)
 	{
 		$salt = $this->getSalt();
@@ -172,7 +175,7 @@ class User
 		}
 		$this->activationCode = $activationCode;
 	}
-	
+
 	private function generateSalt()
 	{
 		$salt = $this->generateRandomString(20, 30);
@@ -216,7 +219,7 @@ class User
 		global $dbCon;
 		//Create SQL Query
 		$sql = "INSERT INTO user (username, user_email, user_password, user_created, user_active, user_role_id, user_activation_code, user_salt) VALUES (?, ?, ?, NOW(), 1, 1, ?, ?)";
-		
+
 		//Prepare Statement
 		$stmt = $dbCon->prepare($sql);
 		if ($stmt === false)
@@ -232,7 +235,7 @@ class User
 
 		//Get ID of user just saved
 		$id = $stmt->insert_id;
-		
+
 		$stmt->close();
 		if ($id > 0)
 		{
@@ -485,7 +488,7 @@ class User
 	{
 		if ($this->checkIfValueExists('username', $username))
 		{
-                    $respond = "username exists";
+			$respond = "username exists";
 			$this->setValuesAccordingToUsername($username);
 			//Check password identity
 			$hashedTriedPassword = $this->hashPass($password);
@@ -502,7 +505,7 @@ class User
 		}
 		else
 		{
-                        echo $username;
+			echo $username;
 			$respond = 'Username is incorrect!'; //Username is wrong
 		}
 		return $respond;
@@ -526,11 +529,11 @@ class User
 		$this->setId($id);
 		$this->setValuesAccordingToId($id);
 	}
-	
+
 	private function setValuesAccordingToEmail($email)
 	{
 		global $dbCon;
-                //echo "<script>alert('dbCon: '".$dbCon.");</script>";
+		//echo "<script>alert('dbCon: '".$dbCon.");</script>";
 		$sql = "SELECT user_id FROM user WHERE user_email = ?";
 		$stmt = $dbCon->prepare($sql); //Prepare Statement
 		if ($stmt === false)
@@ -546,17 +549,17 @@ class User
 		$this->setId($id);
 		$this->setValuesAccordingToId($id);
 	}
-	
+
 	public function RequestPasswordReset($email)
 	{
-		if($this->checkIfValueExists('email', $email))
+		if ($this->checkIfValueExists('email', $email))
 		{
 			$this->setValuesAccordingToEmail($email);
 			$verificationCode = $this->generateRandomString(40, 60);
-			if($this->saveVerification($verificationCode))
+			if ($this->saveVerification($verificationCode))
 			{
 				$mail = $this->generateResetPasswordEmail($verificationCode);
-				if(mail($mail['to'], $mail['subject'], $mail['content'], $mail['headers']))
+				if (mail($mail['to'], $mail['subject'], $mail['content'], $mail['headers']))
 				{
 					$message = "An email has been dispatched to ";
 					$message .= $this->getEmail();
@@ -569,15 +572,15 @@ class User
 		}
 		return $message;
 	}
-	
+
 	public function resetPassword($userId, $verificationCode, $newPassword)
 	{
 		$type = 1;
 		$this->setValuesAccordingToId($userId);
 		$experationTime = $this->getExperationTimeForVerification($verificationCode, $type);
-		if($this->checkIfDatetimeIsPassed($experationTime))
+		if ($this->checkIfDatetimeIsPassed($experationTime))
 		{
-			if($this->saveNewPassword($newPassword))
+			if ($this->saveNewPassword($newPassword))
 			{
 				$message = "New Password is Saved. Log in with your new Credentials";
 			}
@@ -592,7 +595,7 @@ class User
 		}
 		return $message;
 	}
-	
+
 	private function getExperationTimeForVerification($verificationCode, $type)
 	{
 		global $dbCon;
@@ -607,28 +610,28 @@ class User
 		$stmt->bind_result($experationTime); //Get ResultSet
 		$stmt->fetch();
 		$stmt->close();
-		
+
 		return $experationTime;
 	}
-	
+
 	private function checkIfDatetimeIsPassed($datetime)
 	{
 		$now = date("Y-m-d H:i:s", time());
-		if($datetime >= $now)
+		if ($datetime >= $now)
 		{
 			return true;
 		}
 		return false;
 	}
-	
+
 	private function saveNewPassword($password)
 	{
 		$hashedPassword = $this->hashPass($password);
 		$status = $this->updatePasswordInDb($hashedPassword);
-		
+
 		return $status;
 	}
-	
+
 	private function updatePasswordInDb($hashedPassword)
 	{
 		global $dbCon;
@@ -642,14 +645,13 @@ class User
 		$status = $stmt->execute(); //Execute
 		return $status;
 	}
-	
+
 	private function generateResetPasswordEmail($verificationCode)
 	{
 		$mail = array();
 		$subject = "Password Reset | Online Movie Index";
 		$from = $supportMail;
-		$body =
-				"
+		$body = "
 					Can't see this e-mail? No problem, <a href='http://www.omi.heibosoft.com/user/$this->id/$verificationCode/'>follow this link</a>!
 					<html>
 						<body>
@@ -815,19 +817,19 @@ class User
 		$mail['subject'] = $subject;
 		$mail['content'] = $body;
 		$mail['headers'] = $headers;
-		
+
 		return $mail;
 	}
-	
+
 	private function saveVerification($verificationCode)
 	{
 		global $dbCon;
-		
+
 		$now = date("Y-m-d H:i:s");
-		$experation = date('Y-m-d H:i:s', time()+7200);
+		$experation = date('Y-m-d H:i:s', time() + 7200);
 		//Create SQL Query
 		$sql = "INSERT INTO verification (verification_user_id, verification_string, verification_datetime, verification_experation_time, verification_type) VALUES (?, ?, NOW(), DATE_ADD(NOW(), INTERVAL 2 HOUR), 1)";
-		
+
 		//Prepare Statement
 		$stmt = $dbCon->prepare($sql);
 		if ($stmt === false)
@@ -843,7 +845,7 @@ class User
 
 		//Get ID of user just saved
 		$id = $stmt->insert_id;
-		
+
 		$stmt->close();
 		if ($id > 0)
 		{
@@ -851,12 +853,70 @@ class User
 		}
 		return $dbCon->error;
 	}
-	
+
 	public function logout()
 	{
 		session_unset();
 	}
 
+	public function get_most_popular_collection()
+	{
+		global $dbCon;
+
+		$sql = "SELECT COUNT(id), collection_id FROM collection_user_view WHERE user_id = ? GROUP BY collection_id ORDER BY COUNT(id) DESC;";
+		$stmt = $dbCon->prepare($sql); //Prepare Statement
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('i', $this->id); //Bind parameters.
+		$stmt->execute(); //Execute
+		$stmt->bind_result($count, $collection_id); //Get ResultSet
+		$stmt->fetch();
+		$numRows = $stmt->num_rows();
+		$stmt->close();
+		if ($collection_id)
+		{
+			return $collection_id;
+		}
+		return false;
+	}
+
+	public function get_most_popular_collections($limit = 2)
+	{
+		$collection_ids = array();
+		global $dbCon;
+
+		$sql = "SELECT COUNT(id), collection.collection_id FROM collection_user_view INNER JOIN collection ON collection_user_view.collection_id = collection.collection_id WHERE collection_user_id = ? GROUP BY collection_id ORDER BY COUNT(id) DESC LIMIT ?;";
+		$stmt = $dbCon->prepare($sql); //Prepare Statement
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('ii', $this->id, $limit); //Bind parameters.
+		$stmt->execute(); //Execute
+		$stmt->bind_result($count, $collection_id); //Get ResultSet
+		while ($stmt->fetch())
+		{
+			$collection_ids[] = $collection_id;
+		}
+		$stmt->close();
+		return $collection_ids;
+	}
+
+	public function get_possessed_username()
+	{
+		if (substr($this->getUsername(), -1) == 's' OR substr($this->getUsername(), -1) == 'z')
+		{
+			$username_label = $this->getUsername() . '\'';
+		}
+		else
+		{
+			$username_label = $this->getUsername() . '\'s';
+		}
+		return $username_label;
+	}
+	
 	/*
 	 * All Getters and Setters (Getters are public, Setters are private)
 	 */
@@ -895,12 +955,12 @@ class User
 	{
 		return $this->role;
 	}
-	
+
 	private function getActivationCode()
 	{
 		return $this->activationCode;
 	}
-	
+
 	private function getSalt()
 	{
 		return $this->salt;
@@ -945,20 +1005,27 @@ class User
 	{
 		global $dbCon;
 		$sql = "SELECT role_name FROM role WHERE role_id = ?";
-		$stmt = $dbCon->prepare($sql);
-		$stmt->bind_param("i", $this->roleId);
-		$stmt->execute(); //Execute
-		$stmt->bind_result($role); //Get ResultSet
-		$stmt->fetch();
-		$stmt->close();
-		$this->role = $role;
+		if ($stmt = $dbCon->prepare($sql))
+		{
+			$stmt->bind_param("i", $this->roleId);
+			$stmt->execute(); //Execute
+			$stmt->bind_result($role); //Get ResultSet
+			$stmt->fetch();
+			$stmt->close();
+			$this->role = $role;
+		}
+		else
+		{
+			//error !! don't go further
+			var_dump($dbCon->error);
+		}
 	}
 
 	private function setActivationCode($activationCode)
 	{
 		$this->activationCode = $activationCode;
 	}
-	
+
 	private function setSalt($salt)
 	{
 		$this->salt = $salt;

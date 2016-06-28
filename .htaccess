@@ -1,0 +1,41 @@
+RewriteEngine On
+
+#Redirect for a collection
+RewriteCond %{REQUEST_FILENAME} !-d [NC]
+RewriteCond %{REQUEST_FILENAME} !-f [NC]
+RewriteRule ^collection/(\d+)/[a-z-]+/?$ collection/collectionView.php?id=$1 [NC,L]
+
+#Redirect for adding movie to a collection
+RewriteCond %{REQUEST_FILENAME} !-d [NC]
+RewriteCond %{REQUEST_FILENAME} !-f [NC]
+RewriteRule ^collection/(\d+)/[a-z-]+/addMovie/$ collection/addMovie.php?cid=$1 [NC,L]
+
+#Redirect for removing movie from collection
+RewriteCond %{REQUEST_FILENAME} !-d [NC]
+RewriteCond %{REQUEST_FILENAME} !-f [NC]
+RewriteRule ^collection/\d+/[a-z-]+/removeMovie/?$ collection/removeMovie.php [NC,L]
+
+#Redirect for movie Discussion
+RewriteCond %{REQUEST_FILENAME} !-d [NC]
+RewriteCond %{REQUEST_FILENAME} !-f [NC]
+RewriteRule ^movie/(\d+)/[a-z0-9-]+/discussion/?$ movie/discussion.php?id=$1 [NC,L]
+
+#Redirect for movie Details
+RewriteCond %{REQUEST_FILENAME} !-d [NC]
+RewriteCond %{REQUEST_FILENAME} !-f [NC]
+RewriteRule ^movie/(\d+)/[a-z0-9-]+/?$ movie/details.php?mid=$1 [NC,L]
+
+#Redirect for person Details
+RewriteCond %{REQUEST_FILENAME} !-d [NC]
+RewriteCond %{REQUEST_FILENAME} !-f [NC]
+RewriteRule ^person/(\d+)/[a-z0-9-]+/?$ person/details.php?pid=$1 [NC,L]
+
+#Redirect for user Details
+RewriteCond %{REQUEST_FILENAME} !-d [NC]
+RewriteCond %{REQUEST_FILENAME} !-f [NC]
+RewriteRule ^user/(\d+)/? user/profile.php?id=$1 [NC,L]
+
+#Redirect for quicksearch
+RewriteCond %{REQUEST_FILENAME} !-d [NC]
+RewriteCond %{REQUEST_FILENAME} !-f [NC]
+RewriteRule ^quicksearch? quicksearch.php [NC,L]

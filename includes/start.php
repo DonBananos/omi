@@ -9,9 +9,14 @@ Author: Heini L. Ovason
 			<div class="page-header">
 				<h1>Welcome to Online Movie Index</h1>
 			</div>
-			<p>At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus. Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat.</p>
+			<p>
+				Online Movie Index is your easy access to your entire collection
+				of movies.! Whenver you want to see a movie, but can't get a 
+				clear overview of what you have in your collection, OMI is there
+				to help you.
+			</p>
 			<small>
-				// CEO CincoWare
+				// Mike Jensen
 			</small>
         </div>
         <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">

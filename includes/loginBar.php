@@ -12,7 +12,7 @@ Author: Heini L. Ovason
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="#">Online Movie Index</a>
+            <a class="navbar-brand" href="<?php echo $path ?>"><img src="<?php echo $path ?>includes/img/omi-alpha.png" style="max-height:180%; margin-top: -7px;"></a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
@@ -20,7 +20,7 @@ Author: Heini L. Ovason
                 <li><a href="#">About</a></li>
                 <li><a href="#">Contact</a></li>
             </ul>
-            <form class="navbar-form navbar-right" method="post" action="/onlineMovieIndex/user/login.php">
+            <form class="navbar-form navbar-right" method="post" action="<?php echo $path ?>user/login.php">
                 <div class="form-group">
                     <input type="text" placeholder="Username" name="username" class="form-control" required autofocus>
                 </div>

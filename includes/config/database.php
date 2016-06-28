@@ -1,7 +1,8 @@
 <?php
-$dbCon = new mysqli('85.119.155.19', 'phplogin', 'Mowgli42', 'omi');
+$dbCon = new mysqli('localhost', 'root', 'mik89jen', 'omi');
 if ($dbCon->connect_errno) 
 {
-	printf("Connect failed: %s\n", $mysqli->connect_error);
+	printf("Connect failed: %s\n", $dbCon->connect_error);
 	exit();
 }
+$dbCon->set_charset("utf8");
